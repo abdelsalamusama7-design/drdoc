@@ -64,8 +64,6 @@ export default function UserManagement() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>("");
 
-  if (role !== "admin") return <Navigate to="/" replace />;
-
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -85,8 +83,10 @@ export default function UserManagement() {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (role === "admin") fetchUsers();
+  }, [role]);
+
+  if (role !== "admin") return <Navigate to="/" replace />;
 
   const handleAssignRole = async () => {
     if (!roleDialog.user || !selectedRole) return;
