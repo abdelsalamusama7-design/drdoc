@@ -57,7 +57,10 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
 
         {/* Nav Items */}
         <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
-          {navItems.map((item) => {
+          {navItems.filter(item => {
+            if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
+            return true;
+          }).map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Link
