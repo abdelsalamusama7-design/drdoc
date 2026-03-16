@@ -24,8 +24,13 @@ interface ClinicLayoutProps {
 
 export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const location = useLocation();
+  const { profile, role, signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+
+  const displayName = profile?.full_name || "مستخدم";
+  const roleLabel = role === "admin" ? "مدير" : role === "doctor" ? "طبيب" : role === "receptionist" ? "موظف استقبال" : "مستخدم";
+  const initials = displayName.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background flex flex-row-reverse">
