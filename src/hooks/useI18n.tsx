@@ -49,7 +49,7 @@ const translations: Record<Language, Record<string, string>> = {
     "dash.appointmentCount": "مواعيد اليوم",
     "dash.todayRevenue": "إيراد اليوم",
     "dash.pendingFollowups": "متابعات معلقة",
-    "dash.sar": "ر.س",
+    "dash.sar": "ج.م",
     "dash.todayAppointments": "مواعيد اليوم",
     "dash.all": "الكل",
     "dash.waiting": "بانتظار",
