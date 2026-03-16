@@ -42,7 +42,7 @@ export default function Services() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-bold text-foreground font-en tabular-nums">
-                      {service.price.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ر.س</span>
+                      {service.price.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ج.م</span>
                     </span>
                   </div>
                 </div>
@@ -62,7 +62,7 @@ export default function Services() {
               <Input placeholder="مثال: استشارة أولية" className="mt-1.5" />
             </div>
             <div>
-              <Label>السعر (ر.س)</Label>
+              <Label>السعر (ج.م)</Label>
               <Input type="number" placeholder="0" className="mt-1.5 font-en" dir="ltr" />
             </div>
             <div>

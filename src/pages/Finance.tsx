@@ -54,7 +54,7 @@ export default function Finance() {
             </div>
             <div className="stat-value text-foreground font-en tabular-nums">
               {stat.value.toLocaleString()}
-              <span className="text-sm font-normal text-muted-foreground mr-1">ر.س</span>
+              <span className="text-sm font-normal text-muted-foreground mr-1">ج.م</span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
           </div>
@@ -102,7 +102,7 @@ export default function Finance() {
               </div>
               <div className="text-left">
                 <p className="text-sm font-bold text-foreground font-en tabular-nums">
-                  {exp.amount.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ر.س</span>
+                  {exp.amount.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ج.م</span>
                 </p>
                 <p className="text-[10px] text-muted-foreground font-en">{exp.date}</p>
               </div>
@@ -134,7 +134,7 @@ export default function Finance() {
               </Select>
             </div>
             <div>
-              <Label>المبلغ (ر.س)</Label>
+              <Label>المبلغ (ج.م)</Label>
               <Input type="number" placeholder="0" className="mt-1.5 font-en" dir="ltr" />
             </div>
             <div>
