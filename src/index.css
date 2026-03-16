@@ -89,12 +89,21 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
     font-feature-settings: 'tnum' on;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+    padding-top: env(safe-area-inset-top);
   }
 
   /* Geist for English text */
