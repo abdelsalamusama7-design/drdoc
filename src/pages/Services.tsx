@@ -42,7 +42,7 @@ export default function Services() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-bold text-foreground font-en tabular-nums">
-                      {service.price.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ر.س</span>
+                      {service.price.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ج.م</span>
                     </span>
                   </div>
                 </div>
