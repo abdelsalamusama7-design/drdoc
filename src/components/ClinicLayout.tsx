@@ -3,8 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
-  DollarSign, BarChart3, Settings, Menu, X, ChevronLeft
+  DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { path: "/", label: "لوحة التحكم", icon: LayoutDashboard },
