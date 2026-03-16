@@ -102,7 +102,7 @@ export default function Finance() {
               </div>
               <div className="text-left">
                 <p className="text-sm font-bold text-foreground font-en tabular-nums">
-                  {exp.amount.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ر.س</span>
+                  {exp.amount.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ج.م</span>
                 </p>
                 <p className="text-[10px] text-muted-foreground font-en">{exp.date}</p>
               </div>
