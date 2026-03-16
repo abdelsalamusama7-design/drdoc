@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { I18nProvider } from "@/hooks/useI18n";
 import { ThemeProvider } from "@/hooks/useTheme";
 import SplashScreen from "@/components/SplashScreen";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import ClinicLayout from "@/components/ClinicLayout";
 import Dashboard from "@/pages/Dashboard";
 import Patients from "@/pages/Patients";
