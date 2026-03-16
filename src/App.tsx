@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import ClinicLayout from "@/components/ClinicLayout";
 import Dashboard from "@/pages/Dashboard";
 import Patients from "@/pages/Patients";
@@ -13,9 +14,54 @@ import Services from "@/pages/Services";
 import Finance from "@/pages/Finance";
 import Reports from "@/pages/Reports";
 import SettingsPage from "@/pages/Settings";
+import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
+import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
+
+function ProtectedRoutes() {
+  const { user, loading, role } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  // Role-based access: receptionist cannot access finance/reports/settings
+  const isReceptionist = role === "receptionist";
+
+  return (
+    <ClinicLayout>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/patients" element={<Patients />} />
+        <Route path="/patients/:id" element={<PatientDetail />} />
+        <Route path="/appointments" element={<Appointments />} />
+        <Route path="/prescriptions" element={<Prescriptions />} />
+        <Route path="/services" element={<Services />} />
+        <Route
+          path="/finance"
+          element={isReceptionist ? <Navigate to="/" replace /> : <Finance />}
+        />
+        <Route
+          path="/reports"
+          element={isReceptionist ? <Navigate to="/" replace /> : <Reports />}
+        />
+        <Route
+          path="/settings"
+          element={isReceptionist ? <Navigate to="/" replace /> : <SettingsPage />}
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </ClinicLayout>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -23,20 +69,12 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <ClinicLayout>
+        <AuthProvider>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/patients" element={<Patients />} />
-            <Route path="/patients/:id" element={<PatientDetail />} />
-            <Route path="/appointments" element={<Appointments />} />
-            <Route path="/prescriptions" element={<Prescriptions />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/finance" element={<Finance />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/*" element={<ProtectedRoutes />} />
           </Routes>
-        </ClinicLayout>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
