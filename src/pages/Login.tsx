@@ -87,7 +87,7 @@ export default function Login() {
               <Stethoscope className="h-7 w-7 text-primary" />
             </div>
             <h1 className="text-xl font-bold text-foreground">
-              Clinic Sys<span className="text-primary">.</span>
+              Smart Clinic<span className="text-primary">.</span>
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
               {isSignUp ? t("login.signup") : t("login.title")}
