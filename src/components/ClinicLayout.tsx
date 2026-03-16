@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
   DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
-  Search, Bell, Plus, UserPlus, Receipt
+  Search, Bell, Plus, UserPlus, Receipt, ShieldCheck
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { mockPatients } from "@/data/mockData";
