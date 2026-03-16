@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 const pageTransition = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  transition: { type: "tween" as const, ease: [0.2, 0, 0, 1], duration: 0.25 },
+  transition: { type: "tween" as const, ease: [0.2, 0, 0, 1] as const, duration: 0.25 },
 };
 
 interface MedEntry {
