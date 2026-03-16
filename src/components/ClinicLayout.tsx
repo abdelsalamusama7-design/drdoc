@@ -17,6 +17,7 @@ const navItems = [
   { path: "/services", label: "الخدمات", icon: Stethoscope },
   { path: "/finance", label: "المالية", icon: DollarSign },
   { path: "/reports", label: "التقارير", icon: BarChart3 },
+  { path: "/users", label: "المستخدمين", icon: ShieldCheck, adminOnly: true },
   { path: "/settings", label: "الإعدادات", icon: Settings },
 ];
 
