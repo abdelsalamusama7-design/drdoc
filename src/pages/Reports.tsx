@@ -24,9 +24,9 @@ const reports = [
     description: "ملخص الإيرادات والمصروفات لشهر مارس",
     icon: DollarSign,
     stats: [
-      { label: "الإيرادات", value: "٤٨,٠٠٠ ر.س" },
-      { label: "المصروفات", value: "٤٧,٠٠٠ ر.س" },
-      { label: "صافي الربح", value: "١,٠٠٠ ر.س" },
+      { label: "الإيرادات", value: "٤٨,٠٠٠ ج.م" },
+      { label: "المصروفات", value: "٤٧,٠٠٠ ج.م" },
+      { label: "صافي الربح", value: "١,٠٠٠ ج.م" },
       { label: "عدد المعاملات", value: "١٥٦" },
     ],
   },

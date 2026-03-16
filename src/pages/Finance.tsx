@@ -134,7 +134,7 @@ export default function Finance() {
               </Select>
             </div>
             <div>
-              <Label>المبلغ (ر.س)</Label>
+              <Label>المبلغ (ج.م)</Label>
               <Input type="number" placeholder="0" className="mt-1.5 font-en" dir="ltr" />
             </div>
             <div>

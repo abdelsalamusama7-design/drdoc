@@ -242,7 +242,7 @@ const translations: Record<Language, Record<string, string>> = {
     "dash.appointmentCount": "Today's Appointments",
     "dash.todayRevenue": "Today's Revenue",
     "dash.pendingFollowups": "Pending Follow-ups",
-    "dash.sar": "SAR",
+    "dash.sar": "EGP",
     "dash.todayAppointments": "Today's Appointments",
     "dash.all": "All",
     "dash.waiting": "Waiting",

@@ -62,7 +62,7 @@ export default function Services() {
               <Input placeholder="مثال: استشارة أولية" className="mt-1.5" />
             </div>
             <div>
-              <Label>السعر (ر.س)</Label>
+              <Label>السعر (ج.م)</Label>
               <Input type="number" placeholder="0" className="mt-1.5 font-en" dir="ltr" />
             </div>
             <div>
