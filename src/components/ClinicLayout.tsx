@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
   DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
-  Search, Bell, Plus, UserPlus, Receipt
+  Search, Bell, Plus, UserPlus, Receipt, ShieldCheck
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { mockPatients } from "@/data/mockData";
@@ -17,6 +17,7 @@ const navItems = [
   { path: "/services", label: "الخدمات", icon: Stethoscope },
   { path: "/finance", label: "المالية", icon: DollarSign },
   { path: "/reports", label: "التقارير", icon: BarChart3 },
+  { path: "/users", label: "المستخدمين", icon: ShieldCheck, adminOnly: true },
   { path: "/settings", label: "الإعدادات", icon: Settings },
 ];
 
@@ -249,6 +250,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
         <nav className="flex-1 py-3 px-2.5 space-y-0.5 overflow-y-auto">
           {navItems.filter(item => {
             if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
+            if ((item as any).adminOnly && role !== "admin") return false;
             return true;
           }).map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
