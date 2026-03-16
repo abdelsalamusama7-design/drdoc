@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
-  DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut
+  DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
+  Search, Bell, Plus, UserPlus, Receipt
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { mockPatients } from "@/data/mockData";
 
 const navItems = [
   { path: "/", label: "لوحة التحكم", icon: LayoutDashboard },
@@ -22,91 +24,304 @@ interface ClinicLayoutProps {
   children: React.ReactNode;
 }
 
+// Global Search Component
+function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [open]);
+
+  const results = query.trim()
+    ? mockPatients.filter(p =>
+        p.name.includes(query) || p.phone.includes(query)
+      ).slice(0, 5)
+    : [];
+
+  const handleSelect = (id: string) => {
+    onClose();
+    navigate(`/patients/${id}`);
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="search-overlay" onClick={onClose}>
+      <motion.div
+        initial={{ opacity: 0, y: -20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2 }}
+        className="w-full max-w-lg mx-4"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="bg-card rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--card-shadow-lg)' }}>
+          <div className="flex items-center gap-3 px-4 h-14 border-b border-border">
+            <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="ابحث عن مريض بالاسم أو رقم الهاتف..."
+              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+            />
+            <kbd className="hidden sm:inline-flex text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-en">ESC</kbd>
+          </div>
+          {query.trim() && (
+            <div className="max-h-[300px] overflow-y-auto">
+              {results.length === 0 ? (
+                <div className="p-6 text-center text-sm text-muted-foreground">
+                  لا توجد نتائج
+                </div>
+              ) : (
+                results.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => handleSelect(p.id)}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors text-right"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                      {p.name.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                      <p className="text-[11px] text-muted-foreground font-en">{p.phone}</p>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground">{p.age} سنة</span>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+          {!query.trim() && (
+            <div className="p-4 space-y-2">
+              <p className="text-[10px] text-muted-foreground font-medium mb-2">إجراءات سريعة</p>
+              <Link to="/patients" onClick={onClose} className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm text-foreground">
+                <UserPlus className="h-4 w-4 text-primary" /> إضافة مريض جديد
+              </Link>
+              <Link to="/appointments" onClick={onClose} className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm text-foreground">
+                <CalendarDays className="h-4 w-4 text-accent" /> حجز موعد
+              </Link>
+              <Link to="/prescriptions" onClick={onClose} className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm text-foreground">
+                <FileText className="h-4 w-4 text-success" /> كتابة وصفة
+              </Link>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// Notification Panel
+function NotificationPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
+  if (!open) return null;
+  
+  const notifications = [
+    { id: 1, text: "فهد القحطاني - تحليل هرمونات جاهز", time: "منذ ١٠ دقائق", type: "lab" },
+    { id: 2, text: "خالد السعيد - موعد متابعة غداً", time: "منذ ساعة", type: "appointment" },
+    { id: 3, text: "٣ مرضى لم يعودوا منذ ٣ أشهر", time: "منذ ٣ ساعات", type: "alert" },
+    { id: 4, text: "تقرير مالي شهري جاهز", time: "اليوم", type: "report" },
+  ];
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <motion.div
+        initial={{ opacity: 0, y: -8, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -4 }}
+        className="absolute top-full left-0 mt-2 w-[340px] bg-card rounded-2xl border border-border z-50 overflow-hidden"
+        style={{ boxShadow: 'var(--card-shadow-lg)' }}
+      >
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <h3 className="text-sm font-semibold">الإشعارات</h3>
+          <span className="text-[10px] text-primary font-medium cursor-pointer hover:underline">قراءة الكل</span>
+        </div>
+        <div className="max-h-[320px] overflow-y-auto divide-y divide-border">
+          {notifications.map(n => (
+            <div key={n.id} className="px-4 py-3 hover:bg-muted/30 transition-colors cursor-pointer">
+              <div className="flex items-start gap-2.5">
+                <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                  n.type === 'lab' ? 'bg-accent' :
+                  n.type === 'appointment' ? 'bg-primary' :
+                  n.type === 'alert' ? 'bg-warning' : 'bg-success'
+                }`} />
+                <div>
+                  <p className="text-[12px] text-foreground leading-relaxed">{n.text}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{n.time}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </>
+  );
+}
+
 export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const location = useLocation();
   const { profile, role, signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
 
   const displayName = profile?.full_name || "مستخدم";
   const roleLabel = role === "admin" ? "مدير" : role === "doctor" ? "طبيب" : role === "receptionist" ? "موظف استقبال" : "مستخدم";
-  const initials = displayName.slice(0, 3);
+  const initials = displayName.slice(0, 2);
+
+  // Global keyboard shortcut for search
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+      if (e.key === 'Escape') setSearchOpen(false);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-row-reverse">
+      {/* Global Search Overlay */}
+      <AnimatePresence>
+        {searchOpen && <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />}
+      </AnimatePresence>
+
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden lg:flex flex-col border-l border-border bg-card fixed top-0 right-0 h-full z-40 transition-all duration-200 ${
-          collapsed ? "w-[68px]" : "w-[240px]"
+        className={`hidden lg:flex flex-col border-l border-border/80 bg-card fixed top-0 right-0 h-full z-40 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
+          collapsed ? "w-[72px]" : "w-[250px]"
         }`}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-border">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-border/80">
           {!collapsed && (
-            <h1 className="text-base font-bold text-foreground">
-              MedClinic<span className="text-primary mr-0.5">.</span>
-            </h1>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
+                <Stethoscope className="h-4 w-4 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-sm font-bold text-foreground leading-none">AndroClinic</h1>
+                <p className="text-[9px] text-muted-foreground mt-0.5">Smart Dashboard</p>
+              </div>
+            </div>
           )}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground"
-          >
-            <ChevronLeft className={`h-4 w-4 transition-transform ${collapsed ? "rotate-180" : ""}`} />
-          </button>
+          {collapsed && (
+            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center mx-auto">
+              <Stethoscope className="h-4 w-4 text-primary-foreground" />
+            </div>
+          )}
+          {!collapsed && (
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
+        {/* Search trigger */}
+        {!collapsed && (
+          <div className="px-3 pt-3">
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="w-full flex items-center gap-2 px-3 h-9 rounded-xl bg-muted/70 text-xs text-muted-foreground hover:bg-muted transition-colors"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span className="flex-1 text-right">بحث سريع...</span>
+              <kbd className="text-[9px] bg-background px-1 py-0.5 rounded font-en">⌘K</kbd>
+            </button>
+          </div>
+        )}
+
         {/* Nav Items */}
-        <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 py-3 px-2.5 space-y-0.5 overflow-y-auto">
           {navItems.filter(item => {
             if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
             return true;
           }).map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+            const isExactActive = location.pathname === item.path;
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`touch-target flex items-center gap-3 px-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
+                className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-all duration-150 ${
+                  isExactActive
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 } ${collapsed ? "justify-center px-0" : ""}`}
               >
-                <item.icon className="h-[18px] w-[18px] shrink-0" />
+                <item.icon className={`h-[18px] w-[18px] shrink-0 ${isExactActive ? 'text-primary' : ''}`} />
                 {!collapsed && <span>{item.label}</span>}
+                {isExactActive && !collapsed && (
+                  <div className="mr-auto w-1.5 h-1.5 rounded-full bg-primary" />
+                )}
               </Link>
             );
           })}
         </nav>
 
         {/* User */}
-        {!collapsed && (
-          <div className="p-4 border-t border-border">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
-                {initials}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium truncate">{displayName}</p>
-                <p className="text-xs text-muted-foreground">{roleLabel}</p>
-              </div>
-              <button onClick={signOut} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground" title="تسجيل الخروج">
+        <div className="border-t border-border/80">
+          {collapsed ? (
+            <div className="p-3 flex justify-center">
+              <button onClick={signOut} className="p-2 rounded-lg hover:bg-muted text-muted-foreground" title="تسجيل الخروج">
                 <LogOut className="h-4 w-4" />
               </button>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="p-3">
+              <div className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-muted/50 transition-colors">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary text-xs font-bold">
+                  {initials}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[12px] font-semibold truncate text-foreground">{displayName}</p>
+                  <p className="text-[10px] text-muted-foreground">{roleLabel}</p>
+                </div>
+                <button onClick={signOut} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground transition-colors" title="تسجيل الخروج">
+                  <LogOut className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </aside>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 inset-x-0 h-14 bg-card border-b border-border z-50 flex items-center justify-between px-4">
-        <button onClick={() => setSidebarOpen(true)} className="p-2 -mr-2">
+      <header className="lg:hidden fixed top-0 inset-x-0 h-14 glass z-50 flex items-center justify-between px-4">
+        <button onClick={() => setSidebarOpen(true)} className="p-2 -mr-2 rounded-lg">
           <Menu className="h-5 w-5 text-foreground" />
         </button>
-        <h1 className="text-sm font-bold text-foreground">
-          MedClinic<span className="text-primary">.</span>
-        </h1>
-        <div className="w-8" />
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+            <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
+          </div>
+          <h1 className="text-sm font-bold text-foreground">AndroClinic</h1>
+        </div>
+        <div className="flex items-center gap-1">
+          <button onClick={() => setSearchOpen(true)} className="p-2 rounded-lg hover:bg-muted transition-colors">
+            <Search className="h-4.5 w-4.5 text-muted-foreground" />
+          </button>
+          <div className="relative">
+            <button onClick={() => setNotifOpen(!notifOpen)} className="p-2 rounded-lg hover:bg-muted transition-colors">
+              <Bell className="h-4.5 w-4.5 text-muted-foreground" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
+            </button>
+          </div>
+        </div>
       </header>
 
       {/* Mobile Sidebar Overlay */}
@@ -117,25 +332,28 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-foreground/20 z-50 lg:hidden"
+              className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-50 lg:hidden"
               onClick={() => setSidebarOpen(false)}
             />
             <motion.aside
-              initial={{ x: 280 }}
+              initial={{ x: 300 }}
               animate={{ x: 0 }}
-              exit={{ x: 280 }}
-              transition={{ type: "tween", ease: [0.2, 0, 0, 1], duration: 0.25 }}
+              exit={{ x: 300 }}
+              transition={{ type: "tween", ease: [0.2, 0, 0, 1], duration: 0.3 }}
               className="fixed top-0 right-0 bottom-0 w-[280px] bg-card z-50 lg:hidden border-l border-border"
             >
               <div className="h-14 flex items-center justify-between px-4 border-b border-border">
-                <h1 className="text-base font-bold">
-                  MedClinic<span className="text-primary">.</span>
-                </h1>
-                <button onClick={() => setSidebarOpen(false)} className="p-2 -ml-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                    <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
+                  </div>
+                  <h1 className="text-sm font-bold">AndroClinic</h1>
+                </div>
+                <button onClick={() => setSidebarOpen(false)} className="p-2 -ml-2 rounded-lg">
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="py-3 px-2 space-y-0.5">
+              <nav className="py-3 px-2.5 space-y-0.5">
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
@@ -143,7 +361,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                       key={item.path}
                       to={item.path}
                       onClick={() => setSidebarOpen(false)}
-                      className={`touch-target flex items-center gap-3 px-3 rounded-lg text-sm font-medium transition-colors ${
+                      className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-colors ${
                         isActive
                           ? "bg-primary/10 text-primary"
                           : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -155,6 +373,21 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                   );
                 })}
               </nav>
+              {/* Mobile user section */}
+              <div className="absolute bottom-0 inset-x-0 p-3 border-t border-border bg-card">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary text-xs font-bold">
+                    {initials}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[12px] font-semibold truncate">{displayName}</p>
+                    <p className="text-[10px] text-muted-foreground">{roleLabel}</p>
+                  </div>
+                  <button onClick={signOut} className="p-2 rounded-lg hover:bg-muted text-muted-foreground">
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
             </motion.aside>
           </>
         )}
@@ -168,22 +401,58 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-[10px] ${
+              className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-[10px] transition-colors ${
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >
-              <item.icon className="h-5 w-5" />
-              <span>{item.label}</span>
+              <item.icon className={`h-5 w-5 ${isActive ? 'scale-110' : ''} transition-transform`} />
+              <span className={isActive ? 'font-semibold' : ''}>{item.label}</span>
+              {isActive && <div className="w-1 h-1 rounded-full bg-primary" />}
             </Link>
           );
         })}
       </nav>
 
+      {/* Desktop Top Bar */}
+      <div className={`hidden lg:flex fixed top-0 z-30 h-14 items-center justify-between px-6 border-b border-border/60 bg-background/80 backdrop-blur-lg transition-all duration-300 ${
+        collapsed ? "right-[72px] left-0" : "right-[250px] left-0"
+      }`}>
+        <div className="flex items-center gap-4">
+          <div>
+            <h2 className="text-sm font-semibold text-foreground">
+              {navItems.find(n => n.path === location.pathname)?.label || 'لوحة التحكم'}
+            </h2>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="flex items-center gap-2 h-9 px-3 rounded-xl bg-muted/60 hover:bg-muted text-xs text-muted-foreground transition-colors min-w-[200px]"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span>بحث سريع...</span>
+            <kbd className="mr-auto text-[9px] bg-background px-1.5 py-0.5 rounded font-en">⌘K</kbd>
+          </button>
+          <div className="relative">
+            <button
+              onClick={() => setNotifOpen(!notifOpen)}
+              className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors relative"
+            >
+              <Bell className="h-[18px] w-[18px]" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
+            </button>
+            <AnimatePresence>
+              {notifOpen && <NotificationPanel open={notifOpen} onClose={() => setNotifOpen(false)} />}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
       <main
-        className={`flex-1 transition-all duration-200 ${
-          collapsed ? "lg:mr-[68px]" : "lg:mr-[240px]"
-        } mt-14 lg:mt-0 mb-16 lg:mb-0`}
+        className={`flex-1 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
+          collapsed ? "lg:mr-[72px]" : "lg:mr-[250px]"
+        } mt-14 lg:mt-14 mb-16 lg:mb-0`}
       >
         <div className="p-4 lg:p-6 max-w-[1400px]">
           {children}
