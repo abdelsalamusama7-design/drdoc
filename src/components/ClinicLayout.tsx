@@ -421,20 +421,26 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
       </AnimatePresence>
 
       {/* Mobile Bottom Nav */}
-      <nav className="bottom-nav lg:hidden flex items-center justify-around h-16">
+      <nav className="bottom-nav lg:hidden flex items-center justify-around h-20 px-2">
         {navItems.slice(0, 5).map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-[10px] transition-colors ${
-                isActive ? "text-primary" : "text-muted-foreground"
+              className={`relative flex flex-col items-center justify-center gap-1 flex-1 h-full text-[11px] font-medium transition-all duration-200 ${
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground/70"
               }`}
             >
-              <item.icon className={`h-5 w-5 ${isActive ? 'scale-110' : ''} transition-transform`} />
-              <span className={isActive ? 'font-semibold' : ''}>{t(item.labelKey)}</span>
-              {isActive && <div className="w-1 h-1 rounded-full bg-primary" />}
+              {isActive && (
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-primary" />
+              )}
+              <div className={`flex items-center justify-center w-11 h-11 rounded-2xl transition-all duration-200 ${
+                isActive ? "bg-primary/10 shadow-sm" : ""
+              }`}>
+                <item.icon className={`h-6 w-6 transition-transform duration-200 ${isActive ? 'scale-105' : ''}`} strokeWidth={isActive ? 2.2 : 1.8} />
+              </div>
+              <span className={`leading-tight ${isActive ? 'font-bold' : 'font-normal'}`}>{t(item.labelKey)}</span>
             </Link>
           );
         })}
