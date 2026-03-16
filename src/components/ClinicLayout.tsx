@@ -3,8 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
-  DollarSign, BarChart3, Settings, Menu, X, ChevronLeft
+  DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { path: "/", label: "لوحة التحكم", icon: LayoutDashboard },
@@ -23,8 +24,13 @@ interface ClinicLayoutProps {
 
 export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const location = useLocation();
+  const { profile, role, signOut } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+
+  const displayName = profile?.full_name || "مستخدم";
+  const roleLabel = role === "admin" ? "مدير" : role === "doctor" ? "طبيب" : role === "receptionist" ? "موظف استقبال" : "مستخدم";
+  const initials = displayName.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background flex flex-row-reverse">
@@ -51,7 +57,10 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
 
         {/* Nav Items */}
         <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
-          {navItems.map((item) => {
+          {navItems.filter(item => {
+            if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
+            return true;
+          }).map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Link
@@ -75,12 +84,15 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           <div className="p-4 border-t border-border">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
-                د.س
+                {initials}
               </div>
-              <div className="min-w-0">
-                <p className="text-sm font-medium truncate">د. سلطان الأحمدي</p>
-                <p className="text-xs text-muted-foreground">طبيب</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium truncate">{displayName}</p>
+                <p className="text-xs text-muted-foreground">{roleLabel}</p>
               </div>
+              <button onClick={signOut} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground" title="تسجيل الخروج">
+                <LogOut className="h-4 w-4" />
+              </button>
             </div>
           </div>
         )}
