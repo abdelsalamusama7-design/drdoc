@@ -2,12 +2,12 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -19,7 +19,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create client with user's token to verify identity
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -52,10 +51,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    const url = new URL(req.url);
     const method = req.method;
 
-    // GET: List all users with their profiles and roles
+    // GET: List all users
     if (method === "GET") {
       const { data: { users }, error: listError } = await adminClient.auth.admin.listUsers();
       if (listError) throw listError;
@@ -83,12 +81,74 @@ Deno.serve(async (req) => {
       });
     }
 
-    // POST: Assign/update role
+    // POST: Actions
     if (method === "POST") {
-      const { user_id, role, action } = await req.json();
+      const body = await req.json();
+      const { action, user_id, role, email, password, full_name, phone, specialty } = body;
+
+      if (action === "create_user") {
+        // Validate inputs
+        if (!email || typeof email !== "string" || email.length > 255) {
+          return new Response(JSON.stringify({ error: "Invalid email" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (!password || typeof password !== "string" || password.length < 6 || password.length > 128) {
+          return new Response(JSON.stringify({ error: "Password must be 6-128 characters" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (!role || !["admin", "doctor", "receptionist"].includes(role)) {
+          return new Response(JSON.stringify({ error: "Invalid role" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const trimmedName = (full_name || "").trim().slice(0, 100);
+
+        // Create user via admin API (auto-confirmed)
+        const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
+          email: email.trim(),
+          password,
+          email_confirm: true,
+          user_metadata: { full_name: trimmedName },
+        });
+
+        if (createError) throw createError;
+
+        // Update profile with extra fields
+        if (newUser.user) {
+          const updates: Record<string, string> = {};
+          if (phone) updates.phone = phone.trim().slice(0, 20);
+          if (specialty) updates.specialty = specialty.trim().slice(0, 100);
+          if (Object.keys(updates).length > 0) {
+            await adminClient
+              .from("profiles")
+              .update(updates)
+              .eq("id", newUser.user.id);
+          }
+
+          // Assign role
+          await adminClient
+            .from("user_roles")
+            .insert({ user_id: newUser.user.id, role });
+        }
+
+        return new Response(JSON.stringify({ success: true, user_id: newUser.user?.id }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       if (action === "assign_role") {
-        // Upsert role
+        if (!user_id || !role || !["admin", "doctor", "receptionist"].includes(role)) {
+          return new Response(JSON.stringify({ error: "Invalid parameters" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
         const { data: existing } = await adminClient
           .from("user_roles")
           .select("id")
@@ -113,13 +173,13 @@ Deno.serve(async (req) => {
         });
       }
 
-      if (action === "update_profile") {
-        const { full_name, phone, specialty } = await req.json().catch(() => ({}));
-        const body = await req.json().catch(() => null);
-        // Re-parse since we already consumed the body
-      }
-
       if (action === "delete_user") {
+        if (!user_id) {
+          return new Response(JSON.stringify({ error: "Missing user_id" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
         if (user_id === user.id) {
           return new Response(JSON.stringify({ error: "Cannot delete yourself" }), {
             status: 400,

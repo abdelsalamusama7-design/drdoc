@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Users, Shield, ShieldCheck, UserCog, Trash2, Loader2,
-  ChevronDown, Mail, Phone, Stethoscope, Clock, Search,
-  AlertTriangle, Check, X
+  Mail, Phone, Stethoscope, Search,
+  AlertTriangle, Check, UserPlus, Eye, EyeOff, Lock
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogFooter
@@ -61,8 +63,18 @@ export default function UserManagement() {
   const [search, setSearch] = useState("");
   const [roleDialog, setRoleDialog] = useState<{ open: boolean; user: ManagedUser | null }>({ open: false, user: null });
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; user: ManagedUser | null }>({ open: false, user: null });
+  const [createDialog, setCreateDialog] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string>("");
+
+  // Create user form
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newFullName, setNewFullName] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+  const [newSpecialty, setNewSpecialty] = useState("");
+  const [newRole, setNewRole] = useState<string>("doctor");
+  const [showPassword, setShowPassword] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -87,6 +99,52 @@ export default function UserManagement() {
   }, [role]);
 
   if (role !== "admin") return <Navigate to="/" replace />;
+
+  const resetCreateForm = () => {
+    setNewEmail("");
+    setNewPassword("");
+    setNewFullName("");
+    setNewPhone("");
+    setNewSpecialty("");
+    setNewRole("doctor");
+    setShowPassword(false);
+  };
+
+  const handleCreateUser = async () => {
+    if (!newEmail.trim() || !newPassword || !newRole) {
+      toast({ title: "خطأ", description: "يرجى ملء جميع الحقول المطلوبة", variant: "destructive" });
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast({ title: "خطأ", description: "كلمة المرور يجب أن تكون ٦ أحرف على الأقل", variant: "destructive" });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await supabase.functions.invoke("admin-users", {
+        body: {
+          action: "create_user",
+          email: newEmail.trim(),
+          password: newPassword,
+          full_name: newFullName.trim(),
+          phone: newPhone.trim(),
+          specialty: newSpecialty.trim(),
+          role: newRole,
+        },
+      });
+      if (res.error) throw res.error;
+      if (res.data?.error) throw new Error(res.data.error);
+
+      toast({ title: "تم إنشاء الحساب", description: `تم إنشاء حساب ${newFullName || newEmail} بنجاح` });
+      setCreateDialog(false);
+      resetCreateForm();
+      fetchUsers();
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
 
   const handleAssignRole = async () => {
     if (!roleDialog.user || !selectedRole) return;
@@ -157,9 +215,19 @@ export default function UserManagement() {
             إدارة حسابات الموظفين وصلاحياتهم
           </p>
         </div>
-        <Button onClick={fetchUsers} variant="outline" size="sm" disabled={loading}>
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "تحديث"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => setCreateDialog(true)}
+            size="sm"
+            className="gap-1.5"
+          >
+            <UserPlus className="h-4 w-4" />
+            إضافة موظف
+          </Button>
+          <Button onClick={fetchUsers} variant="outline" size="sm" disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "تحديث"}
+          </Button>
+        </div>
       </motion.div>
 
       {/* Stats */}
@@ -304,6 +372,144 @@ export default function UserManagement() {
           </div>
         )}
       </motion.div>
+
+      {/* Create User Dialog */}
+      <Dialog open={createDialog} onOpenChange={(o) => { setCreateDialog(o); if (!o) resetCreateForm(); }}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-primary" />
+              إضافة موظف جديد
+            </DialogTitle>
+            <DialogDescription>
+              أنشئ حساب جديد للموظف وحدد دوره في النظام
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            {/* Full Name */}
+            <div>
+              <Label className="text-[12px]">الاسم الكامل <span className="text-destructive">*</span></Label>
+              <Input
+                value={newFullName}
+                onChange={(e) => setNewFullName(e.target.value)}
+                placeholder="د. سلطان الأحمدي"
+                className="mt-1.5"
+                maxLength={100}
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <Label className="text-[12px]">البريد الإلكتروني <span className="text-destructive">*</span></Label>
+              <div className="relative mt-1.5">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="staff@clinic.com"
+                  className="pl-9 font-en"
+                  dir="ltr"
+                  maxLength={255}
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <Label className="text-[12px]">كلمة المرور <span className="text-destructive">*</span></Label>
+              <div className="relative mt-1.5">
+                <Lock className="absolute left-9 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="٦ أحرف على الأقل"
+                  className="pl-16 font-en"
+                  dir="ltr"
+                  minLength={6}
+                  maxLength={128}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Phone + Specialty row */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-[12px]">الهاتف</Label>
+                <div className="relative mt-1.5">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={newPhone}
+                    onChange={(e) => setNewPhone(e.target.value)}
+                    placeholder="05xxxxxxxx"
+                    className="pl-9 font-en"
+                    dir="ltr"
+                    maxLength={20}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="text-[12px]">التخصص</Label>
+                <Input
+                  value={newSpecialty}
+                  onChange={(e) => setNewSpecialty(e.target.value)}
+                  placeholder="طب الذكورة"
+                  className="mt-1.5"
+                  maxLength={100}
+                />
+              </div>
+            </div>
+
+            {/* Role Selection */}
+            <div>
+              <Label className="text-[12px] mb-2 block">الدور <span className="text-destructive">*</span></Label>
+              <div className="grid grid-cols-3 gap-2">
+                {(["doctor", "receptionist", "admin"] as const).map((r) => {
+                  const Icon = roleIcons[r];
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setNewRole(r)}
+                      className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all ${
+                        newRole === r
+                          ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                          : "border-border hover:bg-muted/50"
+                      }`}
+                    >
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                        newRole === r ? roleColors[r] : "bg-muted text-muted-foreground"
+                      }`}>
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <span className="text-[11px] font-medium text-foreground">{roleLabels[r]}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => { setCreateDialog(false); resetCreateForm(); }}>
+              إلغاء
+            </Button>
+            <Button onClick={handleCreateUser} disabled={submitting} className="gap-1.5">
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+              إنشاء الحساب
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Role Assignment Dialog */}
       <Dialog open={roleDialog.open} onOpenChange={(o) => setRoleDialog({ open: o, user: o ? roleDialog.user : null })}>
