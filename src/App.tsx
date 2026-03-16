@@ -58,6 +58,10 @@ function ProtectedRoutes() {
           path="/settings"
           element={isReceptionist ? <Navigate to="/" replace /> : <SettingsPage />}
         />
+        <Route
+          path="/users"
+          element={<UserManagement />}
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ClinicLayout>
