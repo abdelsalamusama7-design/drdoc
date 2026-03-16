@@ -81,12 +81,15 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           <div className="p-4 border-t border-border">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
-                د.س
+                {initials}
               </div>
-              <div className="min-w-0">
-                <p className="text-sm font-medium truncate">د. سلطان الأحمدي</p>
-                <p className="text-xs text-muted-foreground">طبيب</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium truncate">{displayName}</p>
+                <p className="text-xs text-muted-foreground">{roleLabel}</p>
               </div>
+              <button onClick={signOut} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground" title="تسجيل الخروج">
+                <LogOut className="h-4 w-4" />
+              </button>
             </div>
           </div>
         )}
