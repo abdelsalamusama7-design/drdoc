@@ -46,7 +46,7 @@ export default function Login() {
     } else if (isSignUp) {
       toast({
         title: "تم إنشاء الحساب",
-        description: "تحقق من بريدك الإلكتروني لتأكيد الحساب",
+        description: "مرحباً بك! جاري تسجيل الدخول...",
       });
     }
     setSubmitting(false);
