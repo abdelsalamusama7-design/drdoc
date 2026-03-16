@@ -15,6 +15,7 @@ import Finance from "@/pages/Finance";
 import Reports from "@/pages/Reports";
 import SettingsPage from "@/pages/Settings";
 import Login from "@/pages/Login";
+import UserManagement from "@/pages/UserManagement";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
