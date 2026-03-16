@@ -349,7 +349,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                   <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
                     <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
                   </div>
-                  <h1 className="text-sm font-bold">AndroClinic</h1>
+                  <h1 className="text-sm font-bold">Clinic Sys</h1>
                 </div>
                 <button onClick={() => setSidebarOpen(false)} className="p-2 -ml-2 rounded-lg">
                   <X className="h-5 w-5" />

@@ -67,7 +67,7 @@ export default function Login() {
               <Stethoscope className="h-7 w-7 text-primary" />
             </div>
             <h1 className="text-xl font-bold text-foreground">
-              MedClinic<span className="text-primary">.</span>
+              Clinic Sys<span className="text-primary">.</span>
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
               {isSignUp ? "إنشاء حساب جديد" : "تسجيل الدخول"}
