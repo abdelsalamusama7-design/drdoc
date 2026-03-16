@@ -212,7 +212,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                 <Stethoscope className="h-4 w-4 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-sm font-bold text-foreground leading-none">AndroClinic</h1>
+                <h1 className="text-sm font-bold text-foreground leading-none">Clinic Sys</h1>
                 <p className="text-[9px] text-muted-foreground mt-0.5">Smart Dashboard</p>
               </div>
             </div>
