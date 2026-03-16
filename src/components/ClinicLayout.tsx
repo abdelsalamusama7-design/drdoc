@@ -4,21 +4,30 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
   DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
-  Search, Bell, Plus, UserPlus, Receipt, ShieldCheck
+  Search, Bell, UserPlus, ShieldCheck, Moon, Sun, Languages
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useI18n } from "@/hooks/useI18n";
+import { useTheme } from "@/hooks/useTheme";
 import { mockPatients } from "@/data/mockData";
 
-const navItems = [
-  { path: "/", label: "لوحة التحكم", icon: LayoutDashboard },
-  { path: "/patients", label: "المرضى", icon: Users },
-  { path: "/appointments", label: "المواعيد", icon: CalendarDays },
-  { path: "/prescriptions", label: "الوصفات", icon: FileText },
-  { path: "/services", label: "الخدمات", icon: Stethoscope },
-  { path: "/finance", label: "المالية", icon: DollarSign },
-  { path: "/reports", label: "التقارير", icon: BarChart3 },
-  { path: "/users", label: "المستخدمين", icon: ShieldCheck, adminOnly: true },
-  { path: "/settings", label: "الإعدادات", icon: Settings },
+interface NavItem {
+  path: string;
+  labelKey: string;
+  icon: typeof LayoutDashboard;
+  adminOnly?: boolean;
+}
+
+const navItems: NavItem[] = [
+  { path: "/", labelKey: "nav.dashboard", icon: LayoutDashboard },
+  { path: "/patients", labelKey: "nav.patients", icon: Users },
+  { path: "/appointments", labelKey: "nav.appointments", icon: CalendarDays },
+  { path: "/prescriptions", labelKey: "nav.prescriptions", icon: FileText },
+  { path: "/services", labelKey: "nav.services", icon: Stethoscope },
+  { path: "/finance", labelKey: "nav.finance", icon: DollarSign },
+  { path: "/reports", labelKey: "nav.reports", icon: BarChart3 },
+  { path: "/users", labelKey: "nav.users", icon: ShieldCheck, adminOnly: true },
+  { path: "/settings", labelKey: "nav.settings", icon: Settings },
 ];
 
 interface ClinicLayoutProps {
@@ -30,6 +39,7 @@ function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => void })
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   useEffect(() => {
     if (open) {
@@ -68,7 +78,7 @@ function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => void })
               ref={inputRef}
               value={query}
               onChange={e => setQuery(e.target.value)}
-              placeholder="ابحث عن مريض بالاسم أو رقم الهاتف..."
+              placeholder={t("layout.search")}
               className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
             />
             <kbd className="hidden sm:inline-flex text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-en">ESC</kbd>
@@ -77,7 +87,7 @@ function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => void })
             <div className="max-h-[300px] overflow-y-auto">
               {results.length === 0 ? (
                 <div className="p-6 text-center text-sm text-muted-foreground">
-                  لا توجد نتائج
+                  {t("layout.noResults")}
                 </div>
               ) : (
                 results.map(p => (
@@ -93,7 +103,7 @@ function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => void })
                       <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
                       <p className="text-[11px] text-muted-foreground font-en">{p.phone}</p>
                     </div>
-                    <span className="text-[10px] text-muted-foreground">{p.age} سنة</span>
+                    <span className="text-[10px] text-muted-foreground">{p.age} {t("layout.years")}</span>
                   </button>
                 ))
               )}
@@ -101,15 +111,15 @@ function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => void })
           )}
           {!query.trim() && (
             <div className="p-4 space-y-2">
-              <p className="text-[10px] text-muted-foreground font-medium mb-2">إجراءات سريعة</p>
+              <p className="text-[10px] text-muted-foreground font-medium mb-2">{t("layout.quickActions")}</p>
               <Link to="/patients" onClick={onClose} className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm text-foreground">
-                <UserPlus className="h-4 w-4 text-primary" /> إضافة مريض جديد
+                <UserPlus className="h-4 w-4 text-primary" /> {t("layout.addPatient")}
               </Link>
               <Link to="/appointments" onClick={onClose} className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm text-foreground">
-                <CalendarDays className="h-4 w-4 text-accent" /> حجز موعد
+                <CalendarDays className="h-4 w-4 text-accent" /> {t("layout.bookAppointment")}
               </Link>
               <Link to="/prescriptions" onClick={onClose} className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted transition-colors text-sm text-foreground">
-                <FileText className="h-4 w-4 text-success" /> كتابة وصفة
+                <FileText className="h-4 w-4 text-success" /> {t("layout.writePrescription")}
               </Link>
             </div>
           )}
@@ -121,13 +131,14 @@ function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => void })
 
 // Notification Panel
 function NotificationPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useI18n();
   if (!open) return null;
   
   const notifications = [
-    { id: 1, text: "فهد القحطاني - تحليل هرمونات جاهز", time: "منذ ١٠ دقائق", type: "lab" },
-    { id: 2, text: "خالد السعيد - موعد متابعة غداً", time: "منذ ساعة", type: "appointment" },
-    { id: 3, text: "٣ مرضى لم يعودوا منذ ٣ أشهر", time: "منذ ٣ ساعات", type: "alert" },
-    { id: 4, text: "تقرير مالي شهري جاهز", time: "اليوم", type: "report" },
+    { id: 1, text: t("notif.1"), time: t("notif.time1"), type: "lab" },
+    { id: 2, text: t("notif.2"), time: t("notif.time2"), type: "appointment" },
+    { id: 3, text: t("notif.3"), time: t("notif.time3"), type: "alert" },
+    { id: 4, text: t("notif.4"), time: t("notif.time4"), type: "report" },
   ];
 
   return (
@@ -141,8 +152,8 @@ function NotificationPanel({ open, onClose }: { open: boolean; onClose: () => vo
         style={{ boxShadow: 'var(--card-shadow-lg)' }}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <h3 className="text-sm font-semibold">الإشعارات</h3>
-          <span className="text-[10px] text-primary font-medium cursor-pointer hover:underline">قراءة الكل</span>
+          <h3 className="text-sm font-semibold">{t("layout.notifications")}</h3>
+          <span className="text-[10px] text-primary font-medium cursor-pointer hover:underline">{t("layout.readAll")}</span>
         </div>
         <div className="max-h-[320px] overflow-y-auto divide-y divide-border">
           {notifications.map(n => (
@@ -169,13 +180,15 @@ function NotificationPanel({ open, onClose }: { open: boolean; onClose: () => vo
 export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const location = useLocation();
   const { profile, role, signOut } = useAuth();
+  const { t, lang, toggleLang } = useI18n();
+  const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
-  const displayName = profile?.full_name || "مستخدم";
-  const roleLabel = role === "admin" ? "مدير" : role === "doctor" ? "طبيب" : role === "receptionist" ? "موظف استقبال" : "مستخدم";
+  const displayName = profile?.full_name || (lang === "ar" ? "مستخدم" : "User");
+  const roleLabel = t(`role.${role || "user"}`);
   const initials = displayName.slice(0, 2);
 
   // Global keyboard shortcut for search
@@ -190,6 +203,9 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
+  // Get current page title
+  const currentPageTitle = navItems.find(n => n.path === location.pathname)?.labelKey;
 
   return (
     <div className="min-h-screen bg-background flex flex-row-reverse">
@@ -240,7 +256,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
               className="w-full flex items-center gap-2 px-3 h-9 rounded-xl bg-muted/70 text-xs text-muted-foreground hover:bg-muted transition-colors"
             >
               <Search className="h-3.5 w-3.5" />
-              <span className="flex-1 text-right">بحث سريع...</span>
+              <span className="flex-1 text-right">{t("layout.search")}</span>
               <kbd className="text-[9px] bg-background px-1 py-0.5 rounded font-en">⌘K</kbd>
             </button>
           </div>
@@ -250,10 +266,9 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
         <nav className="flex-1 py-3 px-2.5 space-y-0.5 overflow-y-auto">
           {navItems.filter(item => {
             if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
-            if ((item as any).adminOnly && role !== "admin") return false;
+            if (item.adminOnly && role !== "admin") return false;
             return true;
           }).map((item) => {
-            const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
             const isExactActive = location.pathname === item.path;
             return (
               <Link
@@ -266,7 +281,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                 } ${collapsed ? "justify-center px-0" : ""}`}
               >
                 <item.icon className={`h-[18px] w-[18px] shrink-0 ${isExactActive ? 'text-primary' : ''}`} />
-                {!collapsed && <span>{item.label}</span>}
+                {!collapsed && <span>{t(item.labelKey)}</span>}
                 {isExactActive && !collapsed && (
                   <div className="mr-auto w-1.5 h-1.5 rounded-full bg-primary" />
                 )}
@@ -279,7 +294,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
         <div className="border-t border-border/80">
           {collapsed ? (
             <div className="p-3 flex justify-center">
-              <button onClick={signOut} className="p-2 rounded-lg hover:bg-muted text-muted-foreground" title="تسجيل الخروج">
+              <button onClick={signOut} className="p-2 rounded-lg hover:bg-muted text-muted-foreground" title={t("layout.signOut")}>
                 <LogOut className="h-4 w-4" />
               </button>
             </div>
@@ -293,7 +308,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                   <p className="text-[12px] font-semibold truncate text-foreground">{displayName}</p>
                   <p className="text-[10px] text-muted-foreground">{roleLabel}</p>
                 </div>
-                <button onClick={signOut} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground transition-colors" title="تسجيل الخروج">
+                <button onClick={signOut} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground transition-colors" title={t("layout.signOut")}>
                   <LogOut className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -313,13 +328,19 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           </div>
           <h1 className="text-sm font-bold text-foreground">Clinic Sys</h1>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           <button onClick={() => setSearchOpen(true)} className="p-2 rounded-lg hover:bg-muted transition-colors">
-            <Search className="h-4.5 w-4.5 text-muted-foreground" />
+            <Search className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <button onClick={toggleLang} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Language">
+            <Languages className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Theme">
+            {theme === "light" ? <Moon className="h-4 w-4 text-muted-foreground" /> : <Sun className="h-4 w-4 text-muted-foreground" />}
           </button>
           <div className="relative">
             <button onClick={() => setNotifOpen(!notifOpen)} className="p-2 rounded-lg hover:bg-muted transition-colors">
-              <Bell className="h-4.5 w-4.5 text-muted-foreground" />
+              <Bell className="h-4 w-4 text-muted-foreground" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
             </button>
           </div>
@@ -356,7 +377,11 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                 </button>
               </div>
               <nav className="py-3 px-2.5 space-y-0.5">
-                {navItems.map((item) => {
+                {navItems.filter(item => {
+                  if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
+                  if (item.adminOnly && role !== "admin") return false;
+                  return true;
+                }).map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
                     <Link
@@ -370,7 +395,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                       }`}
                     >
                       <item.icon className="h-[18px] w-[18px] shrink-0" />
-                      <span>{item.label}</span>
+                      <span>{t(item.labelKey)}</span>
                     </Link>
                   );
                 })}
@@ -408,7 +433,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
               }`}
             >
               <item.icon className={`h-5 w-5 ${isActive ? 'scale-110' : ''} transition-transform`} />
-              <span className={isActive ? 'font-semibold' : ''}>{item.label}</span>
+              <span className={isActive ? 'font-semibold' : ''}>{t(item.labelKey)}</span>
               {isActive && <div className="w-1 h-1 rounded-full bg-primary" />}
             </Link>
           );
@@ -422,19 +447,46 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
         <div className="flex items-center gap-4">
           <div>
             <h2 className="text-sm font-semibold text-foreground">
-              {navItems.find(n => n.path === location.pathname)?.label || 'لوحة التحكم'}
+              {currentPageTitle ? t(currentPageTitle) : t("nav.dashboard")}
             </h2>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => setSearchOpen(true)}
             className="flex items-center gap-2 h-9 px-3 rounded-xl bg-muted/60 hover:bg-muted text-xs text-muted-foreground transition-colors min-w-[200px]"
           >
             <Search className="h-3.5 w-3.5" />
-            <span>بحث سريع...</span>
+            <span>{t("layout.search")}</span>
             <kbd className="mr-auto text-[9px] bg-background px-1.5 py-0.5 rounded font-en">⌘K</kbd>
           </button>
+
+          {/* Language Toggle */}
+          <button
+            onClick={toggleLang}
+            className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors relative"
+            title={lang === "ar" ? "Switch to English" : "التبديل للعربية"}
+          >
+            <Languages className="h-[18px] w-[18px]" />
+            <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-primary font-en">
+              {lang === "ar" ? "EN" : "ع"}
+            </span>
+          </button>
+
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
+            title={theme === "light" ? "Dark Mode" : "Light Mode"}
+          >
+            {theme === "light" ? (
+              <Moon className="h-[18px] w-[18px]" />
+            ) : (
+              <Sun className="h-[18px] w-[18px]" />
+            )}
+          </button>
+
+          {/* Notifications */}
           <div className="relative">
             <button
               onClick={() => setNotifOpen(!notifOpen)}

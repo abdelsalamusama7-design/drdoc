@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { I18nProvider } from "@/hooks/useI18n";
+import { ThemeProvider } from "@/hooks/useTheme";
 import ClinicLayout from "@/components/ClinicLayout";
 import Dashboard from "@/pages/Dashboard";
 import Patients from "@/pages/Patients";
@@ -70,18 +72,22 @@ function ProtectedRoutes() {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/*" element={<ProtectedRoutes />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider>
+      <I18nProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AuthProvider>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/*" element={<ProtectedRoutes />} />
+              </Routes>
+            </AuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </I18nProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

@@ -4,16 +4,16 @@ import {
   Users, CalendarDays, DollarSign, TrendingUp, TrendingDown,
   Clock, AlertCircle, Activity, Stethoscope,
   FileText, ChevronLeft, Play, FolderOpen, StickyNote,
-  UserPlus, Plus, Receipt, ArrowUpRight, Zap,
+  UserPlus, Receipt, ArrowUpRight, Zap,
   BarChart3, Calendar, Star, FlaskConical
 } from "lucide-react";
-import { mockAppointments, mockPatients, mockServices, visitTypeLabels, statusLabels } from "@/data/mockData";
+import { mockAppointments, mockPatients, mockServices } from "@/data/mockData";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, PieChart, Pie, Cell
 } from "recharts";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { useI18n } from "@/hooks/useI18n";
 
 const container = {
   hidden: { opacity: 0 },
@@ -23,78 +23,75 @@ const container = {
   }
 };
 
-const item = {
+const itemAnim = {
   hidden: { opacity: 0, y: 12 },
   show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.2, 0, 0, 1] as const } }
 };
 
-const revenueData = [
-  { day: 'سبت', revenue: 2400, patients: 5 },
-  { day: 'أحد', revenue: 3200, patients: 7 },
-  { day: 'إثنين', revenue: 2800, patients: 6 },
-  { day: 'ثلاثاء', revenue: 3600, patients: 8 },
-  { day: 'أربعاء', revenue: 4100, patients: 9 },
-  { day: 'خميس', revenue: 3800, patients: 7 },
-  { day: 'جمعة', revenue: 0, patients: 0 },
-];
-
-const monthlyData = [
-  { month: 'يناير', revenue: 45000 },
-  { month: 'فبراير', revenue: 52000 },
-  { month: 'مارس', revenue: 48000 },
-  { month: 'أبريل', revenue: 61000 },
-  { month: 'مايو', revenue: 55000 },
-  { month: 'يونيو', revenue: 67000 },
-];
-
-const visitTypeData = [
-  { name: 'استشارة', value: 42, color: 'hsl(217, 91%, 60%)' },
-  { name: 'متابعة', value: 28, color: 'hsl(199, 89%, 48%)' },
-  { name: 'إجراء', value: 18, color: 'hsl(142, 71%, 45%)' },
-  { name: 'مختبر', value: 12, color: 'hsl(25, 95%, 53%)' },
-];
-
-const stats = [
-  {
-    label: "مرضى اليوم", value: "١٢", change: "+٣", up: true,
-    icon: Users, color: "text-primary", bg: "bg-primary/10",
-    ringColor: "ring-primary/20"
-  },
-  {
-    label: "مواعيد اليوم", value: "٨", change: "+٢", up: true,
-    icon: CalendarDays, color: "text-accent", bg: "bg-accent/10",
-    ringColor: "ring-accent/20"
-  },
-  {
-    label: "إيراد اليوم", value: "٣٬٦٠٠", suffix: "ر.س", change: "+١٢٪", up: true,
-    icon: DollarSign, color: "text-success", bg: "bg-success/10",
-    ringColor: "ring-success/20"
-  },
-  {
-    label: "متابعات معلقة", value: "٥", change: "-٢", up: false,
-    icon: Clock, color: "text-warning", bg: "bg-warning/10",
-    ringColor: "ring-warning/20"
-  },
-];
-
-const todayAppointments = mockAppointments.filter(a => a.date === '2025-03-16');
-
-const performanceInsights = [
-  { label: "استشارات هذا الشهر", value: "٤٧", icon: Stethoscope, color: "text-primary" },
-  { label: "متابعات", value: "٢٣", icon: Calendar, color: "text-accent" },
-  { label: "أعلى خدمة", value: "استشارة أولية", icon: Star, color: "text-warning" },
-  { label: "أنشط يوم", value: "الأربعاء", icon: Zap, color: "text-success" },
-];
-
-const quickActions = [
-  { label: "مريض جديد", icon: UserPlus, path: "/patients", color: "bg-primary" },
-  { label: "حجز موعد", icon: CalendarDays, path: "/appointments", color: "bg-accent" },
-  { label: "وصفة طبية", icon: FileText, path: "/prescriptions", color: "bg-success" },
-  { label: "إضافة مصروف", icon: Receipt, path: "/finance", color: "bg-warning" },
-];
-
 export default function Dashboard() {
+  const { t, lang } = useI18n();
   const [activeTab, setActiveTab] = useState<'all' | 'waiting' | 'in-progress'>('all');
+
+  const revenueData = [
+    { day: t("day.sat"), revenue: 2400, patients: 5 },
+    { day: t("day.sun"), revenue: 3200, patients: 7 },
+    { day: t("day.mon"), revenue: 2800, patients: 6 },
+    { day: t("day.tue"), revenue: 3600, patients: 8 },
+    { day: t("day.wed"), revenue: 4100, patients: 9 },
+    { day: t("day.thu"), revenue: 3800, patients: 7 },
+    { day: t("day.fri"), revenue: 0, patients: 0 },
+  ];
+
+  const monthlyData = [
+    { month: t("month.jan"), revenue: 45000 },
+    { month: t("month.feb"), revenue: 52000 },
+    { month: t("month.mar"), revenue: 48000 },
+    { month: t("month.apr"), revenue: 61000 },
+    { month: t("month.may"), revenue: 55000 },
+    { month: t("month.jun"), revenue: 67000 },
+  ];
+
+  const visitTypeData = [
+    { name: t("visit.consultation"), value: 42, color: 'hsl(217, 91%, 60%)' },
+    { name: t("visit.followup"), value: 28, color: 'hsl(199, 89%, 48%)' },
+    { name: t("visit.procedure"), value: 18, color: 'hsl(142, 71%, 45%)' },
+    { name: t("visit.lab"), value: 12, color: 'hsl(25, 95%, 53%)' },
+  ];
+
+  const stats = [
+    {
+      label: t("dash.patientsToday"), value: "12", change: "+3", up: true,
+      icon: Users, color: "text-primary", bg: "bg-primary/10", ringColor: "ring-primary/20"
+    },
+    {
+      label: t("dash.appointmentCount"), value: "8", change: "+2", up: true,
+      icon: CalendarDays, color: "text-accent", bg: "bg-accent/10", ringColor: "ring-accent/20"
+    },
+    {
+      label: t("dash.todayRevenue"), value: "3,600", suffix: t("dash.sar"), change: "+12%", up: true,
+      icon: DollarSign, color: "text-success", bg: "bg-success/10", ringColor: "ring-success/20"
+    },
+    {
+      label: t("dash.pendingFollowups"), value: "5", change: "-2", up: false,
+      icon: Clock, color: "text-warning", bg: "bg-warning/10", ringColor: "ring-warning/20"
+    },
+  ];
+
+  const todayAppointments = mockAppointments.filter(a => a.date === '2025-03-16');
+
+  const performanceInsights = [
+    { label: t("dash.monthConsultations"), value: "47", icon: Stethoscope, color: "text-primary" },
+    { label: t("dash.followups"), value: "23", icon: Calendar, color: "text-accent" },
+    { label: t("dash.topService"), value: t("perf.initialConsultation"), icon: Star, color: "text-warning" },
+    { label: t("dash.busiestDay"), value: t("perf.wednesday"), icon: Zap, color: "text-success" },
+  ];
+
+  const quickActions = [
+    { label: t("action.newPatient"), icon: UserPlus, path: "/patients" },
+    { label: t("action.bookAppointment"), icon: CalendarDays, path: "/appointments" },
+    { label: t("action.prescription"), icon: FileText, path: "/prescriptions" },
+    { label: t("action.addExpense"), icon: Receipt, path: "/finance" },
+  ];
 
   const filteredApts = activeTab === 'all' ? todayAppointments :
     activeTab === 'waiting' ? todayAppointments.filter(a => a.status === 'scheduled') :
@@ -102,6 +99,8 @@ export default function Dashboard() {
 
   const totalWeeklyRevenue = revenueData.reduce((s, d) => s + d.revenue, 0);
   const avgDailyRevenue = Math.round(totalWeeklyRevenue / 6);
+
+  const currency = t("dash.sar");
 
   return (
     <motion.div
@@ -111,13 +110,13 @@ export default function Dashboard() {
       className="space-y-5"
     >
       {/* Header + Quick Actions */}
-      <motion.div variants={item} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <motion.div variants={itemAnim} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl lg:text-2xl font-bold text-foreground">
-            مرحباً دكتور 👋
+            {t("dash.welcome")}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            الأحد، ١٦ مارس ٢٠٢٥ · لديك <span className="text-primary font-semibold">٨ مواعيد</span> اليوم
+            {t("dash.todayDate")} · <span className="text-primary font-semibold">8 {t("dash.appointmentsToday")}</span>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -136,11 +135,11 @@ export default function Dashboard() {
       </motion.div>
 
       {/* Stats Grid */}
-      <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <motion.div variants={itemAnim} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {stats.map((stat, i) => (
           <motion.div
             key={i}
-            variants={item}
+            variants={itemAnim}
             className="clinic-card p-4 group"
           >
             <div className="flex items-center justify-between mb-3">
@@ -155,7 +154,7 @@ export default function Dashboard() {
               </span>
             </div>
             <div className="animate-count-up">
-              <p className="stat-value text-foreground">
+              <p className="stat-value text-foreground font-en">
                 {stat.value}
                 {stat.suffix && <span className="text-xs font-normal text-muted-foreground mr-1">{stat.suffix}</span>}
               </p>
@@ -168,23 +167,22 @@ export default function Dashboard() {
       {/* Main Grid: Appointments Table + Revenue */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Today's Appointments Table */}
-        <motion.div variants={item} className="lg:col-span-8 clinic-card">
+        <motion.div variants={itemAnim} className="lg:col-span-8 clinic-card">
           <div className="flex items-center justify-between p-4 border-b border-border">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Activity className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-foreground">مواعيد اليوم</h2>
-                <p className="text-[10px] text-muted-foreground">{todayAppointments.length} مواعيد</p>
+                <h2 className="text-sm font-semibold text-foreground">{t("dash.todayAppointments")}</h2>
+                <p className="text-[10px] text-muted-foreground">{todayAppointments.length} {t("dash.appointmentsToday")}</p>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
-              {/* Tab filters */}
               {[
-                { key: 'all' as const, label: 'الكل' },
-                { key: 'waiting' as const, label: 'بانتظار' },
-                { key: 'in-progress' as const, label: 'جاري' },
+                { key: 'all' as const, label: t("dash.all") },
+                { key: 'waiting' as const, label: t("dash.waiting") },
+                { key: 'in-progress' as const, label: t("dash.inProgress") },
               ].map(tab => (
                 <button
                   key={tab.key}
@@ -201,110 +199,113 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border/50">
-                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5">الوقت</th>
-                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5">المريض</th>
-                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5 hidden sm:table-cell">نوع الزيارة</th>
-                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5 hidden md:table-cell">الطبيب</th>
-                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5">الحالة</th>
-                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5">إجراء</th>
+                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5">{t("dash.time")}</th>
+                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5">{t("dash.patient")}</th>
+                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5 hidden sm:table-cell">{t("dash.visitType")}</th>
+                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5 hidden md:table-cell">{t("dash.doctor")}</th>
+                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5">{t("dash.status")}</th>
+                  <th className="text-[10px] text-muted-foreground font-medium text-right px-4 py-2.5">{t("dash.action")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/30">
-                {filteredApts.map((apt, idx) => (
-                  <motion.tr
-                    key={apt.id}
-                    initial={{ opacity: 0, x: -4 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.03 }}
-                    className="hover:bg-muted/20 transition-colors group"
-                  >
-                    <td className="px-4 py-3">
-                      <span className="text-sm font-bold font-en tabular-nums text-foreground">{apt.time}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 flex items-center justify-center text-[10px] font-bold text-primary shrink-0">
-                          {apt.patientName.charAt(0)}
+                {filteredApts.map((apt, idx) => {
+                  const visitKey = `visit.${apt.visitType}` as string;
+                  const statusKey = `status.${apt.status}` as string;
+                  return (
+                    <motion.tr
+                      key={apt.id}
+                      initial={{ opacity: 0, x: -4 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.03 }}
+                      className="hover:bg-muted/20 transition-colors group"
+                    >
+                      <td className="px-4 py-3">
+                        <span className="text-sm font-bold font-en tabular-nums text-foreground">{apt.time}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 flex items-center justify-center text-[10px] font-bold text-primary shrink-0">
+                            {apt.patientName.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="text-[12px] font-semibold text-foreground">{apt.patientName}</p>
+                            <p className="text-[10px] text-muted-foreground font-en">{apt.phone}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-[12px] font-semibold text-foreground">{apt.patientName}</p>
-                          <p className="text-[10px] text-muted-foreground font-en">{apt.phone}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <span className={`text-[10px] px-2 py-1 rounded-lg font-medium ${
-                        apt.visitType === 'consultation' ? 'bg-primary/8 text-primary' :
-                        apt.visitType === 'followup' ? 'bg-accent/8 text-accent' :
-                        apt.visitType === 'procedure' ? 'bg-success/8 text-success' :
-                        'bg-warning/8 text-warning'
-                      }`}>
-                        {visitTypeLabels[apt.visitType]}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      <span className="text-[11px] text-muted-foreground">{apt.doctor}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1.5">
-                        {apt.status === 'in-progress' && (
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-pulse-ring absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                          </span>
-                        )}
+                      </td>
+                      <td className="px-4 py-3 hidden sm:table-cell">
                         <span className={`text-[10px] px-2 py-1 rounded-lg font-medium ${
-                          apt.status === 'in-progress' ? 'status-in-progress' :
-                          apt.status === 'completed' ? 'status-completed' :
-                          apt.status === 'cancelled' ? 'status-cancelled' :
-                          'status-waiting'
+                          apt.visitType === 'consultation' ? 'bg-primary/8 text-primary' :
+                          apt.visitType === 'followup' ? 'bg-accent/8 text-accent' :
+                          apt.visitType === 'procedure' ? 'bg-success/8 text-success' :
+                          'bg-warning/8 text-warning'
                         }`}>
-                          {apt.status === 'scheduled' ? 'بانتظار' : statusLabels[apt.status]}
+                          {t(visitKey)}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Link to={`/patients/${apt.patientId}`} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground" title="فتح الملف">
-                          <FolderOpen className="h-3.5 w-3.5" />
-                        </Link>
-                        <button className="p-1.5 rounded-lg hover:bg-primary/10 text-primary" title="بدء الزيارة">
-                          <Play className="h-3.5 w-3.5" />
-                        </button>
-                        <button className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground" title="إضافة ملاحظة">
-                          <StickyNote className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        <span className="text-[11px] text-muted-foreground">{apt.doctor}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5">
+                          {apt.status === 'in-progress' && (
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-pulse-ring absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </span>
+                          )}
+                          <span className={`text-[10px] px-2 py-1 rounded-lg font-medium ${
+                            apt.status === 'in-progress' ? 'status-in-progress' :
+                            apt.status === 'completed' ? 'status-completed' :
+                            apt.status === 'cancelled' ? 'status-cancelled' :
+                            'status-waiting'
+                          }`}>
+                            {t(apt.status === 'scheduled' ? 'status.scheduled' : statusKey)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Link to={`/patients/${apt.patientId}`} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground" title={t("dash.openFile")}>
+                            <FolderOpen className="h-3.5 w-3.5" />
+                          </Link>
+                          <button className="p-1.5 rounded-lg hover:bg-primary/10 text-primary" title={t("dash.startVisit")}>
+                            <Play className="h-3.5 w-3.5" />
+                          </button>
+                          <button className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground" title={t("dash.addNote")}>
+                            <StickyNote className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
           <div className="px-4 py-3 border-t border-border/50 flex items-center justify-between">
-            <p className="text-[10px] text-muted-foreground">{filteredApts.length} مواعيد</p>
+            <p className="text-[10px] text-muted-foreground">{filteredApts.length} {t("dash.appointmentsToday")}</p>
             <Link to="/appointments" className="text-[11px] text-primary hover:underline font-medium flex items-center gap-1">
-              عرض الكل <ChevronLeft className="h-3 w-3" />
+              {t("dash.viewAll")} <ChevronLeft className="h-3 w-3" />
             </Link>
           </div>
         </motion.div>
 
         {/* Right Column: Revenue + Patient Quick Access */}
-        <motion.div variants={item} className="lg:col-span-4 space-y-4">
+        <motion.div variants={itemAnim} className="lg:col-span-4 space-y-4">
           {/* Revenue Chart */}
           <div className="clinic-card p-4">
             <div className="flex items-center justify-between mb-1">
-              <h2 className="text-sm font-semibold text-foreground">إيرادات الأسبوع</h2>
+              <h2 className="text-sm font-semibold text-foreground">{t("dash.weeklyRevenue")}</h2>
               <ArrowUpRight className="h-4 w-4 text-success" />
             </div>
             <div className="flex items-baseline gap-3 mb-3">
               <p className="text-xl font-bold text-foreground font-en">{totalWeeklyRevenue.toLocaleString()}</p>
-              <span className="text-[10px] text-muted-foreground">ر.س</span>
+              <span className="text-[10px] text-muted-foreground">{currency}</span>
             </div>
             <div className="h-[140px]" dir="ltr">
               <ResponsiveContainer width="100%" height="100%">
@@ -318,14 +319,14 @@ export default function Dashboard() {
                   <XAxis dataKey="day" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip
                     contentStyle={{
-                      background: 'hsl(0, 0%, 100%)',
-                      border: '1px solid hsl(214, 32%, 91%)',
+                      background: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
                       borderRadius: '12px',
                       fontSize: '11px',
                       boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                       padding: '8px 12px',
                     }}
-                    formatter={(value: number) => [`${value.toLocaleString()} ر.س`, '']}
+                    formatter={(value: number) => [`${value.toLocaleString()} ${currency}`, '']}
                   />
                   <Area type="monotone" dataKey="revenue" stroke="hsl(217, 91%, 60%)" strokeWidth={2} fill="url(#revGrad2)" />
                 </AreaChart>
@@ -333,11 +334,11 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/50">
               <div>
-                <p className="text-[10px] text-muted-foreground">إجمالي أسبوعي</p>
+                <p className="text-[10px] text-muted-foreground">{t("dash.totalWeekly")}</p>
                 <p className="text-sm font-bold text-foreground font-en">{totalWeeklyRevenue.toLocaleString()}</p>
               </div>
               <div className="text-left">
-                <p className="text-[10px] text-muted-foreground">متوسط يومي</p>
+                <p className="text-[10px] text-muted-foreground">{t("dash.dailyAvg")}</p>
                 <p className="text-sm font-bold text-foreground font-en">{avgDailyRevenue.toLocaleString()}</p>
               </div>
             </div>
@@ -348,12 +349,12 @@ export default function Dashboard() {
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Users className="h-4 w-4 text-accent" />
-                وصول سريع
+                {t("dash.quickAccess")}
               </h2>
-              <Link to="/patients" className="text-[10px] text-primary hover:underline font-medium">الكل</Link>
+              <Link to="/patients" className="text-[10px] text-primary hover:underline font-medium">{t("dash.allPatients")}</Link>
             </div>
             <div className="p-2">
-              <p className="text-[9px] text-muted-foreground px-2 py-1 font-medium">آخر المرضى</p>
+              <p className="text-[9px] text-muted-foreground px-2 py-1 font-medium">{t("dash.recentPatients")}</p>
               {mockPatients.slice(0, 3).map((p) => (
                 <Link
                   key={p.id}
@@ -371,7 +372,7 @@ export default function Dashboard() {
                 </Link>
               ))}
               <div className="mt-1 pt-1 border-t border-border/50">
-                <p className="text-[9px] text-muted-foreground px-2 py-1 font-medium">يحتاجون متابعة</p>
+                <p className="text-[9px] text-muted-foreground px-2 py-1 font-medium">{t("dash.needFollowup")}</p>
                 {mockPatients.slice(3, 5).map((p) => (
                   <Link
                     key={p.id}
@@ -383,7 +384,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[11px] font-semibold truncate text-foreground">{p.name}</p>
-                      <p className="text-[9px] text-warning">آخر زيارة: {p.lastVisit}</p>
+                      <p className="text-[9px] text-warning">{t("dash.lastVisit")}: {p.lastVisit}</p>
                     </div>
                   </Link>
                 ))}
@@ -396,29 +397,29 @@ export default function Dashboard() {
       {/* Third Row: Charts + Performance + Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Monthly Revenue */}
-        <motion.div variants={item} className="lg:col-span-5 clinic-card p-4">
+        <motion.div variants={itemAnim} className="lg:col-span-5 clinic-card p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h2 className="text-sm font-semibold text-foreground">الإيرادات الشهرية</h2>
-              <p className="text-[10px] text-muted-foreground">آخر ٦ أشهر</p>
+              <h2 className="text-sm font-semibold text-foreground">{t("dash.monthlyRevenue")}</h2>
+              <p className="text-[10px] text-muted-foreground">{t("dash.last6Months")}</p>
             </div>
-            <Link to="/finance" className="text-[10px] text-primary hover:underline font-medium">التفاصيل</Link>
+            <Link to="/finance" className="text-[10px] text-primary hover:underline font-medium">{t("dash.details")}</Link>
           </div>
           <div className="h-[180px]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyData} barSize={24}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(214, 32%, 91%)" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                 <XAxis dataKey="month" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10 }} axisLine={false} tickLine={false} width={35} />
                 <Tooltip
                   contentStyle={{
-                    background: 'hsl(0, 0%, 100%)',
-                    border: '1px solid hsl(214, 32%, 91%)',
+                    background: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
                     borderRadius: '12px',
                     fontSize: '11px',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                   }}
-                  formatter={(value: number) => [`${value.toLocaleString()} ر.س`, '']}
+                  formatter={(value: number) => [`${value.toLocaleString()} ${currency}`, '']}
                 />
                 <Bar dataKey="revenue" fill="hsl(217, 91%, 60%)" radius={[8, 8, 0, 0]} />
               </BarChart>
@@ -427,9 +428,9 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Visit Types Donut */}
-        <motion.div variants={item} className="lg:col-span-3 clinic-card p-4">
-          <h2 className="text-sm font-semibold text-foreground mb-1">أنواع الزيارات</h2>
-          <p className="text-[10px] text-muted-foreground mb-2">هذا الشهر</p>
+        <motion.div variants={itemAnim} className="lg:col-span-3 clinic-card p-4">
+          <h2 className="text-sm font-semibold text-foreground mb-1">{t("dash.visitTypes")}</h2>
+          <p className="text-[10px] text-muted-foreground mb-2">{t("dash.thisMonth")}</p>
           <div className="h-[130px]" dir="ltr">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -449,8 +450,8 @@ export default function Dashboard() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    background: 'hsl(0, 0%, 100%)',
-                    border: '1px solid hsl(214, 32%, 91%)',
+                    background: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
                     borderRadius: '12px',
                     fontSize: '11px',
                   }}
@@ -460,23 +461,23 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
           <div className="grid grid-cols-2 gap-1.5 mt-2">
-            {visitTypeData.map((t) => (
-              <div key={t.name} className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: t.color }} />
-                <span className="text-[10px] text-muted-foreground">{t.name}</span>
-                <span className="text-[10px] font-bold text-foreground mr-auto font-en">{t.value}%</span>
+            {visitTypeData.map((vt) => (
+              <div key={vt.name} className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: vt.color }} />
+                <span className="text-[10px] text-muted-foreground">{vt.name}</span>
+                <span className="text-[10px] font-bold text-foreground mr-auto font-en">{vt.value}%</span>
               </div>
             ))}
           </div>
         </motion.div>
 
         {/* Performance + Alerts */}
-        <motion.div variants={item} className="lg:col-span-4 space-y-4">
+        <motion.div variants={itemAnim} className="lg:col-span-4 space-y-4">
           {/* Performance Insights */}
           <div className="clinic-card p-4">
             <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
               <BarChart3 className="h-4 w-4 text-primary" />
-              أداء العيادة
+              {t("dash.clinicPerformance")}
             </h2>
             <div className="grid grid-cols-2 gap-2">
               {performanceInsights.map((insight) => (
@@ -493,13 +494,13 @@ export default function Dashboard() {
           <div className="clinic-card p-4">
             <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-warning" />
-              تنبيهات
+              {t("dash.alerts")}
             </h2>
             <div className="space-y-2">
               {[
-                { text: "فهد القحطاني - تحليل جاهز", icon: FlaskConical, color: "text-accent", bg: "bg-accent/5 border-accent/10" },
-                { text: "٣ مرضى متأخرون عن المتابعة", icon: AlertCircle, color: "text-warning", bg: "bg-warning/5 border-warning/10" },
-                { text: "٢ مواعيد متابعة هذا الأسبوع", icon: Clock, color: "text-primary", bg: "bg-primary/5 border-primary/10" },
+                { text: t("alert.labReady"), icon: FlaskConical, color: "text-accent", bg: "bg-accent/5 border-accent/10" },
+                { text: t("alert.lateFollowup"), icon: AlertCircle, color: "text-warning", bg: "bg-warning/5 border-warning/10" },
+                { text: t("alert.weekFollowups"), icon: Clock, color: "text-primary", bg: "bg-primary/5 border-primary/10" },
               ].map((alert, i) => (
                 <div key={i} className={`flex items-center gap-2.5 p-2.5 rounded-xl border ${alert.bg} transition-colors hover:brightness-95 cursor-pointer`}>
                   <alert.icon className={`h-3.5 w-3.5 ${alert.color} shrink-0`} />
@@ -513,7 +514,7 @@ export default function Dashboard() {
           <div className="clinic-card p-4">
             <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
               <Stethoscope className="h-4 w-4 text-primary" />
-              أكثر الخدمات طلباً
+              {t("dash.topServices")}
             </h2>
             <div className="space-y-2">
               {mockServices.slice(0, 3).map((service, i) => {

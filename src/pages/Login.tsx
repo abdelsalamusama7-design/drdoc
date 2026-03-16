@@ -2,14 +2,18 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import { useI18n } from "@/hooks/useI18n";
+import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Stethoscope, Loader2 } from "lucide-react";
+import { Stethoscope, Loader2, Moon, Sun, Languages } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
   const { user, loading, signIn, signUp } = useAuth();
+  const { t, lang, dir, toggleLang } = useI18n();
+  const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
@@ -39,21 +43,37 @@ export default function Login() {
 
     if (error) {
       toast({
-        title: "خطأ",
+        title: t("login.error"),
         description: error.message,
         variant: "destructive",
       });
     } else if (isSignUp) {
       toast({
-        title: "تم إنشاء الحساب",
-        description: "مرحباً بك! جاري تسجيل الدخول...",
+        title: t("login.accountCreated"),
+        description: t("login.welcomeMsg"),
       });
     }
     setSubmitting(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4" dir="rtl">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4" dir={dir}>
+      {/* Top corner controls */}
+      <div className="fixed top-4 left-4 flex items-center gap-1 z-10">
+        <button
+          onClick={toggleLang}
+          className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
+        >
+          <Languages className="h-4 w-4" />
+        </button>
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
+        >
+          {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+        </button>
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -70,25 +90,25 @@ export default function Login() {
               Clinic Sys<span className="text-primary">.</span>
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {isSignUp ? "إنشاء حساب جديد" : "تسجيل الدخول"}
+              {isSignUp ? t("login.signup") : t("login.title")}
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
               <div>
-                <Label>الاسم الكامل</Label>
+                <Label>{t("login.fullName")}</Label>
                 <Input
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="د. سلطان الأحمدي"
+                  placeholder={lang === "ar" ? "د. سلطان الأحمدي" : "Dr. John Smith"}
                   className="mt-1.5"
                   required
                 />
               </div>
             )}
             <div>
-              <Label>البريد الإلكتروني</Label>
+              <Label>{t("login.email")}</Label>
               <Input
                 type="email"
                 value={email}
@@ -100,7 +120,7 @@ export default function Login() {
               />
             </div>
             <div>
-              <Label>كلمة المرور</Label>
+              <Label>{t("login.password")}</Label>
               <Input
                 type="password"
                 value={password}
@@ -114,7 +134,7 @@ export default function Login() {
             </div>
             <Button type="submit" className="w-full" disabled={submitting}>
               {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isSignUp ? "إنشاء حساب" : "تسجيل الدخول"}
+              {isSignUp ? t("login.signUpBtn") : t("login.signInBtn")}
             </Button>
           </form>
 
@@ -123,7 +143,7 @@ export default function Login() {
               onClick={() => setIsSignUp(!isSignUp)}
               className="text-sm text-primary hover:underline"
             >
-              {isSignUp ? "لديك حساب؟ تسجيل الدخول" : "ليس لديك حساب؟ إنشاء حساب"}
+              {isSignUp ? t("login.hasAccount") : t("login.noAccount")}
             </button>
           </div>
         </div>
