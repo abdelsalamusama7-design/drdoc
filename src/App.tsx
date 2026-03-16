@@ -84,6 +84,7 @@ const App = () => {
             <Toaster />
             <Sonner />
             {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+            <PWAInstallPrompt />
             <BrowserRouter>
               <AuthProvider>
                 <Routes>
