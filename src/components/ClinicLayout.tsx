@@ -228,8 +228,8 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                 <Stethoscope className="h-4 w-4 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-sm font-bold text-foreground leading-none">Clinic Sys</h1>
-                <p className="text-[9px] text-muted-foreground mt-0.5">Smart Dashboard</p>
+                <h1 className="text-sm font-bold text-foreground leading-none">Smart Clinic</h1>
+                <p className="text-[9px] text-muted-foreground mt-0.5">Management System</p>
               </div>
             </div>
           )}
@@ -326,7 +326,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
             <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
-          <h1 className="text-sm font-bold text-foreground">Clinic Sys</h1>
+          <h1 className="text-sm font-bold text-foreground">Smart Clinic</h1>
         </div>
         <div className="flex items-center gap-0.5">
           <button onClick={() => setSearchOpen(true)} className="p-2 rounded-lg hover:bg-muted transition-colors">
@@ -370,7 +370,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                   <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
                     <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
                   </div>
-                  <h1 className="text-sm font-bold">Clinic Sys</h1>
+                  <h1 className="text-sm font-bold">Smart Clinic</h1>
                 </div>
                 <button onClick={() => setSidebarOpen(false)} className="p-2 -ml-2 rounded-lg">
                   <X className="h-5 w-5" />
