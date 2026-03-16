@@ -54,7 +54,7 @@ export default function Finance() {
             </div>
             <div className="stat-value text-foreground font-en tabular-nums">
               {stat.value.toLocaleString()}
-              <span className="text-sm font-normal text-muted-foreground mr-1">ر.س</span>
+              <span className="text-sm font-normal text-muted-foreground mr-1">ج.م</span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
           </div>
