@@ -165,15 +165,24 @@ export default function Pricing() {
                     </div>
                   ))}
                 </div>
-                <Button
-                  className={`w-full ${pkg.popular ? "" : "variant-outline"}`}
-                  variant={pkg.popular ? "default" : "outline"}
-                  asChild
-                >
-                  <a href="https://wa.me/201227080430" target="_blank" rel="noopener noreferrer">
-                    تواصل معنا
-                  </a>
-                </Button>
+                <div className="space-y-2">
+                  <Button
+                    className="w-full"
+                    variant={pkg.popular ? "default" : "outline"}
+                    onClick={() => window.open(`https://wa.me/201227080430?text=${encodeURIComponent(`مرحباً، أريد الاشتراك في ${pkg.nameAr} (${pkg.name})`)}`, "_blank")}
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    اشترك عبر واتساب
+                  </Button>
+                  <Button
+                    className="w-full"
+                    variant="secondary"
+                    onClick={() => alert("بوابة الدفع الإلكتروني قيد التفعيل - تواصل معنا عبر واتساب حالياً")}
+                  >
+                    <Zap className="h-4 w-4" />
+                    ادفع أونلاين
+                  </Button>
+                </div>
               </div>
             </motion.div>
           ))}
