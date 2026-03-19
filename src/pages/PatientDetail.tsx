@@ -179,7 +179,7 @@ export default function PatientDetail() {
       // Also save in voice_notes table
       await (supabase.from("voice_notes" as any) as any).insert({
         patient_id: id!, transcription: voiceTranscript.trim(),
-        created_by: user?.id || null, clinic_id: patient?.clinic_id || null,
+        created_by: user?.id || null, clinic_id: null,
       });
       toast({ title: "✅ تم حفظ الملاحظة الصوتية" });
       setVoiceTranscript("");
