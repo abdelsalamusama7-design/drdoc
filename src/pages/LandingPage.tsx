@@ -548,14 +548,13 @@ export default function LandingPage() {
                   <h3 className="text-lg font-bold text-foreground mb-1">{plan.nameAr}</h3>
                   <p className="text-xs text-muted-foreground font-en">{plan.name}</p>
                   <div className="mt-4">
-                    {plan.price === "تواصل معنا" ? (
-                      <span className="text-2xl font-bold text-foreground">{plan.price}</span>
-                    ) : (
-                      <div>
-                        <span className="text-4xl font-extrabold text-foreground font-en">{plan.price}</span>
-                        <span className="text-sm text-muted-foreground mr-1">ج.م / شهر</span>
-                      </div>
-                    )}
+                    <div className="mb-1">
+                      <span className="text-3xl font-extrabold text-foreground font-en">{plan.price}</span>
+                      <span className="text-sm text-muted-foreground mr-1">ج.م</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <span className="font-en font-semibold text-foreground">{plan.monthlyPrice}</span> ج.م / شهر
+                    </div>
                   </div>
                 </div>
                 <div className="space-y-3 mb-6">
