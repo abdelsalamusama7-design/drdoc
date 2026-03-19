@@ -152,10 +152,8 @@ export default function LandingPage() {
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex items-center justify-center gap-3 flex-wrap">
-              <a href="#demo"><Button size="lg" className="gap-2 text-base h-12 px-8"><Play className="h-4 w-4" />ابدأ التجربة المجانية لمدة 14 يوم</Button></a>
-              <Button variant="outline" size="lg" className="gap-2 text-base h-12 px-8" onClick={() => window.open("https://wa.me/201227080430?text=" + encodeURIComponent("مرحباً، أريد معرفة المزيد عن نظام Smart Clinic"), "_blank")}>
-                <MessageCircle className="h-4 w-4" />تحدث معنا
-              </Button>
+              <Link to="/login"><Button size="lg" className="gap-2 text-base h-12 px-8"><Play className="h-4 w-4" />سجّل دخولك وجرّب النظام مجاناً</Button></Link>
+              <Link to="/demo"><Button variant="outline" size="lg" className="gap-2 text-base h-12 px-8"><Monitor className="h-4 w-4" />استكشف الديمو التفاعلي</Button></Link>
             </motion.div>
 
             <motion.p variants={fadeUp} className="text-xs text-muted-foreground mt-4 flex items-center justify-center gap-4 flex-wrap">
