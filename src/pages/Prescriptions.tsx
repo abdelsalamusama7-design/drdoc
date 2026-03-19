@@ -155,9 +155,14 @@ export default function Prescriptions() {
                   <p className="text-sm font-medium text-foreground">{rx.patient_name}</p>
                   <p className="text-xs text-muted-foreground font-en">{rx.date}</p>
                 </div>
-                <Button size="sm" variant="outline" className="gap-1.5 h-8" onClick={() => handlePrint(rx)}>
-                  <Printer className="h-3.5 w-3.5" />طباعة
-                </Button>
+                <div className="flex gap-1.5">
+                  <Button size="sm" variant="outline" className="gap-1.5 h-8" onClick={() => shareWhatsApp(rx)}>
+                    <Share2 className="h-3.5 w-3.5" />واتساب
+                  </Button>
+                  <Button size="sm" variant="outline" className="gap-1.5 h-8" onClick={() => handlePrint(rx)}>
+                    <Printer className="h-3.5 w-3.5" />طباعة
+                  </Button>
+                </div>
               </div>
               <div className="space-y-2">
                 {(rx.medications || []).map((med, i) => (
