@@ -234,6 +234,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.medicalAlerts": "Medical Alerts",
     "nav.smartSearch": "Smart Search",
     "nav.subscription": "Pricing & Subscriptions",
+    "nav.patientJourney": "Patient Journey",
 
     // Layout
     "layout.search": "Quick search...",

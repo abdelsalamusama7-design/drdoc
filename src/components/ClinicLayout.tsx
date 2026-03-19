@@ -25,6 +25,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: "/", labelKey: "nav.dashboard", icon: LayoutDashboard },
+  { path: "/patient-journey", labelKey: "nav.patientJourney", icon: Activity },
   { path: "/patients", labelKey: "nav.patients", icon: Users },
   { path: "/appointments", labelKey: "nav.appointments", icon: CalendarDays },
   { path: "/queue", labelKey: "nav.queue", icon: ListOrdered },

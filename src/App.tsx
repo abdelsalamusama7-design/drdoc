@@ -81,6 +81,7 @@ function ProtectedRoutes() {
         <Route path="/" element={<DashboardComponent />} />
         <Route path="/patients" element={<Patients />} />
         <Route path="/patients/:id" element={<PatientDetail />} />
+        <Route path="/patient-journey" element={<PatientJourney />} />
         <Route path="/appointments" element={<Appointments />} />
         {!isAccountant && <Route path="/prescriptions" element={<Prescriptions />} />}
         {!isAccountant && <Route path="/services" element={<Services />} />}
