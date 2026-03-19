@@ -282,6 +282,43 @@ export default function PatientPortal() {
             </div>
           </div>
 
+          {/* Latest Prescription */}
+          {myPrescriptions.length > 0 && (() => {
+            const latest = myPrescriptions.sort((a, b) => (b.date || b.created_at || "").localeCompare(a.date || a.created_at || ""))[0];
+            return (
+              <div className="clinic-card p-4 cursor-pointer hover:border-primary/30 transition-colors" onClick={() => setActiveTab("prescriptions")}>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                    <Pill className="h-5 w-5 text-accent" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-foreground">آخر وصفة طبية</p>
+                    <p className="text-[10px] text-muted-foreground font-en">{latest.date || latest.created_at?.split("T")[0]}</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+                {latest.medications && latest.medications.length > 0 && (
+                  <div className="space-y-1.5">
+                    {latest.medications.slice(0, 3).map((med: any, i: number) => (
+                      <div key={i} className="flex items-center gap-2 text-xs">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                        <span className="font-medium text-foreground">{med.name}</span>
+                        {med.dosage && <span className="text-muted-foreground">· {med.dosage}</span>}
+                        {med.duration && <span className="text-muted-foreground">· {med.duration}</span>}
+                      </div>
+                    ))}
+                    {latest.medications.length > 3 && (
+                      <p className="text-[10px] text-muted-foreground mr-3.5">+{latest.medications.length - 3} أدوية أخرى</p>
+                    )}
+                  </div>
+                )}
+                {latest.doctor_notes && (
+                  <p className="text-[10px] text-muted-foreground mt-2 border-t border-border pt-2">ملاحظات: {latest.doctor_notes}</p>
+                )}
+              </div>
+            );
+          })()}
+
           {/* Upcoming Appointments */}
           <div className="clinic-card">
             <div className="p-4 border-b border-border"><h2 className="text-sm font-semibold text-foreground">المواعيد القادمة</h2></div>
