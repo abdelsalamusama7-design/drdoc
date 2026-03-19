@@ -5,8 +5,9 @@ import {
   Clock, Activity, Stethoscope,
   FileText, ChevronLeft, Play, FolderOpen, StickyNote,
   UserPlus, Receipt, ArrowUpRight, Zap,
-  Calendar, Star, Loader2
+  Calendar, Star, Loader2, ExternalLink, Sparkles
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   AreaChart, Area, XAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
