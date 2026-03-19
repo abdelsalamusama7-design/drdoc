@@ -35,6 +35,10 @@ const navItems: NavItem[] = [
   { path: "/no-show", labelKey: "nav.noShow", icon: UserX },
   { path: "/doctor-performance", labelKey: "nav.doctorPerformance", icon: Activity },
   { path: "/reports", labelKey: "nav.reports", icon: BarChart3 },
+  { path: "/ai-assistant", labelKey: "nav.aiAssistant", icon: Brain },
+  { path: "/medical-alerts", labelKey: "nav.medicalAlerts", icon: AlertTriangle },
+  { path: "/smart-search", labelKey: "nav.smartSearch", icon: Search },
+  { path: "/subscription", labelKey: "nav.subscription", icon: CreditCard },
   { path: "/users", labelKey: "nav.users", icon: ShieldCheck, adminOnly: true },
   { path: "/settings", labelKey: "nav.settings", icon: Settings },
 ];
