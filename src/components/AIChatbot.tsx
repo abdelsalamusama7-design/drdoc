@@ -11,7 +11,7 @@ interface Message {
 export default function AIChatbot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "مرحباً! أنا المساعد الذكي لعيادة Smart Clinic. كيف يمكنني مساعدتك؟ 😊\n\nيمكنني مساعدتك في:\n- حجز موعد\n- الاستفسار عن الخدمات والأسعار\n- معلومات عن العيادة\n- أسئلة طبية عامة" }
+    { role: "assistant", content: "مرحباً! أنا المساعد الطبي الذكي لعيادة Smart Clinic 🩺\n\nيمكنني مساعدتك في:\n- 💬 أسئلة طبية عامة ونصائح صحية\n- 📋 معلومات عن التحاليل والفحوصات\n- 📅 حجز موعد مع الطبيب\n- 💰 الاستفسار عن الخدمات والأسعار\n- 🏥 معلومات عن العيادة\n\nكيف يمكنني مساعدتك؟ 😊" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,7 @@ export default function AIChatbot() {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             onClick={() => setOpen(true)}
-            className="fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+            className="fixed bottom-24 left-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
           >
             <MessageCircle className="h-6 w-6" />
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-success rounded-full border-2 border-background" />
@@ -69,7 +69,7 @@ export default function AIChatbot() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 left-6 z-50 w-[360px] max-w-[calc(100vw-48px)] h-[500px] max-h-[calc(100vh-100px)] bg-card rounded-2xl border border-border flex flex-col overflow-hidden"
+            className="fixed bottom-24 left-6 z-50 w-[360px] max-w-[calc(100vw-48px)] h-[500px] max-h-[calc(100vh-100px)] bg-card rounded-2xl border border-border flex flex-col overflow-hidden"
             style={{ boxShadow: "0 20px 60px -15px rgba(0,0,0,0.2)" }}
             dir="rtl"
           >
@@ -78,7 +78,7 @@ export default function AIChatbot() {
               <div className="flex items-center gap-2">
                 <Bot className="h-5 w-5" />
                 <div>
-                  <h3 className="text-sm font-bold">المساعد الذكي</h3>
+                  <h3 className="text-sm font-bold">المساعد الطبي الذكي</h3>
                   <p className="text-[10px] opacity-80">متصل الآن</p>
                 </div>
               </div>
