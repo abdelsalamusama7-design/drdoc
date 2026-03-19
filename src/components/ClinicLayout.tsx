@@ -6,7 +6,8 @@ import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
   DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
   Search, Bell, UserPlus, ShieldCheck, Moon, Sun, Languages,
-  ListOrdered, Activity, Package, UserX, Lock, Brain, AlertTriangle, CreditCard
+  ListOrdered, Activity, Package, UserX, Lock, Brain, AlertTriangle, CreditCard,
+  ChevronDown
 } from "lucide-react";
 import NotificationPanel from "@/components/NotificationPanel";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,26 +24,59 @@ interface NavItem {
   adminOnly?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { path: "/", labelKey: "nav.dashboard", icon: LayoutDashboard },
-  { path: "/patient-journey", labelKey: "nav.patientJourney", icon: Activity },
-  { path: "/patients", labelKey: "nav.patients", icon: Users },
-  { path: "/appointments", labelKey: "nav.appointments", icon: CalendarDays },
-  { path: "/queue", labelKey: "nav.queue", icon: ListOrdered },
-  { path: "/prescriptions", labelKey: "nav.prescriptions", icon: FileText },
-  { path: "/services", labelKey: "nav.services", icon: Stethoscope },
-  { path: "/inventory", labelKey: "nav.inventory", icon: Package },
-  { path: "/finance", labelKey: "nav.finance", icon: DollarSign },
-  { path: "/no-show", labelKey: "nav.noShow", icon: UserX },
-  { path: "/doctor-performance", labelKey: "nav.doctorPerformance", icon: Activity },
-  { path: "/reports", labelKey: "nav.reports", icon: BarChart3 },
-  { path: "/ai-assistant", labelKey: "nav.aiAssistant", icon: Brain },
-  { path: "/medical-alerts", labelKey: "nav.medicalAlerts", icon: AlertTriangle },
-  { path: "/smart-search", labelKey: "nav.smartSearch", icon: Search },
-  { path: "/subscription", labelKey: "nav.subscription", icon: CreditCard },
-  { path: "/users", labelKey: "nav.users", icon: ShieldCheck, adminOnly: true },
-  { path: "/settings", labelKey: "nav.settings", icon: Settings },
+interface NavGroup {
+  groupKey: string;
+  items: NavItem[];
+}
+
+const navGroups: NavGroup[] = [
+  {
+    groupKey: "navGroup.main",
+    items: [
+      { path: "/", labelKey: "nav.dashboard", icon: LayoutDashboard },
+      { path: "/patient-journey", labelKey: "nav.patientJourney", icon: Activity },
+      { path: "/queue", labelKey: "nav.queue", icon: ListOrdered },
+    ],
+  },
+  {
+    groupKey: "navGroup.clinical",
+    items: [
+      { path: "/patients", labelKey: "nav.patients", icon: Users },
+      { path: "/appointments", labelKey: "nav.appointments", icon: CalendarDays },
+      { path: "/prescriptions", labelKey: "nav.prescriptions", icon: FileText },
+      { path: "/services", labelKey: "nav.services", icon: Stethoscope },
+    ],
+  },
+  {
+    groupKey: "navGroup.management",
+    items: [
+      { path: "/finance", labelKey: "nav.finance", icon: DollarSign },
+      { path: "/inventory", labelKey: "nav.inventory", icon: Package },
+      { path: "/no-show", labelKey: "nav.noShow", icon: UserX },
+      { path: "/doctor-performance", labelKey: "nav.doctorPerformance", icon: Activity },
+      { path: "/reports", labelKey: "nav.reports", icon: BarChart3 },
+    ],
+  },
+  {
+    groupKey: "navGroup.tools",
+    items: [
+      { path: "/ai-assistant", labelKey: "nav.aiAssistant", icon: Brain },
+      { path: "/medical-alerts", labelKey: "nav.medicalAlerts", icon: AlertTriangle },
+      { path: "/smart-search", labelKey: "nav.smartSearch", icon: Search },
+    ],
+  },
+  {
+    groupKey: "navGroup.system",
+    items: [
+      { path: "/subscription", labelKey: "nav.subscription", icon: CreditCard },
+      { path: "/users", labelKey: "nav.users", icon: ShieldCheck, adminOnly: true },
+      { path: "/settings", labelKey: "nav.settings", icon: Settings },
+    ],
+  },
 ];
+
+// Flatten for bottom nav and page title lookup
+const allNavItems = navGroups.flatMap(g => g.items);
 
 interface ClinicLayoutProps {
   children: React.ReactNode;
@@ -156,6 +190,28 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const { hasNavAccess, currentPlan } = useFeatureAccess();
 
 
+  const filterItem = (item: NavItem) => {
+    if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
+    if (role === "accountant" && ["/prescriptions", "/services", "/reports", "/settings"].includes(item.path)) return false;
+    if (role === "patient") return ["/"].includes(item.path);
+    if (item.adminOnly && role !== "admin") return false;
+    return true;
+  };
+
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    navGroups.forEach(g => {
+      initial[g.groupKey] = g.items.some(i => i.path === location.pathname);
+    });
+    // Always open main
+    initial["navGroup.main"] = true;
+    return initial;
+  });
+
+  const toggleGroup = (key: string) => {
+    setOpenGroups(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const displayName = profile?.full_name || (lang === "ar" ? "مستخدم" : "User");
   const roleLabel = t(`role.${role || "user"}`);
   const initials = displayName.slice(0, 2);
@@ -174,7 +230,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
   }, []);
 
   // Get current page title
-  const currentPageTitle = navItems.find(n => n.path === location.pathname)?.labelKey;
+  const currentPageTitle = allNavItems.find(n => n.path === location.pathname)?.labelKey;
 
   return (
     <div className="min-h-screen bg-background flex flex-row-reverse">
@@ -233,38 +289,56 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           </div>
         )}
 
-        {/* Nav Items */}
-        <nav className="flex-1 py-3 px-2.5 space-y-0.5 overflow-y-auto">
-          {navItems.filter(item => {
-            if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
-            if (role === "accountant" && ["/prescriptions", "/services", "/reports", "/settings"].includes(item.path)) return false;
-            if (role === "patient") return ["/"].includes(item.path);
-            if (item.adminOnly && role !== "admin") return false;
-            return true;
-          }).map((item) => {
-            const isExactActive = location.pathname === item.path;
-            const isLocked = !hasNavAccess(item.labelKey);
+        {/* Nav Items - Grouped */}
+        <nav className="flex-1 py-2 px-2.5 overflow-y-auto space-y-1">
+          {navGroups.map(group => {
+            const visibleItems = group.items.filter(filterItem);
+            if (visibleItems.length === 0) return null;
+            const isOpen = openGroups[group.groupKey];
+            const hasActiveItem = visibleItems.some(i => location.pathname === i.path);
+
             return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-all duration-150 ${
-                  isLocked
-                    ? "text-muted-foreground/50 hover:bg-muted/30"
-                    : isExactActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                } ${collapsed ? "justify-center px-0" : ""}`}
-              >
-                <item.icon className={`h-[18px] w-[18px] shrink-0 ${isExactActive && !isLocked ? 'text-primary' : ''}`} />
-                {!collapsed && <span>{t(item.labelKey)}</span>}
-                {isLocked && !collapsed && (
-                  <Lock className="h-3 w-3 mr-auto text-muted-foreground/40" />
+              <div key={group.groupKey}>
+                {!collapsed && (
+                  <button
+                    onClick={() => toggleGroup(group.groupKey)}
+                    className="w-full flex items-center justify-between px-3 py-1.5 text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-wider hover:text-muted-foreground transition-colors"
+                  >
+                    <span>{t(group.groupKey)}</span>
+                    <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${isOpen ? '' : '-rotate-90'}`} />
+                  </button>
                 )}
-                {isExactActive && !collapsed && !isLocked && (
-                  <div className="mr-auto w-1.5 h-1.5 rounded-full bg-primary" />
+                {(collapsed || isOpen) && (
+                  <div className="space-y-0.5">
+                    {visibleItems.map(item => {
+                      const isExactActive = location.pathname === item.path;
+                      const isLocked = !hasNavAccess(item.labelKey);
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-all duration-150 ${
+                            isLocked
+                              ? "text-muted-foreground/50 hover:bg-muted/30"
+                              : isExactActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                          } ${collapsed ? "justify-center px-0" : ""}`}
+                        >
+                          <item.icon className={`h-[18px] w-[18px] shrink-0 ${isExactActive && !isLocked ? 'text-primary' : ''}`} />
+                          {!collapsed && <span>{t(item.labelKey)}</span>}
+                          {isLocked && !collapsed && (
+                            <Lock className="h-3 w-3 mr-auto text-muted-foreground/40" />
+                          )}
+                          {isExactActive && !collapsed && !isLocked && (
+                            <div className="mr-auto w-1.5 h-1.5 rounded-full bg-primary" />
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
                 )}
-              </Link>
+              </div>
             );
           })}
         </nav>
@@ -351,33 +425,47 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="py-3 px-2.5 space-y-0.5">
-                {navItems.filter(item => {
-                  if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
-                  if (role === "accountant" && ["/prescriptions", "/services", "/reports", "/settings"].includes(item.path)) return false;
-                  if (role === "patient") return ["/"].includes(item.path);
-                  if (item.adminOnly && role !== "admin") return false;
-                  return true;
-                }).map((item) => {
-                  const isActive = location.pathname === item.path;
-                  const isLocked = !hasNavAccess(item.labelKey);
+              <nav className="py-2 px-2.5 overflow-y-auto space-y-1">
+                {navGroups.map(group => {
+                  const visibleItems = group.items.filter(filterItem);
+                  if (visibleItems.length === 0) return null;
+                  const isOpen = openGroups[group.groupKey];
                   return (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setSidebarOpen(false)}
-                      className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-colors ${
-                        isLocked
-                          ? "text-muted-foreground/50"
-                          : isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                      }`}
-                    >
-                      <item.icon className="h-[18px] w-[18px] shrink-0" />
-                      <span>{t(item.labelKey)}</span>
-                      {isLocked && <Lock className="h-3 w-3 mr-auto text-muted-foreground/40" />}
-                    </Link>
+                    <div key={group.groupKey}>
+                      <button
+                        onClick={() => toggleGroup(group.groupKey)}
+                        className="w-full flex items-center justify-between px-3 py-1.5 text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-wider hover:text-muted-foreground transition-colors"
+                      >
+                        <span>{t(group.groupKey)}</span>
+                        <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${isOpen ? '' : '-rotate-90'}`} />
+                      </button>
+                      {isOpen && (
+                        <div className="space-y-0.5">
+                          {visibleItems.map(item => {
+                            const isActive = location.pathname === item.path;
+                            const isLocked = !hasNavAccess(item.labelKey);
+                            return (
+                              <Link
+                                key={item.path}
+                                to={item.path}
+                                onClick={() => setSidebarOpen(false)}
+                                className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-colors ${
+                                  isLocked
+                                    ? "text-muted-foreground/50"
+                                    : isActive
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                }`}
+                              >
+                                <item.icon className="h-[18px] w-[18px] shrink-0" />
+                                <span>{t(item.labelKey)}</span>
+                                {isLocked && <Lock className="h-3 w-3 mr-auto text-muted-foreground/40" />}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </nav>
@@ -403,7 +491,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
 
       {/* Mobile Bottom Nav */}
       <nav className="bottom-nav lg:hidden flex items-center justify-around h-20 px-2">
-        {navItems.slice(0, 5).map((item) => {
+        {allNavItems.slice(0, 5).map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link
