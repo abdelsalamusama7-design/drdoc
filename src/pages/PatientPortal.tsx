@@ -128,6 +128,8 @@ export default function PatientPortal() {
   const myAppointments = appointments.filter(a => patientData && a.patient_id === patientData.id);
   const myPrescriptions = prescriptions.filter(p => patientData && p.patient_id === patientData.id);
   const lastAppointment = myAppointments.filter(a => a.status !== "cancelled").sort((a, b) => b.date.localeCompare(a.date))[0];
+  const totalPaid = payments.reduce((sum: number, p: any) => sum + (Number(p.amount) || 0), 0);
+  const totalRemaining = payments.reduce((sum: number, p: any) => sum + (Number(p.remaining_amount) || 0), 0);
 
   const handleDownload = async (filePath: string) => {
     try {
