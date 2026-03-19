@@ -58,6 +58,25 @@ export default function Login() {
     setSubmitting(false);
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail.trim()) return;
+    setSubmitting(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) {
+      toast({ title: t("login.error"), description: error.message, variant: "destructive" });
+    } else {
+      toast({
+        title: lang === "ar" ? "تم الإرسال" : "Email Sent",
+        description: lang === "ar" ? "تحقق من بريدك الإلكتروني لإعادة تعيين كلمة المرور" : "Check your email to reset your password",
+      });
+      setForgotMode(false);
+    }
+    setSubmitting(false);
+  };
+
   const handlePatientSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) return;
