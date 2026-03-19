@@ -156,7 +156,7 @@ export default function LandingPage() {
 
             <motion.div variants={fadeUp} className="flex items-center justify-center gap-3 flex-wrap">
               <Link to="/login"><Button size="lg" className="gap-2 text-base h-12 px-8"><Play className="h-4 w-4" />سجّل دخولك وجرّب النظام مجاناً</Button></Link>
-              <Link to="/demo"><Button variant="outline" size="lg" className="gap-2 text-base h-12 px-8"><Monitor className="h-4 w-4" />استكشف الديمو التفاعلي</Button></Link>
+              <Link to="/login"><Button variant="outline" size="lg" className="gap-2 text-base h-12 px-8"><Monitor className="h-4 w-4" />استكشف الديمو التفاعلي</Button></Link>
             </motion.div>
 
             <motion.p variants={fadeUp} className="text-xs text-muted-foreground mt-4 flex items-center justify-center gap-4 flex-wrap">
