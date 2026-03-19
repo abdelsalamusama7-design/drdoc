@@ -132,52 +132,7 @@ function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => void })
   );
 }
 
-// Old NotificationPanel removed - using imported component
-  const { t } = useI18n();
-  if (!open) return null;
-  
-  const notifications = [
-    { id: 1, text: t("notif.1"), time: t("notif.time1"), type: "lab" },
-    { id: 2, text: t("notif.2"), time: t("notif.time2"), type: "appointment" },
-    { id: 3, text: t("notif.3"), time: t("notif.time3"), type: "alert" },
-    { id: 4, text: t("notif.4"), time: t("notif.time4"), type: "report" },
-  ];
 
-  return (
-    <>
-      <div className="fixed inset-0 z-40" onClick={onClose} />
-      <motion.div
-        initial={{ opacity: 0, y: -8, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -4 }}
-        className="absolute top-full left-0 mt-2 w-[340px] bg-card rounded-2xl border border-border z-50 overflow-hidden"
-        style={{ boxShadow: 'var(--card-shadow-lg)' }}
-      >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <h3 className="text-sm font-semibold">{t("layout.notifications")}</h3>
-          <span className="text-[10px] text-primary font-medium cursor-pointer hover:underline">{t("layout.readAll")}</span>
-        </div>
-        <div className="max-h-[320px] overflow-y-auto divide-y divide-border">
-          {notifications.map(n => (
-            <div key={n.id} className="px-4 py-3 hover:bg-muted/30 transition-colors cursor-pointer">
-              <div className="flex items-start gap-2.5">
-                <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                  n.type === 'lab' ? 'bg-accent' :
-                  n.type === 'appointment' ? 'bg-primary' :
-                  n.type === 'alert' ? 'bg-warning' : 'bg-success'
-                }`} />
-                <div>
-                  <p className="text-[12px] text-foreground leading-relaxed">{n.text}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{n.time}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-    </>
-  );
-}
 
 export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const location = useLocation();
