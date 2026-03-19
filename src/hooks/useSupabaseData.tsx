@@ -221,7 +221,8 @@ function useSupabaseQuery<T>(
 
 // ─── Patients ────────────────────────────────────────────────
 export function usePatients() {
-  return useSupabaseQuery<Patient>("patients", { orderBy: "created_at" });
+  const { clinic } = useClinic();
+  return useSupabaseQuery<Patient>("patients", { orderBy: "created_at", clinicId: clinic?.id });
 }
 
 export function usePatient(id: string) {
@@ -238,9 +239,9 @@ export function usePatient(id: string) {
   return { patient, loading, refetch: fetch };
 }
 
-export async function createPatient(patient: Omit<Patient, "id" | "created_at" | "last_visit">) {
+export async function createPatient(patient: Omit<Patient, "id" | "created_at" | "last_visit">, clinicId?: string) {
   const { data, error } = await (supabase.from("patients" as any) as any)
-    .insert(patient).select().single();
+    .insert({ ...patient, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as Patient;
 }
@@ -253,19 +254,22 @@ export async function updatePatient(id: string, updates: Partial<Patient>) {
 
 // ─── Appointments ────────────────────────────────────────────
 export function useAppointments(date?: string) {
+  const { clinic } = useClinic();
   return useSupabaseQuery<Appointment>("appointments", {
     orderBy: "time", ascending: true,
     filters: date ? { date } : undefined,
+    clinicId: clinic?.id,
   });
 }
 
 export function useAllAppointments() {
-  return useSupabaseQuery<Appointment>("appointments", { orderBy: "date" });
+  const { clinic } = useClinic();
+  return useSupabaseQuery<Appointment>("appointments", { orderBy: "date", clinicId: clinic?.id });
 }
 
-export async function createAppointment(apt: Omit<Appointment, "id" | "created_at">) {
+export async function createAppointment(apt: Omit<Appointment, "id" | "created_at">, clinicId?: string) {
   const { data, error } = await (supabase.from("appointments" as any) as any)
-    .insert(apt).select().single();
+    .insert({ ...apt, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as Appointment;
 }
@@ -278,12 +282,13 @@ export async function updateAppointment(id: string, updates: Partial<Appointment
 
 // ─── Services ────────────────────────────────────────────────
 export function useServices() {
-  return useSupabaseQuery<Service>("services", { orderBy: "category", ascending: true });
+  const { clinic } = useClinic();
+  return useSupabaseQuery<Service>("services", { orderBy: "category", ascending: true, clinicId: clinic?.id });
 }
 
-export async function createService(service: Omit<Service, "id" | "created_at">) {
+export async function createService(service: Omit<Service, "id" | "created_at">, clinicId?: string) {
   const { data, error } = await (supabase.from("services" as any) as any)
-    .insert(service).select().single();
+    .insert({ ...service, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as Service;
 }
@@ -295,6 +300,7 @@ export async function deleteService(id: string) {
 
 // ─── Prescriptions ───────────────────────────────────────────
 export function usePrescriptions() {
+  const { clinic } = useClinic();
   const [data, setData] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -302,8 +308,10 @@ export function usePrescriptions() {
   const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      const { data: prescriptions, error } = await (supabase.from("prescriptions" as any) as any)
+      let query = (supabase.from("prescriptions" as any) as any)
         .select("*").order("created_at", { ascending: false });
+      if (clinic?.id) query = query.eq("clinic_id", clinic.id);
+      const { data: prescriptions, error } = await query;
       if (error) throw error;
       const ids = (prescriptions as any[]).map((p: any) => p.id);
       if (ids.length > 0) {
@@ -322,17 +330,18 @@ export function usePrescriptions() {
       toast({ title: "خطأ", description: err.message, variant: "destructive" });
     }
     setLoading(false);
-  }, []);
+  }, [clinic?.id]);
   useEffect(() => { fetch(); }, [fetch]);
   return { data, loading, refetch: fetch };
 }
 
 export async function createPrescription(
   prescription: { patient_id?: string; patient_name: string; doctor_notes?: string; created_by?: string },
-  medications: Omit<PrescriptionMedication, "id" | "prescription_id">[]
+  medications: Omit<PrescriptionMedication, "id" | "prescription_id">[],
+  clinicId?: string
 ) {
   const { data: rx, error } = await (supabase.from("prescriptions" as any) as any)
-    .insert(prescription).select().single();
+    .insert({ ...prescription, clinic_id: clinicId }).select().single();
   if (error) throw error;
   if (medications.length > 0) {
     const medsWithId = medications.map(m => ({ ...m, prescription_id: (rx as any).id }));
@@ -345,32 +354,34 @@ export async function createPrescription(
 
 // ─── Expenses ────────────────────────────────────────────────
 export function useExpenses() {
-  return useSupabaseQuery<Expense>("expenses", { orderBy: "date" });
+  const { clinic } = useClinic();
+  return useSupabaseQuery<Expense>("expenses", { orderBy: "date", clinicId: clinic?.id });
 }
 
-export async function createExpense(expense: Omit<Expense, "id" | "created_at">) {
+export async function createExpense(expense: Omit<Expense, "id" | "created_at">, clinicId?: string) {
   const { data, error } = await (supabase.from("expenses" as any) as any)
-    .insert(expense).select().single();
+    .insert({ ...expense, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as Expense;
 }
 
 // ─── Patient Files ───────────────────────────────────────────
 export function usePatientFiles(patientId: string) {
+  const { clinic } = useClinic();
   return useSupabaseQuery<PatientFile>("patient_files", {
-    orderBy: "created_at", filters: { patient_id: patientId },
+    orderBy: "created_at", filters: { patient_id: patientId }, clinicId: clinic?.id,
   });
 }
 
 export async function uploadPatientFile(
-  patientId: string, file: File, fileType: string, notes: string, userId: string
+  patientId: string, file: File, fileType: string, notes: string, userId: string, clinicId?: string
 ) {
   const filePath = `${patientId}/${Date.now()}_${file.name}`;
   const { error: uploadError } = await supabase.storage
     .from("patient-files").upload(filePath, file);
   if (uploadError) throw uploadError;
   const { data, error } = await (supabase.from("patient_files" as any) as any)
-    .insert({ patient_id: patientId, file_name: file.name, file_path: filePath, file_type: fileType, notes, uploaded_by: userId })
+    .insert({ patient_id: patientId, file_name: file.name, file_path: filePath, file_type: fileType, notes, uploaded_by: userId, clinic_id: clinicId })
     .select().single();
   if (error) throw error;
   return data as PatientFile;
@@ -390,29 +401,32 @@ export async function getSignedFileUrl(filePath: string) {
 
 // ─── Doctor Notes ────────────────────────────────────────────
 export function useDoctorNotes(patientId: string) {
+  const { clinic } = useClinic();
   return useSupabaseQuery<DoctorNote>("doctor_notes", {
-    orderBy: "date", filters: { patient_id: patientId },
+    orderBy: "date", filters: { patient_id: patientId }, clinicId: clinic?.id,
   });
 }
 
-export async function createDoctorNote(note: Omit<DoctorNote, "id" | "created_at">) {
+export async function createDoctorNote(note: Omit<DoctorNote, "id" | "created_at">, clinicId?: string) {
   const { data, error } = await (supabase.from("doctor_notes" as any) as any)
-    .insert(note).select().single();
+    .insert({ ...note, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as DoctorNote;
 }
 
 // ─── Follow-ups ──────────────────────────────────────────────
 export function useFollowUps(patientId?: string) {
+  const { clinic } = useClinic();
   return useSupabaseQuery<FollowUp>("follow_ups", {
     orderBy: "follow_up_date", ascending: true,
     filters: patientId ? { patient_id: patientId } : undefined,
+    clinicId: clinic?.id,
   });
 }
 
-export async function createFollowUp(followUp: Omit<FollowUp, "id" | "created_at" | "notified">) {
+export async function createFollowUp(followUp: Omit<FollowUp, "id" | "created_at" | "notified">, clinicId?: string) {
   const { data, error } = await (supabase.from("follow_ups" as any) as any)
-    .insert(followUp).select().single();
+    .insert({ ...followUp, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as FollowUp;
 }
@@ -425,34 +439,39 @@ export async function updateFollowUp(id: string, updates: Partial<FollowUp>) {
 
 // ─── Patient Ratings ─────────────────────────────────────────
 export function usePatientRatings(patientId?: string) {
+  const { clinic } = useClinic();
   return useSupabaseQuery<PatientRating>("patient_ratings", {
     orderBy: "created_at",
     filters: patientId ? { patient_id: patientId } : undefined,
+    clinicId: clinic?.id,
   });
 }
 
-export async function createRating(rating: Omit<PatientRating, "id" | "created_at">) {
+export async function createRating(rating: Omit<PatientRating, "id" | "created_at">, clinicId?: string) {
   const { data, error } = await (supabase.from("patient_ratings" as any) as any)
-    .insert(rating).select().single();
+    .insert({ ...rating, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as PatientRating;
 }
 
 // ─── Visits ──────────────────────────────────────────────────
 export function useVisits(patientId?: string) {
+  const { clinic } = useClinic();
   return useSupabaseQuery<Visit>("visits", {
     orderBy: "date",
     filters: patientId ? { patient_id: patientId } : undefined,
+    clinicId: clinic?.id,
   });
 }
 
 export function useAllVisits() {
-  return useSupabaseQuery<Visit>("visits", { orderBy: "date" });
+  const { clinic } = useClinic();
+  return useSupabaseQuery<Visit>("visits", { orderBy: "date", clinicId: clinic?.id });
 }
 
-export async function createVisit(visit: Omit<Visit, "id" | "created_at">) {
+export async function createVisit(visit: Omit<Visit, "id" | "created_at">, clinicId?: string) {
   const { data, error } = await (supabase.from("visits" as any) as any)
-    .insert(visit).select().single();
+    .insert({ ...visit, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as Visit;
 }
@@ -465,48 +484,54 @@ export async function updateVisit(id: string, updates: Partial<Visit>) {
 
 // ─── Visit Services ──────────────────────────────────────────
 export function useVisitServices(visitId: string) {
+  const { clinic } = useClinic();
   return useSupabaseQuery<VisitService>("visit_services", {
-    filters: { visit_id: visitId },
+    filters: { visit_id: visitId }, clinicId: clinic?.id,
   });
 }
 
-export async function addVisitService(vs: Omit<VisitService, "id" | "created_at">) {
+export async function addVisitService(vs: Omit<VisitService, "id" | "created_at">, clinicId?: string) {
   const { data, error } = await (supabase.from("visit_services" as any) as any)
-    .insert(vs).select().single();
+    .insert({ ...vs, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as VisitService;
 }
 
 // ─── Payments ────────────────────────────────────────────────
 export function usePayments(patientId?: string) {
+  const { clinic } = useClinic();
   return useSupabaseQuery<Payment>("payments", {
     orderBy: "created_at",
     filters: patientId ? { patient_id: patientId } : undefined,
+    clinicId: clinic?.id,
   });
 }
 
 export function useAllPayments() {
-  return useSupabaseQuery<Payment>("payments", { orderBy: "created_at" });
+  const { clinic } = useClinic();
+  return useSupabaseQuery<Payment>("payments", { orderBy: "created_at", clinicId: clinic?.id });
 }
 
-export async function createPayment(payment: Omit<Payment, "id" | "created_at">) {
+export async function createPayment(payment: Omit<Payment, "id" | "created_at">, clinicId?: string) {
   const { data, error } = await (supabase.from("payments" as any) as any)
-    .insert(payment).select().single();
+    .insert({ ...payment, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as Payment;
 }
 
 // ─── Therapy Sessions ────────────────────────────────────────
 export function useTherapySessions(patientId?: string) {
+  const { clinic } = useClinic();
   return useSupabaseQuery<TherapySession>("therapy_sessions", {
     orderBy: "session_date", ascending: true,
     filters: patientId ? { patient_id: patientId } : undefined,
+    clinicId: clinic?.id,
   });
 }
 
-export async function createTherapySession(session: Omit<TherapySession, "id" | "created_at">) {
+export async function createTherapySession(session: Omit<TherapySession, "id" | "created_at">, clinicId?: string) {
   const { data, error } = await (supabase.from("therapy_sessions" as any) as any)
-    .insert(session).select().single();
+    .insert({ ...session, clinic_id: clinicId }).select().single();
   if (error) throw error;
   return data as TherapySession;
 }
