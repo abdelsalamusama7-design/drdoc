@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import {
   UserPlus, DollarSign, Stethoscope, CalendarCheck, ChevronLeft, ChevronRight,
   Search, Loader2, Phone, FileText, Brain, Pill, Plus, Upload, Clock,
