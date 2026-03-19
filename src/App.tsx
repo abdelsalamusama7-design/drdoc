@@ -145,6 +145,7 @@ const App = () => {
                     <Route path="/*" element={<ProtectedRoutes />} />
                   </Routes>
                   <AIChatbot />
+                  <WhatsAppFloat />
                 </ClinicProvider>
               </AuthProvider>
             </BrowserRouter>
