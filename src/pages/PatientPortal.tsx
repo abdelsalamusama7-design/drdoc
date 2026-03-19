@@ -413,7 +413,35 @@ export default function PatientPortal() {
 
       {/* ── Patient Journey ── */}
       {activeTab === "journey" && (
-        <PatientJourneyTab visits={visits} />
+        <div className="space-y-4">
+          <PatientJourneyTab visits={visits} />
+          {/* Payment Summary in Journey */}
+          <div className="clinic-card p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Wallet className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">ملخص الحساب</h3>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="text-center p-2 rounded-lg bg-muted/50">
+                <p className="text-xs text-muted-foreground">الإجمالي</p>
+                <p className="font-en font-bold text-foreground">{(totalPaid + totalRemaining).toLocaleString()}</p>
+              </div>
+              <div className="text-center p-2 rounded-lg bg-success/5">
+                <p className="text-xs text-muted-foreground">المدفوع</p>
+                <p className="font-en font-bold text-success">{totalPaid.toLocaleString()}</p>
+              </div>
+              <div className="text-center p-2 rounded-lg bg-destructive/5">
+                <p className="text-xs text-muted-foreground">المتبقي</p>
+                <p className="font-en font-bold text-destructive">{totalRemaining.toLocaleString()}</p>
+              </div>
+            </div>
+            {totalRemaining > 0 && (
+              <Button size="sm" variant="outline" className="w-full mt-3 gap-1.5 text-xs" onClick={() => setActiveTab("payments")}>
+                <CreditCard className="h-3.5 w-3.5" /> ادفع الآن
+              </Button>
+            )}
+          </div>
+        </div>
       )}
 
       {/* ── Payments ── */}
