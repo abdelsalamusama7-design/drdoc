@@ -166,7 +166,7 @@ export default function ResetPassword() {
         <div className="pt-4 border-t border-border/40">
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+              <CheckCircle2 className="h-3.5 w-3.5 text-success" />
               {lang === "ar" ? "تشفير كامل" : "Fully Encrypted"}
             </span>
           </div>
