@@ -223,9 +223,9 @@ export default function PatientPortal() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               { label: "الزيارات", value: visits.length, icon: Calendar, color: "text-primary", bg: "bg-primary/10" },
-              { label: "الملفات", value: patientFiles.length, icon: FileText, color: "text-accent", bg: "bg-accent/10" },
-              { label: "الوصفات", value: myPrescriptions.length, icon: Pill, color: "text-success", bg: "bg-success/10" },
-              { label: "الجلسات", value: sessions.length, icon: Stethoscope, color: "text-warning", bg: "bg-warning/10" },
+              { label: "إجمالي المدفوع", value: `${totalPaid.toLocaleString()} ج.م`, icon: Wallet, color: "text-success", bg: "bg-success/10" },
+              { label: "المتبقي", value: `${totalRemaining.toLocaleString()} ج.م`, icon: Wallet, color: "text-destructive", bg: "bg-destructive/10" },
+              { label: "الوصفات", value: myPrescriptions.length, icon: Pill, color: "text-accent", bg: "bg-accent/10" },
             ].map((stat, i) => (
               <div key={i} className="clinic-card p-4">
                 <div className={`w-9 h-9 rounded-lg ${stat.bg} flex items-center justify-center mb-2`}><stat.icon className={`h-4 w-4 ${stat.color}`} /></div>
