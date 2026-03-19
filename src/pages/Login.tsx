@@ -25,6 +25,7 @@ export default function Login() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   if (loading) {
     return (
