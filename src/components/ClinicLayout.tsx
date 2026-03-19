@@ -7,6 +7,7 @@ import {
   DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
   Search, Bell, UserPlus, ShieldCheck, Moon, Sun, Languages
 } from "lucide-react";
+import NotificationPanel from "@/components/NotificationPanel";
 import { useAuth } from "@/hooks/useAuth";
 import ClinicSwitcher from "@/components/ClinicSwitcher";
 import { useI18n } from "@/hooks/useI18n";
@@ -131,53 +132,7 @@ function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => void })
   );
 }
 
-// Notification Panel
-function NotificationPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { t } = useI18n();
-  if (!open) return null;
-  
-  const notifications = [
-    { id: 1, text: t("notif.1"), time: t("notif.time1"), type: "lab" },
-    { id: 2, text: t("notif.2"), time: t("notif.time2"), type: "appointment" },
-    { id: 3, text: t("notif.3"), time: t("notif.time3"), type: "alert" },
-    { id: 4, text: t("notif.4"), time: t("notif.time4"), type: "report" },
-  ];
 
-  return (
-    <>
-      <div className="fixed inset-0 z-40" onClick={onClose} />
-      <motion.div
-        initial={{ opacity: 0, y: -8, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -4 }}
-        className="absolute top-full left-0 mt-2 w-[340px] bg-card rounded-2xl border border-border z-50 overflow-hidden"
-        style={{ boxShadow: 'var(--card-shadow-lg)' }}
-      >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <h3 className="text-sm font-semibold">{t("layout.notifications")}</h3>
-          <span className="text-[10px] text-primary font-medium cursor-pointer hover:underline">{t("layout.readAll")}</span>
-        </div>
-        <div className="max-h-[320px] overflow-y-auto divide-y divide-border">
-          {notifications.map(n => (
-            <div key={n.id} className="px-4 py-3 hover:bg-muted/30 transition-colors cursor-pointer">
-              <div className="flex items-start gap-2.5">
-                <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                  n.type === 'lab' ? 'bg-accent' :
-                  n.type === 'appointment' ? 'bg-primary' :
-                  n.type === 'alert' ? 'bg-warning' : 'bg-success'
-                }`} />
-                <div>
-                  <p className="text-[12px] text-foreground leading-relaxed">{n.text}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{n.time}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-    </>
-  );
-}
 
 export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const location = useLocation();
@@ -187,7 +142,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
+  
 
   const displayName = profile?.full_name || (lang === "ar" ? "مستخدم" : "User");
   const roleLabel = t(`role.${role || "user"}`);
@@ -343,12 +298,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Theme">
             {theme === "light" ? <Moon className="h-4 w-4 text-muted-foreground" /> : <Sun className="h-4 w-4 text-muted-foreground" />}
           </button>
-          <div className="relative">
-            <button onClick={() => setNotifOpen(!notifOpen)} className="p-2 rounded-lg hover:bg-muted transition-colors">
-              <Bell className="h-4 w-4 text-muted-foreground" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
-            </button>
-          </div>
+          <NotificationPanel />
         </div>
       </header>
 
@@ -500,18 +450,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           </button>
 
           {/* Notifications */}
-          <div className="relative">
-            <button
-              onClick={() => setNotifOpen(!notifOpen)}
-              className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors relative"
-            >
-              <Bell className="h-[18px] w-[18px]" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
-            </button>
-            <AnimatePresence>
-              {notifOpen && <NotificationPanel open={notifOpen} onClose={() => setNotifOpen(false)} />}
-            </AnimatePresence>
-          </div>
+          <NotificationPanel />
         </div>
       </div>
 

@@ -319,6 +319,53 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          clinic_id: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          reference_id: string | null
+          reference_type: string | null
+          title: string
+          type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          body?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          reference_id?: string | null
+          reference_type?: string | null
+          title: string
+          type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          body?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          reference_id?: string | null
+          reference_type?: string | null
+          title?: string
+          type?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patient_files: {
         Row: {
           clinic_id: string | null
