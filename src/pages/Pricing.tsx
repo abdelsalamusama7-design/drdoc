@@ -92,7 +92,7 @@ export default function Pricing() {
       {/* Header */}
       <div className="bg-card border-b border-border">
         <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <Link to="/landing" className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
               <Stethoscope className="h-5 w-5 text-primary-foreground" />
             </div>
@@ -100,7 +100,7 @@ export default function Pricing() {
               <h1 className="text-xl font-bold text-foreground">Instatech AI</h1>
               <p className="text-xs text-muted-foreground">حلول ذكية للعيادات والمراكز الطبية</p>
             </div>
-          </div>
+          </Link>
           <Link to="/booking">
             <Button variant="outline" size="sm">جرّب مجاناً</Button>
           </Link>
