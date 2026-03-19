@@ -452,6 +452,268 @@ export type Database = {
           },
         ]
       }
+      insurance_claims: {
+        Row: {
+          approved_amount: number | null
+          claim_date: string | null
+          claim_number: string | null
+          clinic_id: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          insurance_company_id: string
+          notes: string | null
+          patient_id: string
+          patient_share: number | null
+          rejection_reason: string | null
+          resolved_at: string | null
+          status: string | null
+          submitted_at: string | null
+          total_amount: number | null
+          updated_at: string | null
+          visit_id: string | null
+        }
+        Insert: {
+          approved_amount?: number | null
+          claim_date?: string | null
+          claim_number?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          insurance_company_id: string
+          notes?: string | null
+          patient_id: string
+          patient_share?: number | null
+          rejection_reason?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          total_amount?: number | null
+          updated_at?: string | null
+          visit_id?: string | null
+        }
+        Update: {
+          approved_amount?: number | null
+          claim_date?: string | null
+          claim_number?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          insurance_company_id?: string
+          notes?: string | null
+          patient_id?: string
+          patient_share?: number | null
+          rejection_reason?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          total_amount?: number | null
+          updated_at?: string | null
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_claims_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_claims_insurance_company_id_fkey"
+            columns: ["insurance_company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_claims_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_claims_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insurance_companies: {
+        Row: {
+          address: string | null
+          clinic_id: string | null
+          contact_person: string | null
+          contract_end: string | null
+          contract_start: string | null
+          created_at: string | null
+          discount_percentage: number | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          name_en: string | null
+          notes: string | null
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          clinic_id?: string | null
+          contact_person?: string | null
+          contract_end?: string | null
+          contract_start?: string | null
+          created_at?: string | null
+          discount_percentage?: number | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          name_en?: string | null
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          clinic_id?: string | null
+          contact_person?: string | null
+          contract_end?: string | null
+          contract_start?: string | null
+          created_at?: string | null
+          discount_percentage?: number | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          name_en?: string | null
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_companies_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insurance_invoice_claims: {
+        Row: {
+          amount: number | null
+          claim_id: string
+          created_at: string | null
+          id: string
+          invoice_id: string
+        }
+        Insert: {
+          amount?: number | null
+          claim_id: string
+          created_at?: string | null
+          id?: string
+          invoice_id: string
+        }
+        Update: {
+          amount?: number | null
+          claim_id?: string
+          created_at?: string | null
+          id?: string
+          invoice_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_invoice_claims_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_claims"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_invoice_claims_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insurance_invoices: {
+        Row: {
+          clinic_id: string | null
+          created_at: string | null
+          created_by: string | null
+          due_date: string | null
+          id: string
+          insurance_company_id: string
+          invoice_date: string | null
+          invoice_number: string | null
+          notes: string | null
+          paid_amount: number | null
+          paid_at: string | null
+          sent_at: string | null
+          status: string | null
+          total_amount: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          insurance_company_id: string
+          invoice_date?: string | null
+          invoice_number?: string | null
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          due_date?: string | null
+          id?: string
+          insurance_company_id?: string
+          invoice_date?: string | null
+          invoice_number?: string | null
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_invoices_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_invoices_insurance_company_id_fkey"
+            columns: ["insurance_company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_items: {
         Row: {
           category: string | null
@@ -902,6 +1164,9 @@ export type Database = {
           current_medications: string[] | null
           gender: string | null
           id: string
+          insurance_company_id: string | null
+          insurance_expiry: string | null
+          insurance_number: string | null
           last_visit: string | null
           marital_status: string | null
           medical_history: string | null
@@ -923,6 +1188,9 @@ export type Database = {
           current_medications?: string[] | null
           gender?: string | null
           id?: string
+          insurance_company_id?: string | null
+          insurance_expiry?: string | null
+          insurance_number?: string | null
           last_visit?: string | null
           marital_status?: string | null
           medical_history?: string | null
@@ -944,6 +1212,9 @@ export type Database = {
           current_medications?: string[] | null
           gender?: string | null
           id?: string
+          insurance_company_id?: string | null
+          insurance_expiry?: string | null
+          insurance_number?: string | null
           last_visit?: string | null
           marital_status?: string | null
           medical_history?: string | null
@@ -961,6 +1232,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patients_insurance_company_id_fkey"
+            columns: ["insurance_company_id"]
+            isOneToOne: false
+            referencedRelation: "insurance_companies"
             referencedColumns: ["id"]
           },
         ]
