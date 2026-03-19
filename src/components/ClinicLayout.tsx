@@ -185,7 +185,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const { t, lang, toggleLang } = useI18n();
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const { hasNavAccess, currentPlan } = useFeatureAccess();
 
@@ -258,9 +258,9 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
             </div>
           )}
           {collapsed && (
-            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center mx-auto">
+            <button onClick={() => setCollapsed(false)} className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center mx-auto hover:opacity-80 transition-opacity">
               <Stethoscope className="h-4 w-4 text-primary-foreground" />
-            </div>
+            </button>
           )}
           {!collapsed && (
             <button
