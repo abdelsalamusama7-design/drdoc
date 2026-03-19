@@ -216,7 +216,7 @@ export default function UserManagement() {
             إدارة المستخدمين
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            إدارة حسابات الموظفين وصلاحياتهم
+            إدارة حسابات الموظفين والمرضى وصلاحياتهم
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -226,7 +226,7 @@ export default function UserManagement() {
             className="gap-1.5"
           >
             <UserPlus className="h-4 w-4" />
-            إضافة موظف
+            إضافة مستخدم
           </Button>
           <Button onClick={fetchUsers} variant="outline" size="sm" disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "تحديث"}
