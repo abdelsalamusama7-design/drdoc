@@ -137,6 +137,7 @@ const App = () => {
                 <ClinicProvider>
                   <Routes>
                     <Route path="/login" element={<Login />} />
+                    <Route path="/landing" element={<LandingPage />} />
                     <Route path="/booking" element={<Booking />} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/register-clinic" element={<RegisterClinic />} />
