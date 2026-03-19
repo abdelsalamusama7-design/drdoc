@@ -163,6 +163,26 @@ export default function LandingPage() {
               <span className="flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5 text-success" />دعم فني على مدار الساعة</span>
             </motion.p>
           </motion.div>
+
+          {/* Hero Screenshot */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+            className="mt-12 max-w-5xl mx-auto"
+          >
+            <div className="relative rounded-2xl overflow-hidden border border-border/50 shadow-2xl shadow-primary/10">
+              <div className="bg-card/80 backdrop-blur-sm px-4 py-2.5 flex items-center gap-2 border-b border-border/50">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-destructive/60" />
+                  <div className="w-3 h-3 rounded-full bg-warning/60" />
+                  <div className="w-3 h-3 rounded-full bg-success/60" />
+                </div>
+                <span className="text-xs text-muted-foreground mx-auto font-mono">Smart Clinic — لوحة التحكم</span>
+              </div>
+              <img src={screenshotDashboard} alt="لوحة تحكم Smart Clinic" className="w-full" loading="lazy" />
+            </div>
+          </motion.div>
         </div>
       </section>
 
