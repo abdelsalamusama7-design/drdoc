@@ -62,8 +62,31 @@ export default function PatientPortal() {
       }
       setLoading(false);
     };
+    const fetchNotifications = async () => {
+      if (!user?.id) return;
+      const { data } = await supabase.from("notifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      setNotifications(data || []);
+    };
     fetchPatientData();
-  }, [profile?.phone]);
+    fetchNotifications();
+  }, [profile?.phone, user?.id]);
+
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+
+  const markAsRead = async (id: string) => {
+    await supabase.from("notifications").update({ is_read: true }).eq("id", id);
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+  };
+
+  const markAllRead = async () => {
+    if (!user?.id) return;
+    await supabase.from("notifications").update({ is_read: true }).eq("user_id", user.id).eq("is_read", false);
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+  };
 
   const myAppointments = appointments.filter(a =>
     patientData && a.patient_id === patientData.id
