@@ -68,6 +68,7 @@ export default function SettingsPage() {
   const [localBackupLoading, setLocalBackupLoading] = useState(false);
   const [cloudBackupLoading, setCloudBackupLoading] = useState(false);
   const [restoreLoading, setRestoreLoading] = useState(false);
+  const [cloudRestoreLoading, setCloudRestoreLoading] = useState(false);
   const [lastLocalBackup, setLastLocalBackup] = useState<string | null>(null);
   const [lastCloudBackup, setLastCloudBackup] = useState<string | null>(null);
   const restoreInputRef = useRef<HTMLInputElement>(null);
