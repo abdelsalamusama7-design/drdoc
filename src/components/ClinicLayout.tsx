@@ -491,7 +491,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
 
       {/* Mobile Bottom Nav */}
       <nav className="bottom-nav lg:hidden flex items-center justify-around h-20 px-2">
-        {navItems.slice(0, 5).map((item) => {
+        {allNavItems.slice(0, 5).map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link
