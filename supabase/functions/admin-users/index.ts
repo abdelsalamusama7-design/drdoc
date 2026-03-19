@@ -135,26 +135,24 @@ Deno.serve(async (req) => {
             .from("user_roles")
             .insert({ user_id: newUser.user.id, role });
 
-          // If patient, also add as clinic member to the admin's clinic
-          if (role === "patient") {
-            const { data: adminClinic } = await adminClient
-              .from("clinic_members")
-              .select("clinic_id")
-              .eq("user_id", user.id)
-              .eq("is_active", true)
-              .limit(1)
-              .single();
+          // Add user as clinic member to the admin's clinic
+          const { data: adminClinic } = await adminClient
+            .from("clinic_members")
+            .select("clinic_id")
+            .eq("user_id", user.id)
+            .eq("is_active", true)
+            .limit(1)
+            .single();
 
-            if (adminClinic) {
-              await adminClient
-                .from("clinic_members")
-                .insert({ 
-                  user_id: newUser.user.id, 
-                  clinic_id: adminClinic.clinic_id, 
-                  role: "patient",
-                  is_active: true 
-                });
-            }
+          if (adminClinic) {
+            await adminClient
+              .from("clinic_members")
+              .insert({ 
+                user_id: newUser.user.id, 
+                clinic_id: adminClinic.clinic_id, 
+                role: role,
+                is_active: true 
+              });
           }
         }
 
