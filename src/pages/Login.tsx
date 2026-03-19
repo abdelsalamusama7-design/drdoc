@@ -365,57 +365,6 @@ export default function Login() {
               </motion.form>
             )}
 
-            {/* Forgot Password Form */}
-            {mode === "staff" && forgotMode && (
-              <motion.form
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
-                onSubmit={handleForgotPassword}
-                className="space-y-4"
-              >
-                <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/15">
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {lang === "ar"
-                      ? "💡 أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور."
-                      : "💡 Enter your email and we'll send you a link to reset your password."}
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium flex items-center gap-1.5">
-                    <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                    {t("login.email")}
-                  </Label>
-                  <Input
-                    type="email"
-                    value={forgotEmail}
-                    onChange={e => setForgotEmail(e.target.value)}
-                    placeholder="doctor@clinic.com"
-                    className="h-11 bg-muted/30 border-border/60 focus:bg-background transition-colors font-en"
-                    dir="ltr"
-                    required
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full h-11 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all"
-                  disabled={submitting}
-                >
-                  {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {lang === "ar" ? "إرسال رابط الاستعادة" : "Send Reset Link"}
-                </Button>
-
-                <button
-                  type="button"
-                  onClick={() => setForgotMode(false)}
-                  className="w-full text-center text-sm text-primary hover:text-primary/80 font-medium transition-colors"
-                >
-                  {lang === "ar" ? "العودة لتسجيل الدخول" : "Back to Sign In"}
-                </button>
-              </motion.form>
-            )}
 
             {/* Patient Form */}
             {mode === "patient" && (
