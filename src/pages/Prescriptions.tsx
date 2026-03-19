@@ -81,6 +81,14 @@ export default function Prescriptions() {
     setSubmitting(false);
   };
 
+  const shareWhatsApp = (rx: typeof prescriptions[0]) => {
+    const meds = (rx.medications || []).map(m => 
+      `💊 ${m.name}${m.dosage ? ` • ${m.dosage}` : ''}${m.duration ? ` • ${m.duration}` : ''}`
+    ).join('\n');
+    const text = `🏥 *وصفة طبية - Smart Clinic*\n👤 المريض: *${rx.patient_name}*\n📅 التاريخ: ${rx.date}\n\n*الأدوية:*\n${meds}${rx.doctor_notes ? `\n\n📝 *ملاحظات:* ${rx.doctor_notes}` : ''}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
   const handlePrint = (rx: typeof prescriptions[0]) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
