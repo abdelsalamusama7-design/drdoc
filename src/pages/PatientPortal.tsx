@@ -44,6 +44,7 @@ export default function PatientPortal() {
   const [payments, setPayments] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { data: appointments } = useAllAppointments();
   const { data: prescriptions } = usePrescriptions();
