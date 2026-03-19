@@ -21,7 +21,7 @@ const anim = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, tra
 export default function PatientPortal() {
   const { user, profile, signOut } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<"overview" | "history" | "files" | "prescriptions" | "sessions">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "history" | "files" | "prescriptions" | "sessions" | "booking">("overview");
   const [patientData, setPatientData] = useState<any>(null);
   const [patientFiles, setPatientFiles] = useState<any[]>([]);
   const [visits, setVisits] = useState<any[]>([]);
