@@ -245,8 +245,9 @@ export default function UserManagement() {
           { label: "مدراء", count: roleCounts.admin, color: "text-destructive", bg: "bg-destructive/10" },
           { label: "أطباء", count: roleCounts.doctor, color: "text-primary", bg: "bg-primary/10" },
           { label: "استقبال", count: roleCounts.receptionist, color: "text-accent", bg: "bg-accent/10" },
+          { label: "محاسبين", count: roleCounts.accountant, color: "text-warning", bg: "bg-warning/10" },
           { label: "مرضى", count: roleCounts.patient, color: "text-success", bg: "bg-success/10" },
-          { label: "بدون دور", count: roleCounts.none, color: "text-warning", bg: "bg-warning/10" },
+          { label: "بدون دور", count: roleCounts.none, color: "text-muted-foreground", bg: "bg-muted" },
         ].map((s) => (
           <div key={s.label} className="clinic-card p-3 text-center">
             <p className={`text-xl font-bold ${s.color}`}>{s.count}</p>
