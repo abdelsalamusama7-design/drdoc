@@ -43,6 +43,7 @@ export default function PatientJourney() {
   const { clinic } = useClinic();
   const { lang } = useI18n();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);
   const [activeStage, setActiveStage] = useState<StageKey | null>(null);
