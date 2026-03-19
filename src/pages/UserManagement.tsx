@@ -235,12 +235,13 @@ export default function UserManagement() {
       </motion.div>
 
       {/* Stats */}
-      <motion.div variants={item} className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <motion.div variants={item} className="grid grid-cols-3 sm:grid-cols-6 gap-3">
         {[
           { label: "إجمالي", count: roleCounts.all, color: "text-foreground", bg: "bg-muted" },
           { label: "مدراء", count: roleCounts.admin, color: "text-destructive", bg: "bg-destructive/10" },
           { label: "أطباء", count: roleCounts.doctor, color: "text-primary", bg: "bg-primary/10" },
           { label: "استقبال", count: roleCounts.receptionist, color: "text-accent", bg: "bg-accent/10" },
+          { label: "مرضى", count: roleCounts.patient, color: "text-success", bg: "bg-success/10" },
           { label: "بدون دور", count: roleCounts.none, color: "text-warning", bg: "bg-warning/10" },
         ].map((s) => (
           <div key={s.label} className="clinic-card p-3 text-center">
