@@ -129,6 +129,7 @@ export default function PatientPortal() {
     { key: "files" as const, label: "الملفات", icon: FlaskConical },
     { key: "prescriptions" as const, label: "الوصفات", icon: Pill },
     { key: "sessions" as const, label: "الجلسات", icon: Stethoscope },
+    { key: "notifications" as const, label: "الإشعارات", icon: Bell },
   ];
 
   return (
