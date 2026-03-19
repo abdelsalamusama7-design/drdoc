@@ -257,6 +257,7 @@ export default function Insurance() {
 
     doc.save(`invoice-${inv.invoice_number || inv.id.substring(0, 8)}.pdf`);
     toast({ title: "✅", description: "تم تصدير الفاتورة بنجاح" });
+  };
 
   const claimStatusBadge = (status: string) => {
     const map: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
