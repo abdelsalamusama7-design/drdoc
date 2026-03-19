@@ -292,19 +292,19 @@ export default function PatientPortal() {
       {/* Main Content */}
       <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
         {/* Patient Header */}
-        <div className="clinic-card p-4 lg:p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="clinic-card p-3 sm:p-4 lg:p-6">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
               {/* Mobile menu trigger */}
-              <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-xl hover:bg-muted text-muted-foreground lg:hidden">
+              <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-xl hover:bg-muted text-muted-foreground lg:hidden shrink-0">
                 <ClipboardList className="h-5 w-5" />
               </button>
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-xl font-bold text-primary">
+              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl bg-primary/10 flex items-center justify-center text-lg sm:text-xl font-bold text-primary shrink-0">
                 {patientData.name.charAt(0)}
               </div>
-              <div>
-                <h1 className="text-lg font-bold text-foreground">{patientData.name}</h1>
-                <p className="text-xs text-muted-foreground mt-0.5">
+              <div className="min-w-0">
+                <h1 className="text-sm sm:text-lg font-bold text-foreground truncate">{patientData.name}</h1>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate">
                   {patientData.age && `${patientData.age} سنة`} · {patientData.phone}
                 </p>
                 {loyaltyData && (
@@ -315,12 +315,12 @@ export default function PatientPortal() {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <button onClick={() => setActiveTab("notifications")} className="relative p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors">
-                {unreadCount > 0 ? <BellDot className="h-4.5 w-4.5 text-primary" /> : <Bell className="h-4.5 w-4.5" />}
+                {unreadCount > 0 ? <BellDot className="h-4 w-4 sm:h-5 sm:w-5 text-primary" /> : <Bell className="h-4 w-4 sm:h-5 sm:w-5" />}
                 {unreadCount > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">{unreadCount}</span>}
               </button>
-              <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5"><LogOut className="h-3.5 w-3.5" />خروج</Button>
+              <Button variant="outline" size="sm" onClick={signOut} className="gap-1 sm:gap-1.5 text-[10px] sm:text-xs h-8 sm:h-9 px-2 sm:px-3"><LogOut className="h-3 w-3 sm:h-3.5 sm:w-3.5" /><span className="hidden sm:inline">خروج</span></Button>
             </div>
           </div>
         </div>
