@@ -20,6 +20,10 @@ import screenshotDashboard from "@/assets/screenshot-dashboard.jpg";
 import screenshotPatients from "@/assets/screenshot-patients.jpg";
 import screenshotAppointments from "@/assets/screenshot-appointments.jpg";
 import screenshotMobile from "@/assets/screenshot-mobile.png";
+import partnersConference from "@/assets/partners-conference.jpg";
+import partnersContract from "@/assets/partners-contract.jpg";
+import partnersTeam from "@/assets/partners-team.jpg";
+import partnersTraining from "@/assets/partners-training.jpg";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
@@ -527,14 +531,43 @@ export default function LandingPage() {
       </section>
 
       {/* ── Partners ── */}
-      <section className="py-16 bg-muted/30 border-t border-border overflow-hidden">
+      <section className="py-20 bg-muted/30 border-t border-border overflow-hidden">
         <div className="max-w-6xl mx-auto px-4">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">شركاؤنا</h2>
-            <p className="text-muted-foreground">نفخر بالتعاون مع صيدليات ومراكز طبية في جميع أنحاء مصر</p>
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 border border-primary/20">
+              <Users className="h-4 w-4" />
+              شراكات موثوقة
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">شركاؤنا في النجاح</h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">نفخر بشراكاتنا مع أكثر من 500 عيادة ومركز طبي وصيدلية في جميع أنحاء مصر والمنطقة العربية</p>
           </motion.div>
+
+          {/* Photo Gallery */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
+            {[
+              { img: partnersConference, title: "مؤتمر التحول الرقمي الطبي 2024", desc: "مشاركتنا في أكبر مؤتمر للتقنيات الطبية في المنطقة" },
+              { img: partnersContract, title: "توقيع شراكة مع مراكز طبية جديدة", desc: "توسيع شبكة شركائنا لتغطية أفضل في جميع المحافظات" },
+              { img: partnersTeam, title: "فريق العمل مع شركاء النجاح", desc: "فريقنا المتكامل يعمل جنباً إلى جنب مع الأطباء والمتخصصين" },
+              { img: partnersTraining, title: "ورشة تدريب على النظام", desc: "تدريب مستمر لفرق العمل في العيادات والمراكز الطبية" },
+            ].map((item, i) => (
+              <motion.div key={i} variants={fadeUp} className="group relative rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:shadow-xl transition-shadow duration-300">
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 right-0 left-0 p-5 text-right">
+                  <h3 className="text-white font-bold text-base sm:text-lg mb-1">{item.title}</h3>
+                  <p className="text-white/75 text-sm">{item.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Scrolling pharmacy names */}
           <div className="relative">
-            <div className="flex animate-scroll gap-6">
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-muted/30 to-transparent z-10" />
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-muted/30 to-transparent z-10" />
+            <div className="flex animate-scroll gap-4">
               {[
                 "صيدلية الشفاء", "صيدلية الأمل", "صيدلية الرحمة", "صيدلية النور", "صيدلية الحياة",
                 "صيدلية السلام", "صيدلية البركة", "صيدلية الإيمان", "صيدلية المعافاة", "صيدلية الوفاء",
@@ -546,18 +579,30 @@ export default function LandingPage() {
                 "صيدلية السلام", "صيدلية البركة", "صيدلية الإيمان", "صيدلية المعافاة", "صيدلية الوفاء",
                 "صيدلية الفردوس", "صيدلية الدواء", "صيدلية العلاج", "صيدلية الصحة", "صيدلية النخبة",
               ]).map((name, i) => (
-                <div
-                  key={`${name}-${i}`}
-                  className="flex-shrink-0 px-6 py-3 rounded-xl border border-border bg-background shadow-sm flex items-center gap-2 min-w-max"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Stethoscope className="h-4 w-4 text-primary" />
+                <div key={`${name}-${i}`} className="flex-shrink-0 px-5 py-2.5 rounded-full border border-border bg-background/80 backdrop-blur-sm shadow-sm flex items-center gap-2 min-w-max">
+                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Stethoscope className="h-3 w-3 text-primary" />
                   </div>
-                  <span className="text-sm font-medium text-foreground whitespace-nowrap">{name}</span>
+                  <span className="text-xs font-medium text-foreground whitespace-nowrap">{name}</span>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Stats strip */}
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { num: "+500", label: "عيادة ومركز طبي" },
+              { num: "+25", label: "صيدلية شريكة" },
+              { num: "+12", label: "مؤتمر ومعرض" },
+              { num: "+8", label: "محافظات مغطاة" },
+            ].map((s, i) => (
+              <div key={i} className="text-center p-4 rounded-xl bg-background border border-border">
+                <div className="text-2xl font-bold text-primary">{s.num}</div>
+                <div className="text-xs text-muted-foreground mt-1">{s.label}</div>
+              </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
