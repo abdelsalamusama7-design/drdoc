@@ -64,7 +64,8 @@ function downloadJson(data: unknown, filename: string) {
 }
 
 export default function SettingsPage() {
-  const { currentClinicId } = useClinic();
+  const { clinic } = useClinic();
+  const clinicId = clinic?.id || null;
   const { toast } = useToast();
   const [localBackupLoading, setLocalBackupLoading] = useState(false);
   const [cloudBackupLoading, setCloudBackupLoading] = useState(false);
