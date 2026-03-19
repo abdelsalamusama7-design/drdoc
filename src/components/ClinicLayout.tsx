@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
   DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
   Search, Bell, UserPlus, ShieldCheck, Moon, Sun, Languages,
-  ListOrdered, Activity, Package, UserX, Lock
+  ListOrdered, Activity, Package, UserX, Lock, Brain, AlertTriangle, CreditCard
 } from "lucide-react";
 import NotificationPanel from "@/components/NotificationPanel";
 import { useAuth } from "@/hooks/useAuth";
