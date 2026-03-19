@@ -59,40 +59,9 @@ export default function Login() {
     if (!email.trim() || !password.trim()) return;
 
     setSubmitting(true);
-
-    if (isSignUp) {
-      // Patient registration via edge function
-      if (!fullName.trim() || !phone.trim()) {
-        toast({ title: lang === "ar" ? "خطأ" : "Error", description: lang === "ar" ? "جميع الحقول مطلوبة" : "All fields required", variant: "destructive" });
-        setSubmitting(false);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase.functions.invoke("patient-register", {
-          body: { email: email.trim(), password, full_name: fullName.trim(), phone: phone.trim() },
-        });
-
-        if (error || data?.error) {
-          toast({ title: lang === "ar" ? "خطأ" : "Error", description: data?.error || error?.message, variant: "destructive" });
-          setSubmitting(false);
-          return;
-        }
-
-        // Auto sign-in after registration
-        const { error: signInError } = await signIn(email.trim(), password);
-        if (signInError) {
-          toast({ title: lang === "ar" ? "تم التسجيل" : "Registered", description: lang === "ar" ? "تم إنشاء حسابك، سجل دخول الآن" : "Account created, please sign in" });
-          setIsSignUp(false);
-        }
-      } catch (err: any) {
-        toast({ title: lang === "ar" ? "خطأ" : "Error", description: err.message, variant: "destructive" });
-      }
-    } else {
-      const { error } = await signIn(email.trim(), password);
-      if (error) {
-        toast({ title: t("login.error"), description: error.message, variant: "destructive" });
-      }
+    const { error } = await signIn(email.trim(), password);
+    if (error) {
+      toast({ title: t("login.error"), description: error.message, variant: "destructive" });
     }
     setSubmitting(false);
   };
@@ -146,10 +115,7 @@ export default function Login() {
           <p className="text-sm text-muted-foreground text-center mb-4">
             {mode === "staff"
               ? (isSignUp ? t("login.signup") : t("login.title"))
-              : (isSignUp
-                ? (lang === "ar" ? "إنشاء حساب مريض جديد" : "Create Patient Account")
-                : (lang === "ar" ? "تسجيل دخول المريض" : "Patient Login")
-              )
+              : (lang === "ar" ? "تسجيل دخول المريض" : "Patient Login")
             }
           </p>
 
@@ -180,21 +146,14 @@ export default function Login() {
           {/* Patient Form */}
           {mode === "patient" && (
             <form onSubmit={handlePatientSubmit} className="space-y-4">
-              {isSignUp && (
-                <>
-                  <div>
-                    <Label>{lang === "ar" ? "الاسم الكامل" : "Full Name"}</Label>
-                    <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder={lang === "ar" ? "أحمد محمد" : "Ahmed Mohamed"} className="mt-1.5" required />
-                  </div>
-                  <div>
-                    <Label>{lang === "ar" ? "رقم الهاتف" : "Phone Number"}</Label>
-                    <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="01012345678" className="mt-1.5 font-en" dir="ltr" required />
-                    <p className="text-[10px] text-muted-foreground mt-1">
-                      {lang === "ar" ? "⚠️ يجب أن يكون نفس الرقم المسجل في العيادة" : "⚠️ Must match the number registered at the clinic"}
-                    </p>
-                  </div>
-                </>
-              )}
+              <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 mb-2">
+                <p className="text-xs text-muted-foreground">
+                  {lang === "ar" 
+                    ? "💡 حساب المريض يتم إنشاؤه بواسطة العيادة. استخدم البيانات التي حصلت عليها من الاستقبال."
+                    : "💡 Patient accounts are created by the clinic. Use the credentials provided by reception."
+                  }
+                </p>
+              </div>
               <div>
                 <Label>{t("login.email")}</Label>
                 <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="patient@email.com" className="mt-1.5 font-en" dir="ltr" required />
@@ -205,25 +164,19 @@ export default function Login() {
               </div>
               <Button type="submit" className="w-full" disabled={submitting}>
                 {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {isSignUp
-                  ? (lang === "ar" ? "إنشاء حساب" : "Create Account")
-                  : (lang === "ar" ? "تسجيل الدخول" : "Sign In")
-                }
+                {lang === "ar" ? "تسجيل الدخول" : "Sign In"}
               </Button>
             </form>
           )}
 
-          <div className="mt-4 text-center">
-            <button onClick={() => setIsSignUp(!isSignUp)} className="text-sm text-primary hover:underline">
-              {mode === "patient"
-                ? (isSignUp
-                  ? (lang === "ar" ? "لديك حساب؟ سجل دخول" : "Have an account? Sign in")
-                  : (lang === "ar" ? "ليس لديك حساب؟ سجل الآن" : "No account? Register now")
-                )
-                : (isSignUp ? t("login.hasAccount") : t("login.noAccount"))
-              }
-            </button>
-          </div>
+          {/* Only show signup toggle for staff mode */}
+          {mode === "staff" && (
+            <div className="mt-4 text-center">
+              <button onClick={() => setIsSignUp(!isSignUp)} className="text-sm text-primary hover:underline">
+                {isSignUp ? t("login.hasAccount") : t("login.noAccount")}
+              </button>
+            </div>
+          )}
         </div>
       </motion.div>
     </div>

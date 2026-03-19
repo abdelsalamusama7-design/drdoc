@@ -25,25 +25,28 @@ interface ManagedUser {
   full_name: string;
   phone: string;
   specialty: string;
-  role: "admin" | "doctor" | "receptionist" | null;
+  role: "admin" | "doctor" | "receptionist" | "patient" | null;
 }
 
 const roleLabels: Record<string, string> = {
   admin: "مدير",
   doctor: "طبيب",
   receptionist: "موظف استقبال",
+  patient: "مريض",
 };
 
 const roleColors: Record<string, string> = {
   admin: "bg-destructive/10 text-destructive",
   doctor: "bg-primary/10 text-primary",
   receptionist: "bg-accent/10 text-accent",
+  patient: "bg-success/10 text-success",
 };
 
 const roleIcons: Record<string, typeof Shield> = {
   admin: ShieldCheck,
   doctor: Stethoscope,
   receptionist: UserCog,
+  patient: Users,
 };
 
 const container = {
@@ -199,6 +202,7 @@ export default function UserManagement() {
     admin: users.filter((u) => u.role === "admin").length,
     doctor: users.filter((u) => u.role === "doctor").length,
     receptionist: users.filter((u) => u.role === "receptionist").length,
+    patient: users.filter((u) => u.role === "patient").length,
     none: users.filter((u) => !u.role).length,
   };
 
@@ -212,7 +216,7 @@ export default function UserManagement() {
             إدارة المستخدمين
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            إدارة حسابات الموظفين وصلاحياتهم
+            إدارة حسابات الموظفين والمرضى وصلاحياتهم
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -222,7 +226,7 @@ export default function UserManagement() {
             className="gap-1.5"
           >
             <UserPlus className="h-4 w-4" />
-            إضافة موظف
+            إضافة مستخدم
           </Button>
           <Button onClick={fetchUsers} variant="outline" size="sm" disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "تحديث"}
@@ -231,12 +235,13 @@ export default function UserManagement() {
       </motion.div>
 
       {/* Stats */}
-      <motion.div variants={item} className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <motion.div variants={item} className="grid grid-cols-3 sm:grid-cols-6 gap-3">
         {[
           { label: "إجمالي", count: roleCounts.all, color: "text-foreground", bg: "bg-muted" },
           { label: "مدراء", count: roleCounts.admin, color: "text-destructive", bg: "bg-destructive/10" },
           { label: "أطباء", count: roleCounts.doctor, color: "text-primary", bg: "bg-primary/10" },
           { label: "استقبال", count: roleCounts.receptionist, color: "text-accent", bg: "bg-accent/10" },
+          { label: "مرضى", count: roleCounts.patient, color: "text-success", bg: "bg-success/10" },
           { label: "بدون دور", count: roleCounts.none, color: "text-warning", bg: "bg-warning/10" },
         ].map((s) => (
           <div key={s.label} className="clinic-card p-3 text-center">
@@ -379,10 +384,10 @@ export default function UserManagement() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserPlus className="h-5 w-5 text-primary" />
-              إضافة موظف جديد
+              إضافة مستخدم جديد
             </DialogTitle>
             <DialogDescription>
-              أنشئ حساب جديد للموظف وحدد دوره في النظام
+              أنشئ حساب جديد وحدد دوره في النظام (موظف أو مريض)
             </DialogDescription>
           </DialogHeader>
 
@@ -441,22 +446,27 @@ export default function UserManagement() {
               </div>
             </div>
 
-            {/* Phone + Specialty row */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label className="text-[12px]">الهاتف</Label>
-                <div className="relative mt-1.5">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
-                    placeholder="05xxxxxxxx"
-                    className="pl-9 font-en"
-                    dir="ltr"
-                    maxLength={20}
-                  />
-                </div>
+            {/* Phone */}
+            <div>
+              <Label className="text-[12px]">الهاتف {newRole === "patient" && <span className="text-destructive">*</span>}</Label>
+              <div className="relative mt-1.5">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={newPhone}
+                  onChange={(e) => setNewPhone(e.target.value)}
+                  placeholder="01xxxxxxxxx"
+                  className="pl-9 font-en"
+                  dir="ltr"
+                  maxLength={20}
+                />
               </div>
+              {newRole === "patient" && (
+                <p className="text-[10px] text-muted-foreground mt-1">⚠️ يجب أن يكون نفس الرقم المسجل في ملف المريض</p>
+              )}
+            </div>
+
+            {/* Specialty - only for non-patient */}
+            {newRole !== "patient" && (
               <div>
                 <Label className="text-[12px]">التخصص</Label>
                 <Input
@@ -467,13 +477,13 @@ export default function UserManagement() {
                   maxLength={100}
                 />
               </div>
-            </div>
+            )}
 
             {/* Role Selection */}
             <div>
               <Label className="text-[12px] mb-2 block">الدور <span className="text-destructive">*</span></Label>
-              <div className="grid grid-cols-3 gap-2">
-                {(["doctor", "receptionist", "admin"] as const).map((r) => {
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {(["doctor", "receptionist", "admin", "patient"] as const).map((r) => {
                   const Icon = roleIcons[r];
                   return (
                     <button
@@ -521,7 +531,7 @@ export default function UserManagement() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 py-2">
-            {(["admin", "doctor", "receptionist"] as const).map((r) => {
+            {(["admin", "doctor", "receptionist", "patient"] as const).map((r) => {
               const Icon = roleIcons[r];
               return (
                 <button
@@ -543,7 +553,8 @@ export default function UserManagement() {
                     <p className="text-[10px] text-muted-foreground">
                       {r === "admin" ? "وصول كامل لجميع الأقسام" :
                        r === "doctor" ? "وصول للمرضى والمواعيد والوصفات" :
-                       "وصول للمرضى والمواعيد فقط"}
+                       r === "receptionist" ? "وصول للمرضى والمواعيد فقط" :
+                       "بوابة المريض - عرض السجل والمواعيد"}
                     </p>
                   </div>
                   {selectedRole === r && <Check className="h-4 w-4 text-primary mr-auto" />}

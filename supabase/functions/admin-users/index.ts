@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-        if (!role || !["admin", "doctor", "receptionist"].includes(role)) {
+        if (!role || !["admin", "doctor", "receptionist", "patient"].includes(role)) {
           return new Response(JSON.stringify({ error: "Invalid role" }), {
             status: 400,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -134,6 +134,28 @@ Deno.serve(async (req) => {
           await adminClient
             .from("user_roles")
             .insert({ user_id: newUser.user.id, role });
+
+          // If patient, also add as clinic member to the admin's clinic
+          if (role === "patient") {
+            const { data: adminClinic } = await adminClient
+              .from("clinic_members")
+              .select("clinic_id")
+              .eq("user_id", user.id)
+              .eq("is_active", true)
+              .limit(1)
+              .single();
+
+            if (adminClinic) {
+              await adminClient
+                .from("clinic_members")
+                .insert({ 
+                  user_id: newUser.user.id, 
+                  clinic_id: adminClinic.clinic_id, 
+                  role: "patient",
+                  is_active: true 
+                });
+            }
+          }
         }
 
         return new Response(JSON.stringify({ success: true, user_id: newUser.user?.id }), {
@@ -142,7 +164,7 @@ Deno.serve(async (req) => {
       }
 
       if (action === "assign_role") {
-        if (!user_id || !role || !["admin", "doctor", "receptionist"].includes(role)) {
+        if (!user_id || !role || !["admin", "doctor", "receptionist", "patient"].includes(role)) {
           return new Response(JSON.stringify({ error: "Invalid parameters" }), {
             status: 400,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
