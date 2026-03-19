@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Building2, Plus, FileText, Send, DollarSign, Loader2, Search, Eye, CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react";
+import { Building2, Plus, FileText, Send, DollarSign, Loader2, Search, Eye, CheckCircle, XCircle, Clock, AlertTriangle, Download } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -193,6 +193,70 @@ export default function Insurance() {
     } catch (err: any) {
       toast({ title: "خطأ", description: err.message, variant: "destructive" });
     }
+  };
+
+  const exportInvoicePDF = async (inv: InsuranceInvoice) => {
+    const { default: jsPDF } = await import("jspdf");
+    const { default: autoTable } = await import("jspdf-autotable");
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+    const companyName = getCompanyName(inv.insurance_company_id);
+    const invoiceClaims = claims.filter(c => c.insurance_company_id === inv.insurance_company_id && c.status === "approved");
+
+    // Header
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Insurance Invoice", 105, 20, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Invoice #: ${inv.invoice_number || inv.id.substring(0, 8)}`, 15, 35);
+    doc.text(`Date: ${inv.invoice_date}`, 15, 42);
+    doc.text(`Due Date: ${inv.due_date || "N/A"}`, 15, 49);
+    doc.text(`Company: ${companyName}`, 15, 56);
+    doc.text(`Status: ${inv.status}`, 15, 63);
+
+    // Line
+    doc.setDrawColor(200);
+    doc.line(15, 68, 195, 68);
+
+    // Claims table
+    const tableData = invoiceClaims.map((cl, i) => [
+      String(i + 1),
+      getPatientName(cl.patient_id),
+      cl.claim_number || "-",
+      cl.claim_date || "-",
+      cl.total_amount.toLocaleString(),
+      (cl.approved_amount || 0).toLocaleString(),
+      (cl.patient_share || 0).toLocaleString(),
+    ]);
+
+    autoTable(doc, {
+      startY: 73,
+      head: [["#", "Patient", "Claim #", "Date", "Total", "Approved", "Patient Share"]],
+      body: tableData.length > 0 ? tableData : [["", "No claims", "", "", "", "", ""]],
+      theme: "grid",
+      headStyles: { fillColor: [41, 128, 185], fontSize: 8, halign: "center" },
+      bodyStyles: { fontSize: 8, halign: "center" },
+      columnStyles: { 1: { halign: "left" } },
+    });
+
+    // Totals
+    const finalY = (doc as any).lastAutoTable?.finalY || 120;
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total Amount: ${inv.total_amount.toLocaleString()} EGP`, 15, finalY + 12);
+    doc.text(`Paid Amount: ${inv.paid_amount.toLocaleString()} EGP`, 15, finalY + 20);
+    doc.text(`Remaining: ${(inv.total_amount - inv.paid_amount).toLocaleString()} EGP`, 15, finalY + 28);
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(150);
+    doc.text("Smart Clinic - Insurance Invoice", 105, 285, { align: "center" });
+
+    doc.save(`invoice-${inv.invoice_number || inv.id.substring(0, 8)}.pdf`);
+    toast({ title: "✅", description: "تم تصدير الفاتورة بنجاح" });
   };
 
   const claimStatusBadge = (status: string) => {
@@ -388,7 +452,10 @@ export default function Insurance() {
                     {inv.due_date && <span className="text-muted-foreground font-en">الاستحقاق: {inv.due_date}</span>}
                   </div>
 
-                  <div className="flex items-center gap-2 mt-3">
+                   <div className="flex items-center gap-2 mt-3">
+                    <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={() => exportInvoicePDF(inv)}>
+                      <Download className="h-3 w-3" />تصدير PDF
+                    </Button>
                     {inv.status === "draft" && (
                       <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={() => updateInvoiceStatus(inv.id, "sent")}>
                         <Send className="h-3 w-3" />إرسال
