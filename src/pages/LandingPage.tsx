@@ -529,7 +529,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-14">
             <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-bold text-foreground mb-4">خطط اشتراك مرنة</motion.h2>
-            <motion.p variants={fadeUp} className="text-muted-foreground text-lg">اختر الخطة المناسبة لعيادتك — وابدأ بتجربة مجانية 14 يوم</motion.p>
+            <motion.p variants={fadeUp} className="text-muted-foreground text-lg">اختر الخطة المناسبة لعيادتك — وابدأ بتجربة مجانية</motion.p>
           </motion.div>
 
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
