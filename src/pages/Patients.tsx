@@ -34,6 +34,7 @@ export default function Patients() {
     name: "", phone: "", age: "", address: "", gender: "male",
     maritalStatus: "single", allergies: "",
     medicalHistory: "", previousSurgeries: "", currentMedications: "",
+    email: "", password: "",
   });
 
   useEffect(() => {
