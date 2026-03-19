@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import {
   UserPlus, DollarSign, Stethoscope, CalendarCheck, ChevronLeft, ChevronRight,
   Search, Loader2, Phone, FileText, Brain, Pill, Plus, Upload, Clock,
@@ -42,6 +43,7 @@ export default function PatientJourney() {
   const { clinic } = useClinic();
   const { lang } = useI18n();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);
   const [activeStage, setActiveStage] = useState<StageKey | null>(null);
@@ -189,10 +191,16 @@ export default function PatientJourney() {
                         <KeyRound className="h-3 w-3" />
                         {lang === "ar" ? "إنشاء حساب" : "Account"}
                       </button>
-                      <Badge variant="outline" className="text-[9px] h-4 gap-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/patients/${visit.patient_id}`);
+                        }}
+                        className="flex items-center gap-1 text-[9px] text-accent hover:text-accent/80 transition-colors px-1.5 py-0.5 rounded-md hover:bg-accent/5"
+                      >
                         <ChevronLeft className="h-2.5 w-2.5" />
                         {lang === "ar" ? "تفاصيل" : "Details"}
-                      </Badge>
+                      </button>
                     </div>
                   </motion.div>
                 ))}
