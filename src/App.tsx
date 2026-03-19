@@ -24,6 +24,9 @@ import Login from "@/pages/Login";
 import UserManagement from "@/pages/UserManagement";
 import Booking from "@/pages/Booking";
 import Pricing from "@/pages/Pricing";
+import ReceptionDashboard from "@/pages/ReceptionDashboard";
+import AccountantDashboard from "@/pages/AccountantDashboard";
+import PatientPortal from "@/pages/PatientPortal";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -42,33 +45,46 @@ function ProtectedRoutes() {
 
   if (!user) return <Navigate to="/login" replace />;
 
+  // Patient portal - separate layout
+  if (role === "patient") {
+    return (
+      <ClinicLayout>
+        <Routes>
+          <Route path="/" element={<PatientPortal />} />
+          <Route path="*" element={<PatientPortal />} />
+        </Routes>
+      </ClinicLayout>
+    );
+  }
+
   const isReceptionist = role === "receptionist";
+  const isAccountant = role === "accountant";
+
+  // Pick the right dashboard based on role
+  const DashboardComponent = isReceptionist ? ReceptionDashboard : isAccountant ? AccountantDashboard : Dashboard;
 
   return (
     <ClinicLayout>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<DashboardComponent />} />
         <Route path="/patients" element={<Patients />} />
         <Route path="/patients/:id" element={<PatientDetail />} />
         <Route path="/appointments" element={<Appointments />} />
-        <Route path="/prescriptions" element={<Prescriptions />} />
-        <Route path="/services" element={<Services />} />
+        {!isAccountant && <Route path="/prescriptions" element={<Prescriptions />} />}
+        {!isAccountant && <Route path="/services" element={<Services />} />}
         <Route
           path="/finance"
-          element={isReceptionist ? <Navigate to="/" replace /> : <Finance />}
+          element={isReceptionist ? <Navigate to="/" replace /> : isAccountant ? <AccountantDashboard /> : <Finance />}
         />
         <Route
           path="/reports"
-          element={isReceptionist ? <Navigate to="/" replace /> : <Reports />}
+          element={isReceptionist || isAccountant ? <Navigate to="/" replace /> : <Reports />}
         />
         <Route
           path="/settings"
-          element={isReceptionist ? <Navigate to="/" replace /> : <SettingsPage />}
+          element={isReceptionist || isAccountant ? <Navigate to="/" replace /> : <SettingsPage />}
         />
-        <Route
-          path="/users"
-          element={<UserManagement />}
-        />
+        <Route path="/users" element={<UserManagement />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ClinicLayout>

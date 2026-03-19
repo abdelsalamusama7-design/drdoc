@@ -8,7 +8,7 @@ type AppRole = Database["public"]["Enums"]["app_role"];
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  profile: { full_name: string | null; specialty: string | null } | null;
+  profile: { full_name: string | null; specialty: string | null; phone: string | null } | null;
   role: AppRole | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserData = async (userId: string) => {
     const [profileRes, roleRes] = await Promise.all([
-      supabase.from("profiles").select("full_name, specialty").eq("id", userId).single(),
+      supabase.from("profiles").select("full_name, specialty, phone").eq("id", userId).single(),
       supabase.from("user_roles").select("role").eq("user_id", userId).single(),
     ]);
     if (profileRes.data) setProfile(profileRes.data);

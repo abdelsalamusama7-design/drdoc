@@ -266,6 +266,8 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
         <nav className="flex-1 py-3 px-2.5 space-y-0.5 overflow-y-auto">
           {navItems.filter(item => {
             if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
+            if (role === "accountant" && ["/prescriptions", "/services", "/reports", "/settings"].includes(item.path)) return false;
+            if (role === "patient") return ["/"].includes(item.path);
             if (item.adminOnly && role !== "admin") return false;
             return true;
           }).map((item) => {
@@ -379,6 +381,8 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
               <nav className="py-3 px-2.5 space-y-0.5">
                 {navItems.filter(item => {
                   if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
+                  if (role === "accountant" && ["/prescriptions", "/services", "/reports", "/settings"].includes(item.path)) return false;
+                  if (role === "patient") return ["/"].includes(item.path);
                   if (item.adminOnly && role !== "admin") return false;
                   return true;
                 }).map((item) => {
