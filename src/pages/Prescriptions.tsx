@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Plus, Printer, Pill, Loader2 } from "lucide-react";
+import { Plus, Printer, Pill, Loader2, Share2 } from "lucide-react";
 import { usePrescriptions, createPrescription, usePatients } from "@/hooks/useSupabaseData";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
