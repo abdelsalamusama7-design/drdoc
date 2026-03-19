@@ -39,13 +39,11 @@ const BACKUP_TABLES = [
 async function fetchAllData(clinicId: string | null) {
   const backup: Record<string, unknown[]> = {};
   for (const table of BACKUP_TABLES) {
-    let query = supabase.from(table).select("*");
-    if (clinicId) {
-      query = query.eq("clinic_id", clinicId);
-    }
-    const { data } = await query;
+    const { data } = clinicId
+      ? await supabase.from(table).select("*").eq("clinic_id", clinicId as string)
+      : await supabase.from(table).select("*");
     if (data && data.length > 0) {
-      backup[table] = data;
+      backup[table] = data as unknown[];
     }
   }
   return backup;
