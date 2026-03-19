@@ -110,6 +110,9 @@ function ProtectedRoutes() {
         <Route path="/ai-assistant" element={<FeatureGuard path="/ai-assistant"><AITreatmentAssistant /></FeatureGuard>} />
         <Route path="/medical-alerts" element={<FeatureGuard path="/medical-alerts"><MedicalAlerts /></FeatureGuard>} />
         <Route path="/smart-search" element={<FeatureGuard path="/smart-search"><SmartSearch /></FeatureGuard>} />
+        <Route path="/onboarding" element={<OnboardingWizard />} />
+        <Route path="/retention" element={<RetentionDashboard />} />
+        <Route path="/referrals" element={<ClinicReferrals />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ClinicLayout>
