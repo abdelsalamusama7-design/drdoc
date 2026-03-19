@@ -280,7 +280,7 @@ export default function Login() {
             </div>
 
             {/* Staff Form */}
-            {mode === "staff" && !forgotMode && (
+            {mode === "staff" && (
               <motion.form
                 key={isSignUp ? "signup" : "signin"}
                 initial={{ opacity: 0, x: isSignUp ? 20 : -20 }}
