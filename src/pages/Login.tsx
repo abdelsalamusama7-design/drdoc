@@ -12,6 +12,7 @@ import {
   CheckCircle2, Mail, Lock, UserPlus
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 import screenshotDashboard from "@/assets/screenshot-dashboard.jpg";
 
