@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Footer from "@/components/Footer";
 import screenshotDashboard from "@/assets/screenshot-dashboard.jpg";
+import problemSolutionImg from "@/assets/problem-solution.png";
 import screenshotPatients from "@/assets/screenshot-patients.jpg";
 import screenshotAppointments from "@/assets/screenshot-appointments.jpg";
 import screenshotMobile from "@/assets/screenshot-mobile.png";
@@ -297,7 +298,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <img src={screenshotDashboard} alt="لوحة تحكم Smart Clinic" className="w-full" loading="eager" />
+              <img src={problemSolutionImg} alt="المشكلة والحل - Smart Clinic" className="w-full" loading="eager" />
             </div>
           </motion.div>
         </div>
