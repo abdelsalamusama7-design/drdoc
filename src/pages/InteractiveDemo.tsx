@@ -561,7 +561,7 @@ export default function InteractiveDemo() {
       <div className="bg-card border-t border-border mt-12">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
           <h3 className="text-2xl font-bold text-foreground mb-3">أعجبك ما رأيت؟</h3>
-          <p className="text-muted-foreground mb-6">ابدأ الآن واحصل على تجربة مجانية لمدة 14 يوم</p>
+          <p className="text-muted-foreground mb-6">ابدأ الآن واحصل على تجربة مجانية</p>
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <Link to="/login">
               <Button size="lg" className="gap-2">
