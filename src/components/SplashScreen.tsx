@@ -116,12 +116,20 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
                   style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%)" }}
                 />
                 <svg width="52" height="52" viewBox="0 0 48 48" fill="none" className="relative z-10 sm:w-[60px] sm:h-[60px]">
-                  <rect x="19" y="10" width="10" height="28" rx="2.5" fill="white" fillOpacity="0.95"/>
-                  <rect x="10" y="19" width="28" height="10" rx="2.5" fill="white" fillOpacity="0.95"/>
+                  {/* Heart shape */}
                   <motion.path
-                    d="M8 30 L16 30 L19 22 L22 34 L25 18 L28 30 L31 26 L34 30 L40 30"
-                    stroke="rgba(255,255,255,0.7)"
-                    strokeWidth="2"
+                    d="M24 40 C20 36, 8 28, 8 18 C8 12, 12 8, 18 8 C21 8, 23 10, 24 12 C25 10, 27 8, 30 8 C36 8, 40 12, 40 18 C40 28, 28 36, 24 40Z"
+                    fill="white"
+                    fillOpacity="0.95"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: [0.8, 1, 0.8], opacity: 1 }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                  {/* Pulse/heartbeat line over the heart */}
+                  <motion.path
+                    d="M10 24 L17 24 L19 18 L22 30 L25 14 L28 24 L30 20 L33 24 L38 24"
+                    stroke="rgba(96, 165, 250, 0.9)"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     fill="none"
