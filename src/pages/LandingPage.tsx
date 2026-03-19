@@ -282,26 +282,37 @@ export default function LandingPage() {
         </div>
       </section>
       <section className="py-16 sm:py-20">
-        <div className="max-w-5xl mx-auto px-4">
+        <div className="max-w-6xl mx-auto px-4">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
             <motion.h2 variants={fadeUp} className="text-2xl sm:text-3xl font-bold text-foreground mb-3">يعمل على أي جهاز</motion.h2>
             <motion.p variants={fadeUp} className="text-muted-foreground">يمكنك استخدام Smart Clinic في أي مكان وعلى أي جهاز</motion.p>
           </motion.div>
-          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="grid sm:grid-cols-3 gap-6">
-            {devices.map(d => (
-              <motion.div key={d.label} variants={fadeUp} className="clinic-card p-6 text-center hover:border-primary/30 transition-colors group">
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <d.icon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground mb-1">{d.label}</h3>
-                <p className="text-sm text-muted-foreground">{d.desc}</p>
-              </motion.div>
-            ))}
+
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Mobile Screenshot */}
+            <motion.div variants={fadeUp} className="flex justify-center">
+              <img src={screenshotMobile} alt="Smart Clinic على الهاتف المحمول" className="max-h-[500px] object-contain drop-shadow-2xl" loading="lazy" />
+            </motion.div>
+
+            {/* Device Cards */}
+            <div className="space-y-4">
+              {devices.map(d => (
+                <motion.div key={d.label} initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="clinic-card p-5 flex items-center gap-4 hover:border-primary/30 transition-colors group">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <d.icon className="h-7 w-7 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground mb-0.5">{d.label}</h3>
+                    <p className="text-sm text-muted-foreground">{d.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+              <motion.p initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="text-sm text-muted-foreground flex items-center gap-2 pt-2">
+                <Smartphone className="h-4 w-4 text-primary" />
+                كما يمكن تثبيته كتطبيق على الهاتف (PWA)
+              </motion.p>
+            </div>
           </motion.div>
-          <motion.p initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="text-center text-sm text-muted-foreground mt-6 flex items-center justify-center gap-2">
-            <Smartphone className="h-4 w-4 text-primary" />
-            كما يمكن تثبيته كتطبيق على الهاتف (PWA)
-          </motion.p>
         </div>
       </section>
 
