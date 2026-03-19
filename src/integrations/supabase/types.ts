@@ -326,6 +326,54 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          created_by: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          payment_method: string | null
+          visit_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          payment_method?: string | null
+          visit_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          payment_method?: string | null
+          visit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prescription_medications: {
         Row: {
           dosage: string | null
@@ -456,6 +504,60 @@ export type Database = {
         }
         Relationships: []
       }
+      therapy_sessions: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          notes: string | null
+          patient_id: string
+          session_date: string | null
+          session_number: number | null
+          status: string | null
+          total_sessions: number | null
+          visit_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          session_date?: string | null
+          session_number?: number | null
+          status?: string | null
+          total_sessions?: number | null
+          visit_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          session_date?: string | null
+          session_number?: number | null
+          status?: string | null
+          total_sessions?: number | null
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "therapy_sessions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "therapy_sessions_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -473,6 +575,111 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      visit_services: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          price: number | null
+          quantity: number | null
+          service_id: string
+          visit_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          price?: number | null
+          quantity?: number | null
+          service_id: string
+          visit_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          price?: number | null
+          quantity?: number | null
+          service_id?: string
+          visit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_services_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visits: {
+        Row: {
+          appointment_id: string | null
+          created_at: string | null
+          created_by: string | null
+          date: string
+          diagnosis: string | null
+          doctor_notes: string | null
+          id: string
+          patient_id: string
+          payment_type: string | null
+          status: string | null
+          time: string | null
+          visit_type: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date?: string
+          diagnosis?: string | null
+          doctor_notes?: string | null
+          id?: string
+          patient_id: string
+          payment_type?: string | null
+          status?: string | null
+          time?: string | null
+          visit_type?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date?: string
+          diagnosis?: string | null
+          doctor_notes?: string | null
+          id?: string
+          patient_id?: string
+          payment_type?: string | null
+          status?: string | null
+          time?: string | null
+          visit_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visits_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visits_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
