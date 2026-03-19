@@ -96,16 +96,16 @@ const clinicTypes = [
 
 const pricingPlans = [
   {
-    name: "Starter", nameAr: "المبتدئة", price: "499", popular: false,
-    features: ["حتى 3 مستخدمين", "إدارة المرضى والمواعيد", "الوصفات الإلكترونية", "تقارير أساسية"],
+    name: "Starter", nameAr: "باقة البداية", price: "10,000", monthlyPrice: "2,000", popular: false,
+    features: ["موقع إلكتروني احترافي", "نظام حجز مواعيد", "إدارة المرضى", "شات بوت أساسي", "لوحة تحكم"],
   },
   {
-    name: "Professional", nameAr: "الاحترافية", price: "999", popular: true,
-    features: ["حتى 10 مستخدمين", "كل مميزات المبتدئة", "الذكاء الاصطناعي", "بوابة المريض", "قائمة الانتظار الذكية", "تقارير متقدمة"],
+    name: "Professional", nameAr: "الباقة الاحترافية", price: "18,000", monthlyPrice: "3,000", popular: true,
+    features: ["كل مميزات الباقة الأساسية", "نظام التذكير التلقائي", "تقارير تفصيلية", "إدارة الباقات والجلسات", "تحسين تجربة المستخدم"],
   },
   {
-    name: "Enterprise", nameAr: "المؤسسات", price: "تواصل معنا", popular: false,
-    features: ["عدد غير محدود", "كل مميزات الاحترافية", "API مخصص", "دعم فني مخصص", "تدريب الفريق"],
+    name: "Premium", nameAr: "الباقة المتكاملة", price: "25,000", monthlyPrice: "4,000", popular: false,
+    features: ["كل مميزات الباقة الاحترافية", "تخصيص كامل", "دعم فني مخصص", "تدريب الفريق", "API مخصص"],
   },
 ];
 
