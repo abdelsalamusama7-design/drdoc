@@ -243,6 +243,13 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.subscription": "Pricing & Subscriptions",
     "nav.patientJourney": "Patient Journey",
 
+    // Nav Groups
+    "navGroup.main": "Main",
+    "navGroup.clinical": "Clinical",
+    "navGroup.management": "Management",
+    "navGroup.tools": "Smart Tools",
+    "navGroup.system": "System",
+
     // Layout
     "layout.search": "Quick search...",
     "layout.quickActions": "Quick Actions",
