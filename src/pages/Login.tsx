@@ -221,7 +221,7 @@ export default function Login() {
             <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
               <HeartPulse className="h-5 w-5 text-primary" />
             </div>
-            <span className="font-bold text-foreground">Dr.Doc</span>
+            <span className="font-bold text-foreground">Smart Clinic</span>
           </div>
           <div className="lg:flex-1" />
 
