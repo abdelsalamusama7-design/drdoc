@@ -86,7 +86,7 @@ export default function Reports() {
     text += `👤 إجمالي المرضى: ${stats.totalPatients}\n`;
     text += `🆕 مرضى جدد: ${stats.newPatients}\n`;
     text += `━━━━━━━━━━━━━━━\n`;
-    text += `تم إنشاء التقرير بواسطة DrDoc`;
+    text += `تم إنشاء التقرير بواسطة Smart Clinic`;
     return text;
   };
 
