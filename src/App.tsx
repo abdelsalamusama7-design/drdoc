@@ -101,6 +101,7 @@ function ProtectedRoutes() {
     <ClinicLayout>
       <Routes>
         <Route path="/" element={<DashboardComponent />} />
+        <Route path="/dashboard" element={<DashboardComponent />} />
         <Route path="/patients" element={<Patients />} />
         <Route path="/patients/:id" element={<PatientDetail />} />
         <Route path="/patient-journey" element={<PatientJourney />} />
