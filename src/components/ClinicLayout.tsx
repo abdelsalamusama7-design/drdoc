@@ -392,12 +392,6 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           <button onClick={() => setSearchOpen(true)} className="p-2 rounded-lg hover:bg-muted transition-colors">
             <Search className="h-4 w-4 text-muted-foreground" />
           </button>
-          <button onClick={toggleLang} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Language">
-            <Languages className="h-4 w-4 text-muted-foreground" />
-          </button>
-          <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Theme">
-            {theme === "light" ? <Moon className="h-4 w-4 text-muted-foreground" /> : <Sun className="h-4 w-4 text-muted-foreground" />}
-          </button>
           <NotificationPanel />
         </div>
       </header>
