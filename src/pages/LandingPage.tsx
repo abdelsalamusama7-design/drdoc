@@ -96,16 +96,16 @@ const clinicTypes = [
 
 const pricingPlans = [
   {
-    name: "Starter", nameAr: "المبتدئة", price: "499", popular: false,
-    features: ["حتى 3 مستخدمين", "إدارة المرضى والمواعيد", "الوصفات الإلكترونية", "تقارير أساسية"],
+    name: "Starter", nameAr: "باقة البداية", price: "10,000", monthlyPrice: "2,000", popular: false,
+    features: ["موقع إلكتروني احترافي", "نظام حجز مواعيد", "إدارة المرضى", "شات بوت أساسي", "لوحة تحكم"],
   },
   {
-    name: "Professional", nameAr: "الاحترافية", price: "999", popular: true,
-    features: ["حتى 10 مستخدمين", "كل مميزات المبتدئة", "الذكاء الاصطناعي", "بوابة المريض", "قائمة الانتظار الذكية", "تقارير متقدمة"],
+    name: "Professional", nameAr: "الباقة الاحترافية", price: "18,000", monthlyPrice: "3,000", popular: true,
+    features: ["كل مميزات الباقة الأساسية", "نظام التذكير التلقائي", "تقارير تفصيلية", "إدارة الباقات والجلسات", "تحسين تجربة المستخدم"],
   },
   {
-    name: "Enterprise", nameAr: "المؤسسات", price: "تواصل معنا", popular: false,
-    features: ["عدد غير محدود", "كل مميزات الاحترافية", "API مخصص", "دعم فني مخصص", "تدريب الفريق"],
+    name: "Premium", nameAr: "الباقة المتكاملة", price: "25,000", monthlyPrice: "4,000", popular: false,
+    features: ["كل مميزات الباقة الاحترافية", "تخصيص كامل", "دعم فني مخصص", "تدريب الفريق", "API مخصص"],
   },
 ];
 
@@ -548,14 +548,13 @@ export default function LandingPage() {
                   <h3 className="text-lg font-bold text-foreground mb-1">{plan.nameAr}</h3>
                   <p className="text-xs text-muted-foreground font-en">{plan.name}</p>
                   <div className="mt-4">
-                    {plan.price === "تواصل معنا" ? (
-                      <span className="text-2xl font-bold text-foreground">{plan.price}</span>
-                    ) : (
-                      <div>
-                        <span className="text-4xl font-extrabold text-foreground font-en">{plan.price}</span>
-                        <span className="text-sm text-muted-foreground mr-1">ج.م / شهر</span>
-                      </div>
-                    )}
+                    <div className="mb-1">
+                      <span className="text-3xl font-extrabold text-foreground font-en">{plan.price}</span>
+                      <span className="text-sm text-muted-foreground mr-1">ج.م</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <span className="font-en font-semibold text-foreground">{plan.monthlyPrice}</span> ج.م / شهر
+                    </div>
                   </div>
                 </div>
                 <div className="space-y-3 mb-6">
