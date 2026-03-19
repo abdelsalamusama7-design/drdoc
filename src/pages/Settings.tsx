@@ -67,8 +67,10 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [localBackupLoading, setLocalBackupLoading] = useState(false);
   const [cloudBackupLoading, setCloudBackupLoading] = useState(false);
+  const [restoreLoading, setRestoreLoading] = useState(false);
   const [lastLocalBackup, setLastLocalBackup] = useState<string | null>(null);
   const [lastCloudBackup, setLastCloudBackup] = useState<string | null>(null);
+  const restoreInputRef = useRef<HTMLInputElement>(null);
 
   const handleLocalBackup = async () => {
     setLocalBackupLoading(true);
