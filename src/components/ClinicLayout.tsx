@@ -420,7 +420,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
               className="fixed top-0 right-0 bottom-0 w-[280px] bg-card z-50 lg:hidden border-l border-border"
             >
               <div className="h-14 flex items-center justify-between px-4 border-b border-border">
-                <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" onClick={() => setSidebarOpen(false)}>
+                <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-all active:scale-90 duration-200" onClick={() => setSidebarOpen(false)}>
                   <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
                     <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
                   </div>
