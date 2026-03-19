@@ -361,15 +361,6 @@ export default function Login() {
                   {isSignUp ? t("login.signUpBtn") : t("login.signInBtn")}
                 </Button>
 
-                {!isSignUp && (
-                  <button
-                    type="button"
-                    onClick={() => setForgotMode(true)}
-                    className="w-full text-center text-sm text-primary hover:text-primary/80 font-medium transition-colors mt-2"
-                  >
-                    {lang === "ar" ? "نسيت كلمة المرور؟" : "Forgot password?"}
-                  </button>
-                )}
 
               </motion.form>
             )}
