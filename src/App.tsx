@@ -25,6 +25,7 @@ import Login from "@/pages/Login";
 import UserManagement from "@/pages/UserManagement";
 import Booking from "@/pages/Booking";
 import Pricing from "@/pages/Pricing";
+import RegisterClinic from "@/pages/RegisterClinic";
 import ReceptionDashboard from "@/pages/ReceptionDashboard";
 import AccountantDashboard from "@/pages/AccountantDashboard";
 import PatientPortal from "@/pages/PatientPortal";
