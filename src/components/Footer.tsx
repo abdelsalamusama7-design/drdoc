@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-1 text-xs text-muted-foreground">
         <span>تنفيذ وتصميم</span>
         <a
-          href="https://www.instatech.site/"
+          href="https://www.facebook.com/share/1DHbu6vRUo/"
           target="_blank"
           rel="noopener noreferrer"
           className="font-semibold text-primary hover:underline"
