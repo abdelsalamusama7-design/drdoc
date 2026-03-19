@@ -113,6 +113,7 @@ const App = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/booking" element={<Booking />} />
                     <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/register-clinic" element={<RegisterClinic />} />
                     <Route path="/*" element={<ProtectedRoutes />} />
                   </Routes>
                   <AIChatbot />
