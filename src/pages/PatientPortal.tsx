@@ -5,7 +5,7 @@ import {
   User, FileText, FlaskConical, Image, Pill, Calendar, Clock,
   Activity, Loader2, Download, Star, Stethoscope, LogOut, CalendarPlus, Check, Bell, BellDot,
   QrCode, Gift, Users, TrendingUp, ClipboardList, Repeat, Heart, Send, Mic, ChevronRight, Wallet,
-  UserPlus, DollarSign, CreditCard, CalendarCheck, MapPin
+  UserPlus, DollarSign, CreditCard, CalendarCheck, MapPin, MessageSquare, Video
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
