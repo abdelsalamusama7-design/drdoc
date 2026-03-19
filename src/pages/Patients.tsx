@@ -85,7 +85,7 @@ export default function Patients() {
       });
       toast({ title: "تم", description: "تم تسجيل المريض بنجاح" });
       setShowAddModal(false);
-      setForm({ name: "", phone: "", age: "", address: "", maritalStatus: "single", allergies: "", medicalHistory: "", previousSurgeries: "", currentMedications: "" });
+      setForm({ name: "", phone: "", age: "", address: "", gender: "male", maritalStatus: "single", allergies: "", medicalHistory: "", previousSurgeries: "", currentMedications: "" });
       refetch();
     } catch (err: any) {
       toast({ title: "خطأ", description: err.message, variant: "destructive" });
