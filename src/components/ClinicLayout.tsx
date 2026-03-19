@@ -330,6 +330,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
             <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
           <h1 className="text-sm font-bold text-foreground">Smart Clinic</h1>
+          <ClinicSwitcher />
         </div>
         <div className="flex items-center gap-0.5">
           <button onClick={() => setSearchOpen(true)} className="p-2 rounded-lg hover:bg-muted transition-colors">
