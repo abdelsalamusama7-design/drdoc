@@ -159,7 +159,51 @@ export default function SettingsPage() {
     }
   };
 
-  return (
+  const handleCloudRestore = async () => {
+    setCloudRestoreLoading(true);
+    try {
+      const folder = `backups/clinic-${clinicId || "all"}/`;
+      const { data: files, error: listErr } = await supabase.storage
+        .from("clinic-backups")
+        .list(folder, { sortBy: { column: "created_at", order: "desc" }, limit: 1 });
+
+      if (listErr) throw listErr;
+      if (!files || files.length === 0) {
+        toast({ title: "لا توجد نسخة", description: "لم يتم العثور على نسخة احتياطية سحابية", variant: "destructive" });
+        return;
+      }
+
+      const latestFile = files[0];
+      const { data: fileData, error: dlErr } = await supabase.storage
+        .from("clinic-backups")
+        .download(`${folder}${latestFile.name}`);
+
+      if (dlErr) throw dlErr;
+      if (!fileData) throw new Error("لم يتم تحميل الملف");
+
+      const text = await fileData.text();
+      const backup = JSON.parse(text);
+      if (!backup.tables || backup.version !== "1.0") {
+        throw new Error("ملف النسخة الاحتياطية غير صالح");
+      }
+
+      let totalInserted = 0;
+      for (const table of BACKUP_TABLES) {
+        const rows = backup.tables[table];
+        if (!rows || rows.length === 0) continue;
+        const { error } = await supabase.from(table as any).upsert(rows as any[], { onConflict: "id" });
+        if (!error) {
+          totalInserted += rows.length;
+        }
+      }
+      toast({ title: "تمت الاستعادة", description: `تم استعادة ${totalInserted} سجل من النسخة السحابية` });
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message || "حدث خطأ أثناء استعادة النسخة السحابية", variant: "destructive" });
+    } finally {
+      setCloudRestoreLoading(false);
+    }
+  };
+
     <motion.div {...pageTransition} className="space-y-6">
       <h1 className="text-xl font-bold text-foreground">الإعدادات</h1>
 
