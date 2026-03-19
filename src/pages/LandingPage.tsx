@@ -561,16 +561,41 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Final CTA ── */}
-      <section className="py-16 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-t border-border">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <Heart className="h-10 w-10 text-primary mx-auto mb-4" />
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">جرب Smart Clinic الآن</h2>
-          <p className="text-muted-foreground mb-6">ابدأ في تنظيم عيادتك وتوفير وقتك وزيادة رضا المرضى.<br />تجربة مجانية لمدة 14 يوم بدون أي التزام.</p>
-          <div className="flex items-center justify-center gap-3 flex-wrap">
-            <Link to="/register-clinic"><Button size="lg" className="gap-2 h-12 px-8"><Zap className="h-4 w-4" />ابدأ التجربة المجانية الآن</Button></Link>
-            <Link to="/pricing"><Button size="lg" variant="outline" className="h-12 px-8">عرض الأسعار</Button></Link>
-          </div>
+      {/* ── Try Demo CTA ── */}
+      <section className="py-20 relative overflow-hidden border-t border-border">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-primary/5 to-accent/10" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}>
+            <motion.div variants={fadeUp}>
+              <Heart className="h-12 w-12 text-primary mx-auto mb-5" />
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">جاهز تجرب النظام؟</h2>
+              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                سجّل دخولك الآن وابدأ في استخدام النظام مجاناً، أو استكشف الديمو التفاعلي بدون تسجيل.
+              </p>
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to="/login">
+                <Button size="lg" className="gap-3 h-14 px-10 text-lg shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-shadow">
+                  <Zap className="h-5 w-5" />
+                  سجّل دخولك وابدأ مجاناً
+                </Button>
+              </Link>
+              <Link to="/demo">
+                <Button size="lg" variant="outline" className="gap-3 h-14 px-10 text-lg border-2">
+                  <Play className="h-5 w-5" />
+                  جرّب الديمو التفاعلي
+                </Button>
+              </Link>
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="mt-6 flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-success" />بدون بطاقة ائتمان</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-success" />14 يوم تجربة مجانية</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-success" />ضمان استرداد 30 يوم</span>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
