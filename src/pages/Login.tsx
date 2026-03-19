@@ -146,21 +146,14 @@ export default function Login() {
           {/* Patient Form */}
           {mode === "patient" && (
             <form onSubmit={handlePatientSubmit} className="space-y-4">
-              {isSignUp && (
-                <>
-                  <div>
-                    <Label>{lang === "ar" ? "الاسم الكامل" : "Full Name"}</Label>
-                    <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder={lang === "ar" ? "أحمد محمد" : "Ahmed Mohamed"} className="mt-1.5" required />
-                  </div>
-                  <div>
-                    <Label>{lang === "ar" ? "رقم الهاتف" : "Phone Number"}</Label>
-                    <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="01012345678" className="mt-1.5 font-en" dir="ltr" required />
-                    <p className="text-[10px] text-muted-foreground mt-1">
-                      {lang === "ar" ? "⚠️ يجب أن يكون نفس الرقم المسجل في العيادة" : "⚠️ Must match the number registered at the clinic"}
-                    </p>
-                  </div>
-                </>
-              )}
+              <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 mb-2">
+                <p className="text-xs text-muted-foreground">
+                  {lang === "ar" 
+                    ? "💡 حساب المريض يتم إنشاؤه بواسطة العيادة. استخدم البيانات التي حصلت عليها من الاستقبال."
+                    : "💡 Patient accounts are created by the clinic. Use the credentials provided by reception."
+                  }
+                </p>
+              </div>
               <div>
                 <Label>{t("login.email")}</Label>
                 <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="patient@email.com" className="mt-1.5 font-en" dir="ltr" required />
@@ -171,25 +164,19 @@ export default function Login() {
               </div>
               <Button type="submit" className="w-full" disabled={submitting}>
                 {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {isSignUp
-                  ? (lang === "ar" ? "إنشاء حساب" : "Create Account")
-                  : (lang === "ar" ? "تسجيل الدخول" : "Sign In")
-                }
+                {lang === "ar" ? "تسجيل الدخول" : "Sign In"}
               </Button>
             </form>
           )}
 
-          <div className="mt-4 text-center">
-            <button onClick={() => setIsSignUp(!isSignUp)} className="text-sm text-primary hover:underline">
-              {mode === "patient"
-                ? (isSignUp
-                  ? (lang === "ar" ? "لديك حساب؟ سجل دخول" : "Have an account? Sign in")
-                  : (lang === "ar" ? "ليس لديك حساب؟ سجل الآن" : "No account? Register now")
-                )
-                : (isSignUp ? t("login.hasAccount") : t("login.noAccount"))
-              }
-            </button>
-          </div>
+          {/* Only show signup toggle for staff mode */}
+          {mode === "staff" && (
+            <div className="mt-4 text-center">
+              <button onClick={() => setIsSignUp(!isSignUp)} className="text-sm text-primary hover:underline">
+                {isSignUp ? t("login.hasAccount") : t("login.noAccount")}
+              </button>
+            </div>
+          )}
         </div>
       </motion.div>
     </div>
