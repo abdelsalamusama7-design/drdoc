@@ -389,6 +389,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <PartnersSection />
+
       {/* ══════════ Features Grid ══════════ */}
       <section id="features" className="py-20 sm:py-28 bg-muted/30 border-y border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -765,7 +767,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <PartnersSection />
+      
       <Footer />
     </div>
   );
