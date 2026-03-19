@@ -73,7 +73,7 @@ export default function Reports() {
   }, [appointments, patients, services, expenses, ratings, today, currentMonth]);
 
   const buildReportText = (periodLabel: string) => {
-    let text = `📊 تقرير ${periodLabel} - DrDoc\n`;
+    let text = `📊 تقرير ${periodLabel} - Smart Clinic\n`;
     text += `📅 ${new Date().toLocaleDateString("ar-EG")}\n`;
     text += `━━━━━━━━━━━━━━━\n`;
     text += `👥 مرضى اليوم: ${stats.todayCount}\n`;
