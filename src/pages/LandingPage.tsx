@@ -223,7 +223,7 @@ export default function LandingPage() {
               <Link to="/login">
                 <Button size="lg" className="gap-2.5 text-base h-14 px-10 shadow-xl shadow-primary/25 hover:shadow-primary/40 transition-all hover:scale-[1.02] active:scale-[0.98]">
                   <Play className="h-4.5 w-4.5" />
-                  سجّل وجرّب مجاناً — 14 يوم
+                  سجّل وجرّب مجاناً
                 </Button>
               </Link>
               <Link to="/login">
