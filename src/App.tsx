@@ -38,6 +38,7 @@ import SubscriptionManagement from "@/pages/SubscriptionManagement";
 import AITreatmentAssistant from "@/pages/AITreatmentAssistant";
 import MedicalAlerts from "@/pages/MedicalAlerts";
 import SmartSearch from "@/pages/SmartSearch";
+import PatientJourney from "@/pages/PatientJourney";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -80,6 +81,7 @@ function ProtectedRoutes() {
         <Route path="/" element={<DashboardComponent />} />
         <Route path="/patients" element={<Patients />} />
         <Route path="/patients/:id" element={<PatientDetail />} />
+        <Route path="/patient-journey" element={<PatientJourney />} />
         <Route path="/appointments" element={<Appointments />} />
         {!isAccountant && <Route path="/prescriptions" element={<Prescriptions />} />}
         {!isAccountant && <Route path="/services" element={<Services />} />}

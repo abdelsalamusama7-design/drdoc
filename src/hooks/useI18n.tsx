@@ -30,6 +30,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.medicalAlerts": "التنبيهات الطبية",
     "nav.smartSearch": "البحث الذكي",
     "nav.subscription": "الأسعار والاشتراكات",
+    "nav.patientJourney": "رحلة المريض",
 
     // Layout
     "layout.search": "بحث سريع...",
@@ -233,6 +234,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.medicalAlerts": "Medical Alerts",
     "nav.smartSearch": "Smart Search",
     "nav.subscription": "Pricing & Subscriptions",
+    "nav.patientJourney": "Patient Journey",
 
     // Layout
     "layout.search": "Quick search...",
