@@ -72,7 +72,37 @@ export default function SettingsPage() {
   const [lastCloudBackup, setLastCloudBackup] = useState<string | null>(null);
   const restoreInputRef = useRef<HTMLInputElement>(null);
 
-  const handleLocalBackup = async () => {
+  const handleRestore = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setRestoreLoading(true);
+    try {
+      const text = await file.text();
+      const backup = JSON.parse(text);
+      if (!backup.data || backup.version !== "1.0") {
+        throw new Error("ملف النسخة الاحتياطية غير صالح");
+      }
+      let totalInserted = 0;
+      for (const table of BACKUP_TABLES) {
+        const rows = backup.data[table];
+        if (!rows || rows.length === 0) continue;
+        const { error } = await supabase.from(table as any).upsert(rows as any[], { onConflict: "id" });
+        if (error) {
+          console.error(`Error restoring ${table}:`, error);
+        } else {
+          totalInserted += rows.length;
+        }
+      }
+      toast({ title: "تمت الاستعادة", description: `تم استعادة ${totalInserted} سجل بنجاح` });
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message || "حدث خطأ أثناء استعادة النسخة الاحتياطية", variant: "destructive" });
+    } finally {
+      setRestoreLoading(false);
+      if (restoreInputRef.current) restoreInputRef.current.value = "";
+    }
+  };
+
+
     setLocalBackupLoading(true);
     try {
       const data = await fetchAllData(clinicId);
