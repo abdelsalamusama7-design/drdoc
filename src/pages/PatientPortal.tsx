@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   User, FileText, FlaskConical, Image, Pill, Calendar, Clock,
-  Activity, Loader2, Download, Star, Stethoscope, LogOut, CalendarPlus, Check
+  Activity, Loader2, Download, Star, Stethoscope, LogOut, CalendarPlus, Check, Bell, BellDot
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,11 +21,12 @@ const anim = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, tra
 export default function PatientPortal() {
   const { user, profile, signOut } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<"overview" | "history" | "files" | "prescriptions" | "sessions" | "booking">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "history" | "files" | "prescriptions" | "sessions" | "booking" | "notifications">("overview");
   const [patientData, setPatientData] = useState<any>(null);
   const [patientFiles, setPatientFiles] = useState<any[]>([]);
   const [visits, setVisits] = useState<any[]>([]);
   const [sessions, setSessions] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const { data: appointments } = useAllAppointments();
@@ -61,8 +62,31 @@ export default function PatientPortal() {
       }
       setLoading(false);
     };
+    const fetchNotifications = async () => {
+      if (!user?.id) return;
+      const { data } = await supabase.from("notifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      setNotifications(data || []);
+    };
     fetchPatientData();
-  }, [profile?.phone]);
+    fetchNotifications();
+  }, [profile?.phone, user?.id]);
+
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+
+  const markAsRead = async (id: string) => {
+    await supabase.from("notifications").update({ is_read: true }).eq("id", id);
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+  };
+
+  const markAllRead = async () => {
+    if (!user?.id) return;
+    await supabase.from("notifications").update({ is_read: true }).eq("user_id", user.id).eq("is_read", false);
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+  };
 
   const myAppointments = appointments.filter(a =>
     patientData && a.patient_id === patientData.id
@@ -105,6 +129,7 @@ export default function PatientPortal() {
     { key: "files" as const, label: "الملفات", icon: FlaskConical },
     { key: "prescriptions" as const, label: "الوصفات", icon: Pill },
     { key: "sessions" as const, label: "الجلسات", icon: Stethoscope },
+    { key: "notifications" as const, label: "الإشعارات", icon: Bell },
   ];
 
   return (
@@ -123,9 +148,22 @@ export default function PatientPortal() {
               </p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5">
-            <LogOut className="h-3.5 w-3.5" />خروج
-          </Button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setActiveTab("notifications")}
+              className="relative p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
+            >
+              {unreadCount > 0 ? <BellDot className="h-4.5 w-4.5 text-primary" /> : <Bell className="h-4.5 w-4.5" />}
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5">
+              <LogOut className="h-3.5 w-3.5" />خروج
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -346,6 +384,53 @@ export default function PatientPortal() {
       {/* Booking */}
       {activeTab === "booking" && (
         <BookingForm patientData={patientData} onSuccess={() => { setActiveTab("overview"); }} />
+      )}
+
+      {/* Notifications */}
+      {activeTab === "notifications" && (
+        <div className="clinic-card">
+          <div className="p-4 border-b border-border flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-foreground">الإشعارات</h2>
+            {unreadCount > 0 && (
+              <Button variant="ghost" size="sm" onClick={markAllRead} className="text-xs h-7">
+                تحديد الكل كمقروء
+              </Button>
+            )}
+          </div>
+          {notifications.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">لا توجد إشعارات</div>
+          ) : (
+            <div className="divide-y divide-border">
+              {notifications.map(notif => (
+                <div
+                  key={notif.id}
+                  className={`p-4 flex items-start gap-3 transition-colors cursor-pointer hover:bg-muted/30 ${!notif.is_read ? "bg-primary/5" : ""}`}
+                  onClick={() => { if (!notif.is_read) markAsRead(notif.id); if (notif.reference_type === "patient_file") setActiveTab("files"); }}
+                >
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${!notif.is_read ? "bg-primary/10" : "bg-muted"}`}>
+                    {notif.type === "patient_file" ? (
+                      <FlaskConical className={`h-4 w-4 ${!notif.is_read ? "text-primary" : "text-muted-foreground"}`} />
+                    ) : (
+                      <Bell className={`h-4 w-4 ${!notif.is_read ? "text-primary" : "text-muted-foreground"}`} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm ${!notif.is_read ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+                      {notif.title}
+                    </p>
+                    {notif.body && <p className="text-[11px] text-muted-foreground mt-0.5">{notif.body}</p>}
+                    <p className="text-[10px] text-muted-foreground/60 mt-1 font-en">
+                      {new Date(notif.created_at).toLocaleDateString("ar-SA")} · {new Date(notif.created_at).toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
+                  {!notif.is_read && (
+                    <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </motion.div>
   );
