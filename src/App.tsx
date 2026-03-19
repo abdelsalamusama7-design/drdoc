@@ -9,7 +9,7 @@ import { ClinicProvider } from "@/hooks/useClinic";
 import { I18nProvider } from "@/hooks/useI18n";
 import { ThemeProvider } from "@/hooks/useTheme";
 import SplashScreen from "@/components/SplashScreen";
-import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+
 import AIChatbot from "@/components/AIChatbot";
 import ClinicLayout from "@/components/ClinicLayout";
 import FeatureGuard from "@/components/FeatureGuard";
