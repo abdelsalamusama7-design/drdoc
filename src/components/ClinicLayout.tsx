@@ -230,7 +230,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
   }, []);
 
   // Get current page title
-  const currentPageTitle = navItems.find(n => n.path === location.pathname)?.labelKey;
+  const currentPageTitle = allNavItems.find(n => n.path === location.pathname)?.labelKey;
 
   return (
     <div className="min-h-screen bg-background flex flex-row-reverse">
