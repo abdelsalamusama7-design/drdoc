@@ -19,12 +19,6 @@ const logos = [
   { src: logoClinic6, name: "عيادات البسمة" },
 ];
 
-const contractPhotos = [
-  { src: partnersContract, alt: "توقيع عقد شراكة" },
-  { src: partnersTeam, alt: "فريق العمل مع العملاء" },
-  { src: partnersConference, alt: "مؤتمر الشركاء" },
-  { src: partnersTraining, alt: "تدريب فريق العيادة" },
-];
 
 export default function PartnersSection() {
   return (
