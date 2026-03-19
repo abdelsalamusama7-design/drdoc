@@ -257,14 +257,14 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-border/80">
           {!collapsed && (
-            <div className="flex items-center gap-2.5">
+            <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
               <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
                 <Stethoscope className="h-4 w-4 text-primary-foreground" />
               </div>
               <div>
                 <h1 className="text-sm font-bold text-foreground leading-none">Smart Clinic</h1>
               </div>
-            </div>
+            </Link>
           )}
           {collapsed && (
             <button onClick={() => setCollapsed(false)} className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center mx-auto hover:opacity-80 transition-opacity">
@@ -382,10 +382,12 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           <Menu className="h-5 w-5 text-foreground" />
         </button>
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-            <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
-          </div>
-          <h1 className="text-sm font-bold text-foreground">Smart Clinic</h1>
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+              <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
+            </div>
+            <h1 className="text-sm font-bold text-foreground">Smart Clinic</h1>
+          </Link>
           <ClinicSwitcher />
         </div>
         <div className="flex items-center gap-0.5">
@@ -418,12 +420,12 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
               className="fixed top-0 right-0 bottom-0 w-[280px] bg-card z-50 lg:hidden border-l border-border"
             >
               <div className="h-14 flex items-center justify-between px-4 border-b border-border">
-                <div className="flex items-center gap-2">
+                <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" onClick={() => setSidebarOpen(false)}>
                   <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
                     <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
                   </div>
                   <h1 className="text-sm font-bold">Smart Clinic</h1>
-                </div>
+                </Link>
                 <button onClick={() => setSidebarOpen(false)} className="p-2 -ml-2 rounded-lg">
                   <X className="h-5 w-5" />
                 </button>
