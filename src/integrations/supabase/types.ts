@@ -319,6 +319,136 @@ export type Database = {
           },
         ]
       }
+      inventory_items: {
+        Row: {
+          category: string | null
+          clinic_id: string | null
+          created_at: string | null
+          created_by: string | null
+          expiry_date: string | null
+          id: string
+          min_quantity: number | null
+          name: string
+          purchase_price: number | null
+          quantity: number
+          selling_price: number | null
+          sku: string | null
+          supplier: string | null
+          unit: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          expiry_date?: string | null
+          id?: string
+          min_quantity?: number | null
+          name: string
+          purchase_price?: number | null
+          quantity?: number
+          selling_price?: number | null
+          sku?: string | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          expiry_date?: string | null
+          id?: string
+          min_quantity?: number | null
+          name?: string
+          purchase_price?: number | null
+          quantity?: number
+          selling_price?: number | null
+          sku?: string | null
+          supplier?: string | null
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_items_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_transactions: {
+        Row: {
+          clinic_id: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          item_id: string
+          notes: string | null
+          patient_id: string | null
+          quantity: number
+          transaction_type: string
+          visit_id: string | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          item_id: string
+          notes?: string | null
+          patient_id?: string | null
+          quantity: number
+          transaction_type?: string
+          visit_id?: string | null
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          item_id?: string
+          notes?: string | null
+          patient_id?: string | null
+          quantity?: number
+          transaction_type?: string
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_transactions_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_transactions_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_transactions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_transactions_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -494,8 +624,10 @@ export type Database = {
           marital_status: string | null
           medical_history: string | null
           name: string
+          no_show_count: number | null
           phone: string
           previous_surgeries: string | null
+          risk_score: number | null
           segment: string | null
           visit_count: number | null
         }
@@ -513,8 +645,10 @@ export type Database = {
           marital_status?: string | null
           medical_history?: string | null
           name: string
+          no_show_count?: number | null
           phone: string
           previous_surgeries?: string | null
+          risk_score?: number | null
           segment?: string | null
           visit_count?: number | null
         }
@@ -532,8 +666,10 @@ export type Database = {
           marital_status?: string | null
           medical_history?: string | null
           name?: string
+          no_show_count?: number | null
           phone?: string
           previous_surgeries?: string | null
+          risk_score?: number | null
           segment?: string | null
           visit_count?: number | null
         }
@@ -733,6 +869,73 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      queue_entries: {
+        Row: {
+          appointment_id: string | null
+          called_time: string | null
+          check_in_time: string | null
+          clinic_id: string | null
+          completed_time: string | null
+          created_at: string | null
+          doctor: string | null
+          id: string
+          patient_id: string | null
+          patient_name: string
+          queue_number: number
+          status: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          called_time?: string | null
+          check_in_time?: string | null
+          clinic_id?: string | null
+          completed_time?: string | null
+          created_at?: string | null
+          doctor?: string | null
+          id?: string
+          patient_id?: string | null
+          patient_name: string
+          queue_number: number
+          status?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          called_time?: string | null
+          check_in_time?: string | null
+          clinic_id?: string | null
+          completed_time?: string | null
+          created_at?: string | null
+          doctor?: string | null
+          id?: string
+          patient_id?: string | null
+          patient_name?: string
+          queue_number?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "queue_entries_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_entries_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_entries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services: {
         Row: {
