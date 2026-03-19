@@ -121,8 +121,8 @@ export default function LandingPage() {
             <a href="#contact" className="hover:text-foreground transition-colors">تواصل معنا</a>
           </div>
           <div className="flex items-center gap-2">
-            <Link to="/login"><Button variant="ghost" size="sm">تسجيل الدخول</Button></Link>
-            <a href="#demo"><Button size="sm" className="gap-1.5"><Play className="h-3.5 w-3.5" />ابدأ التجربة المجانية</Button></a>
+            <Link to="/login"><Button size="sm" className="gap-1.5"><Play className="h-3.5 w-3.5" />جرّب الديمو</Button></Link>
+            <Link to="/pricing"><Button variant="outline" size="sm">الأسعار</Button></Link>
           </div>
         </div>
       </nav>
