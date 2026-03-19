@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { User, Shield, Bell, Globe, Database, Download, Upload, Cloud, HardDrive, CheckCircle2, Loader2, Clock } from "lucide-react";
+import { User, Shield, Bell, Globe, Database, Download, Upload, Cloud, HardDrive, CheckCircle2, Loader2, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
