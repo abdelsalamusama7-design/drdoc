@@ -16,7 +16,7 @@ serve(async (req) => {
     const RECIPIENT = "instacut95@gmail.com";
 
     const emailBody = `
-طلب ${request_type === "demo" ? "عرض توضيحي" : "تواصل"} جديد من موقع Smart Clinic
+طلب ${request_type === "demo" ? "عرض توضيحي" : "تواصل"} جديد من موقع د. خالد جادالله
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 اسم العيادة: ${clinic_name || "-"}
@@ -42,7 +42,7 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Smart Clinic <onboarding@resend.dev>",
+          from: "د. خالد جادالله <onboarding@resend.dev>",
           to: [RECIPIENT],
           subject: `طلب جديد: ${clinic_name} - ${contact_name}`,
           text: emailBody,

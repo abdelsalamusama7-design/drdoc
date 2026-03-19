@@ -172,7 +172,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
                       WebkitTextFillColor: "transparent",
                     }}
                   >
-                    Smart Clinic
+                    د. خالد جادالله
                   </h1>
                   <motion.div
                     initial={{ width: 0 }}

@@ -85,7 +85,7 @@ export default function Prescriptions() {
     const meds = (rx.medications || []).map(m => 
       `💊 ${m.name}${m.dosage ? ` • ${m.dosage}` : ''}${m.duration ? ` • ${m.duration}` : ''}`
     ).join('\n');
-    const text = `🏥 *وصفة طبية - Smart Clinic*\n👤 المريض: *${rx.patient_name}*\n📅 التاريخ: ${rx.date}\n\n*الأدوية:*\n${meds}${rx.doctor_notes ? `\n\n📝 *ملاحظات:* ${rx.doctor_notes}` : ''}`;
+    const text = `🏥 *وصفة طبية - د. خالد جادالله*\n👤 المريض: *${rx.patient_name}*\n📅 التاريخ: ${rx.date}\n\n*الأدوية:*\n${meds}${rx.doctor_notes ? `\n\n📝 *ملاحظات:* ${rx.doctor_notes}` : ''}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -93,7 +93,7 @@ export default function Prescriptions() {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
     printWindow.document.write(`
-      <html dir="rtl"><head><title>وصفة طبية - Smart Clinic</title>
+      <html dir="rtl"><head><title>وصفة طبية - د. خالد جادالله</title>
       <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; padding: 40px; max-width: 600px; margin: auto; }
         h1 { text-align: center; color: #1a56db; font-size: 24px; margin-bottom: 4px; }
@@ -106,8 +106,8 @@ export default function Prescriptions() {
         .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 11px; }
         @media print { body { padding: 20px; } }
       </style></head><body>
-        <h1>🏥 Smart Clinic</h1>
-        <p class="subtitle">عيادة أمراض الذكورة والعقم</p>
+        <h1>🏥 د. خالد جادالله</h1>
+        <p class="subtitle">عيادة متكاملة للذكورة والسعادة الزوجية وصحة الرجل</p>
         <div class="info">
           <span>المريض: <strong>${rx.patient_name}</strong></span>
           <span>التاريخ: ${rx.date}</span>
@@ -120,7 +120,7 @@ export default function Prescriptions() {
           </div>
         `).join('')}
         ${rx.doctor_notes ? `<div class="notes"><strong>ملاحظات:</strong> ${rx.doctor_notes}</div>` : ''}
-        <div class="footer">Smart Clinic Management System - تمت الطباعة: ${new Date().toLocaleString('ar-SA')}</div>
+        <div class="footer">د. خالد جادالله Management System - تمت الطباعة: ${new Date().toLocaleString('ar-SA')}</div>
       </body></html>
     `);
     printWindow.document.close();
