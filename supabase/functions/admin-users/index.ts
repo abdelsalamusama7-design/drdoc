@@ -142,7 +142,7 @@ Deno.serve(async (req) => {
       }
 
       if (action === "assign_role") {
-        if (!user_id || !role || !["admin", "doctor", "receptionist"].includes(role)) {
+        if (!user_id || !role || !["admin", "doctor", "receptionist", "patient"].includes(role)) {
           return new Response(JSON.stringify({ error: "Invalid parameters" }), {
             status: 400,
             headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -202,6 +202,7 @@ export default function UserManagement() {
     admin: users.filter((u) => u.role === "admin").length,
     doctor: users.filter((u) => u.role === "doctor").length,
     receptionist: users.filter((u) => u.role === "receptionist").length,
+    patient: users.filter((u) => u.role === "patient").length,
     none: users.filter((u) => !u.role).length,
   };
 
