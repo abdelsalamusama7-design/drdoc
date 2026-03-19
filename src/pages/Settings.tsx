@@ -68,6 +68,7 @@ export default function SettingsPage() {
   const [localBackupLoading, setLocalBackupLoading] = useState(false);
   const [cloudBackupLoading, setCloudBackupLoading] = useState(false);
   const [restoreLoading, setRestoreLoading] = useState(false);
+  const [cloudRestoreLoading, setCloudRestoreLoading] = useState(false);
   const [lastLocalBackup, setLastLocalBackup] = useState<string | null>(null);
   const [lastCloudBackup, setLastCloudBackup] = useState<string | null>(null);
   const restoreInputRef = useRef<HTMLInputElement>(null);
@@ -79,12 +80,13 @@ export default function SettingsPage() {
     try {
       const text = await file.text();
       const backup = JSON.parse(text);
-      if (!backup.data || backup.version !== "1.0") {
+      const backupData = backup.data || backup.tables;
+      if (!backupData || backup.version !== "1.0") {
         throw new Error("ملف النسخة الاحتياطية غير صالح");
       }
       let totalInserted = 0;
       for (const table of BACKUP_TABLES) {
-        const rows = backup.data[table];
+        const rows = backupData[table];
         if (!rows || rows.length === 0) continue;
         const { error } = await supabase.from(table as any).upsert(rows as any[], { onConflict: "id" });
         if (error) {
@@ -155,6 +157,51 @@ export default function SettingsPage() {
       });
     } finally {
       setCloudBackupLoading(false);
+    }
+  };
+
+  const handleCloudRestore = async () => {
+    setCloudRestoreLoading(true);
+    try {
+      const folder = `backups/clinic-${clinicId || "all"}/`;
+      const { data: files, error: listErr } = await supabase.storage
+        .from("clinic-backups")
+        .list(folder, { sortBy: { column: "created_at", order: "desc" }, limit: 1 });
+
+      if (listErr) throw listErr;
+      if (!files || files.length === 0) {
+        toast({ title: "لا توجد نسخة", description: "لم يتم العثور على نسخة احتياطية سحابية", variant: "destructive" });
+        return;
+      }
+
+      const latestFile = files[0];
+      const { data: fileData, error: dlErr } = await supabase.storage
+        .from("clinic-backups")
+        .download(`${folder}${latestFile.name}`);
+
+      if (dlErr) throw dlErr;
+      if (!fileData) throw new Error("لم يتم تحميل الملف");
+
+      const text = await fileData.text();
+      const backup = JSON.parse(text);
+      if (!backup.tables || backup.version !== "1.0") {
+        throw new Error("ملف النسخة الاحتياطية غير صالح");
+      }
+
+      let totalInserted = 0;
+      for (const table of BACKUP_TABLES) {
+        const rows = backup.tables[table];
+        if (!rows || rows.length === 0) continue;
+        const { error } = await supabase.from(table as any).upsert(rows as any[], { onConflict: "id" });
+        if (!error) {
+          totalInserted += rows.length;
+        }
+      }
+      toast({ title: "تمت الاستعادة", description: `تم استعادة ${totalInserted} سجل من النسخة السحابية` });
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message || "حدث خطأ أثناء استعادة النسخة السحابية", variant: "destructive" });
+    } finally {
+      setCloudRestoreLoading(false);
     }
   };
 
@@ -240,17 +287,17 @@ export default function SettingsPage() {
         </div>
 
         {/* Restore Backup */}
-        <div className="border border-dashed border-border rounded-xl p-4 mt-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <div className="border border-dashed border-border rounded-xl p-4 mt-4">
+          <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 rounded-lg bg-warning/10 flex items-center justify-center">
               <RotateCcw className="h-4.5 w-4.5 text-warning" />
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">استعادة نسخة احتياطية</p>
-              <p className="text-[11px] text-muted-foreground">استعادة البيانات من ملف JSON محفوظ مسبقاً</p>
+              <p className="text-[11px] text-muted-foreground">استعادة البيانات من ملف محفوظ أو من السحابة</p>
             </div>
           </div>
-          <div>
+          <div className="flex flex-wrap gap-2">
             <label htmlFor="restore-backup-input" className="cursor-pointer">
               <input
                 id="restore-backup-input"
@@ -272,12 +319,26 @@ export default function SettingsPage() {
                   {restoreLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <RotateCcw className="h-4 w-4" />
+                    <HardDrive className="h-4 w-4" />
                   )}
-                  {restoreLoading ? "جاري الاستعادة..." : "استعادة نسخة"}
+                  {restoreLoading ? "جاري الاستعادة..." : "استعادة من الجهاز"}
                 </span>
               </Button>
             </label>
+            <Button
+              onClick={handleCloudRestore}
+              disabled={cloudRestoreLoading}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              {cloudRestoreLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Cloud className="h-4 w-4" />
+              )}
+              {cloudRestoreLoading ? "جاري الاستعادة..." : "استعادة من السحابة"}
+            </Button>
           </div>
         </div>
       </div>
