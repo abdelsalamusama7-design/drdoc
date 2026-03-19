@@ -420,12 +420,12 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
               className="fixed top-0 right-0 bottom-0 w-[280px] bg-card z-50 lg:hidden border-l border-border"
             >
               <div className="h-14 flex items-center justify-between px-4 border-b border-border">
-                <div className="flex items-center gap-2">
+                <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" onClick={() => setSidebarOpen(false)}>
                   <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
                     <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
                   </div>
                   <h1 className="text-sm font-bold">Smart Clinic</h1>
-                </div>
+                </Link>
                 <button onClick={() => setSidebarOpen(false)} className="p-2 -ml-2 rounded-lg">
                   <X className="h-5 w-5" />
                 </button>
