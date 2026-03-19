@@ -517,7 +517,7 @@ export default function Login() {
             )}
 
             {/* Toggle Signup/Signin */}
-            {mode === "staff" && (
+            {mode === "staff" && !forgotMode && (
               <div className="text-center pt-2">
                 <button
                   onClick={() => setIsSignUp(!isSignUp)}
