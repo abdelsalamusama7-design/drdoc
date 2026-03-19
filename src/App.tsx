@@ -39,6 +39,10 @@ import AITreatmentAssistant from "@/pages/AITreatmentAssistant";
 import MedicalAlerts from "@/pages/MedicalAlerts";
 import SmartSearch from "@/pages/SmartSearch";
 import PatientJourney from "@/pages/PatientJourney";
+import LandingPage from "@/pages/LandingPage";
+import OnboardingWizard from "@/pages/OnboardingWizard";
+import RetentionDashboard from "@/pages/RetentionDashboard";
+import ClinicReferrals from "@/pages/ClinicReferrals";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
