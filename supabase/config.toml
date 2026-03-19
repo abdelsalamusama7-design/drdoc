@@ -6,5 +6,11 @@ verify_jwt = false
 [functions.ai-chat]
 verify_jwt = false
 
+[functions.ai-medical]
+verify_jwt = false
+
+[functions.smart-alerts]
+verify_jwt = false
+
 [functions.manage-subscription]
 verify_jwt = false
