@@ -57,7 +57,7 @@ export default function PatientPortal() {
           const cid = patient.clinic_id;
 
           // Parallel fetches
-          const [filesRes, visitsRes, sessRes, loyaltyRes, loyaltyTxRes, referralsRes, plansRes, progressRes, formsRes] = await Promise.all([
+          const [filesRes, visitsRes, sessRes, loyaltyRes, loyaltyTxRes, referralsRes, plansRes, progressRes, formsRes, paymentsRes] = await Promise.all([
             (supabase.from("patient_files" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
             (supabase.from("visits" as any) as any).select("*").eq("patient_id", pid).order("date", { ascending: false }),
             (supabase.from("therapy_sessions" as any) as any).select("*").eq("patient_id", pid).order("session_date", { ascending: true }),
@@ -67,6 +67,7 @@ export default function PatientPortal() {
             (supabase.from("treatment_plans" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
             (supabase.from("patient_progress" as any) as any).select("*").eq("patient_id", pid).order("date", { ascending: true }),
             (supabase.from("pre_visit_forms" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
+            (supabase.from("payments" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
           ]);
 
           setPatientFiles(filesRes.data || []);
