@@ -152,6 +152,8 @@
   .bottom-nav {
     @apply fixed bottom-0 inset-x-0 bg-card/95 backdrop-blur-lg border-t border-border z-50;
     padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 
   /* Glass morphism */
