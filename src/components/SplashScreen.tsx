@@ -1,23 +1,18 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-function playStartupSound() {
-  try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const now = ctx.currentTime;
+export default function SplashScreen({ onComplete }: { onComplete: () => void }) {
+  const [phase, setPhase] = useState(0);
 
-    // Deep bass whoosh
-    const bass = ctx.createOscillator();
-    const bassGain = ctx.createGain();
-    bass.type = "sine";
-    bass.frequency.setValueAtTime(60, now);
-    bass.frequency.exponentialRampToValueAtTime(120, now + 0.8);
-    bassGain.gain.setValueAtTime(0, now);
-    bassGain.gain.linearRampToValueAtTime(0.3, now + 0.1);
-    bassGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
-    bass.connect(bassGain).connect(ctx.destination);
-    bass.start(now);
-    bass.stop(now + 1.2);
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 800);
+    const t2 = setTimeout(() => setPhase(2), 2000);
+    const t3 = setTimeout(() => setPhase(3), 7200);
+    const t4 = setTimeout(() => onComplete(), 8000);
+    return () => {
+      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4);
+    };
+  }, [onComplete]);
 
     // Rising shimmer tone 1
     const osc1 = ctx.createOscillator();
