@@ -245,7 +245,6 @@ export default function PatientPortal() {
     { key: "notifications", label: "الإشعارات", icon: Bell },
   ];
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <motion.div {...anim} className="flex gap-0 lg:gap-5 min-h-screen">
