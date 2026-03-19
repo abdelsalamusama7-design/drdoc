@@ -133,7 +133,69 @@ export default function PatientPortal() {
   const totalPaid = payments.reduce((sum: number, p: any) => sum + (Number(p.amount) || 0), 0);
   const totalRemaining = payments.reduce((sum: number, p: any) => sum + (Number(p.remaining_amount) || 0), 0);
 
-  const handleDownload = async (filePath: string) => {
+  const downloadPrescriptionPDF = (rx: any, patient: any) => {
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a5" });
+    const w = doc.internal.pageSize.getWidth();
+    
+    // Header
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Medical Prescription", w / 2, 15, { align: "center" });
+    
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Date: ${rx.date || "N/A"}`, w - 10, 25, { align: "right" });
+    
+    // Patient info
+    doc.setDrawColor(200);
+    doc.line(10, 30, w - 10, 30);
+    doc.setFontSize(10);
+    doc.text(`Patient: ${patient.name}`, 10, 37);
+    doc.text(`Phone: ${patient.phone}`, 10, 43);
+    if (patient.age) doc.text(`Age: ${patient.age}`, w - 10, 37, { align: "right" });
+    
+    doc.line(10, 47, w - 10, 47);
+    
+    // Medications
+    let y = 55;
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text("Medications:", 10, y);
+    y += 8;
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    if (rx.medications && rx.medications.length > 0) {
+      rx.medications.forEach((med: any, i: number) => {
+        doc.setFont("helvetica", "bold");
+        doc.text(`${i + 1}. ${med.name}`, 12, y);
+        y += 5;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        const details = [med.dosage, med.duration, med.notes].filter(Boolean).join(" | ");
+        if (details) { doc.text(`   ${details}`, 14, y); y += 5; }
+        doc.setFontSize(10);
+        y += 2;
+      });
+    }
+    
+    // Doctor notes
+    if (rx.doctor_notes) {
+      y += 5;
+      doc.line(10, y, w - 10, y);
+      y += 7;
+      doc.setFont("helvetica", "bold");
+      doc.text("Notes:", 10, y);
+      y += 6;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      const lines = doc.splitTextToSize(rx.doctor_notes, w - 24);
+      doc.text(lines, 12, y);
+    }
+    
+    doc.save(`prescription-${rx.date || "rx"}.pdf`);
+  };
+
     try {
       const url = await getSignedFileUrl(filePath);
       window.open(url, "_blank");
