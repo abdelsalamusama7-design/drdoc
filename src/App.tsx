@@ -39,6 +39,10 @@ import AITreatmentAssistant from "@/pages/AITreatmentAssistant";
 import MedicalAlerts from "@/pages/MedicalAlerts";
 import SmartSearch from "@/pages/SmartSearch";
 import PatientJourney from "@/pages/PatientJourney";
+import LandingPage from "@/pages/LandingPage";
+import OnboardingWizard from "@/pages/OnboardingWizard";
+import RetentionDashboard from "@/pages/RetentionDashboard";
+import ClinicReferrals from "@/pages/ClinicReferrals";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -106,6 +110,9 @@ function ProtectedRoutes() {
         <Route path="/ai-assistant" element={<FeatureGuard path="/ai-assistant"><AITreatmentAssistant /></FeatureGuard>} />
         <Route path="/medical-alerts" element={<FeatureGuard path="/medical-alerts"><MedicalAlerts /></FeatureGuard>} />
         <Route path="/smart-search" element={<FeatureGuard path="/smart-search"><SmartSearch /></FeatureGuard>} />
+        <Route path="/onboarding" element={<OnboardingWizard />} />
+        <Route path="/retention" element={<RetentionDashboard />} />
+        <Route path="/referrals" element={<ClinicReferrals />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ClinicLayout>
@@ -130,6 +137,7 @@ const App = () => {
                 <ClinicProvider>
                   <Routes>
                     <Route path="/login" element={<Login />} />
+                    <Route path="/landing" element={<LandingPage />} />
                     <Route path="/booking" element={<Booking />} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/register-clinic" element={<RegisterClinic />} />
