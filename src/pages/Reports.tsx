@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { FileBarChart, Users, DollarSign, Stethoscope, Loader2, Star, TrendingUp } from "lucide-react";
+import { FileBarChart, Users, DollarSign, Loader2, Star, TrendingUp, Download, MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 import { useAllAppointments, usePatients, useServices, useExpenses, usePatientRatings } from "@/hooks/useSupabaseData";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
@@ -67,6 +70,52 @@ export default function Reports() {
     };
   }, [appointments, patients, services, expenses, ratings, today, currentMonth]);
 
+  const buildReportText = (periodLabel: string) => {
+    let text = `📊 تقرير ${periodLabel} - DrDoc\n`;
+    text += `📅 ${new Date().toLocaleDateString("ar-EG")}\n`;
+    text += `━━━━━━━━━━━━━━━\n`;
+    text += `👥 مرضى اليوم: ${stats.todayCount}\n`;
+    text += `📋 مرضى الشهر: ${stats.monthCount}\n`;
+    text += `✅ زيارات مكتملة: ${stats.completedCount}\n`;
+    text += `💰 إيراد الشهر: ${stats.monthlyRevenue.toLocaleString()} ج.م\n`;
+    text += `📉 المصروفات: ${stats.totalExpenses.toLocaleString()} ج.م\n`;
+    text += `💵 صافي الربح: ${stats.profit.toLocaleString()} ج.م\n`;
+    text += `⭐ متوسط التقييم: ${stats.avgRating} (${stats.ratingsCount} تقييم)\n`;
+    text += `👤 إجمالي المرضى: ${stats.totalPatients}\n`;
+    text += `🆕 مرضى جدد: ${stats.newPatients}\n`;
+    text += `━━━━━━━━━━━━━━━\n`;
+    text += `تم إنشاء التقرير بواسطة DrDoc`;
+    return text;
+  };
+
+  const downloadCSV = (periodLabel: string) => {
+    const csv = [
+      "البند,القيمة",
+      `مرضى اليوم,${stats.todayCount}`,
+      `مرضى الشهر,${stats.monthCount}`,
+      `زيارات مكتملة,${stats.completedCount}`,
+      `إيراد الشهر,${stats.monthlyRevenue}`,
+      `المصروفات,${stats.totalExpenses}`,
+      `صافي الربح,${stats.profit}`,
+      `متوسط التقييم,${stats.avgRating}`,
+      `إجمالي المرضى,${stats.totalPatients}`,
+      `مرضى جدد,${stats.newPatients}`,
+    ].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `تقرير-${periodLabel}-${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`تم تحميل التقرير ${periodLabel}`);
+  };
+
+  const shareWhatsApp = (periodLabel: string) => {
+    const text = buildReportText(periodLabel);
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
   }
@@ -74,6 +123,32 @@ export default function Reports() {
   return (
     <motion.div {...pageTransition} className="space-y-4">
       <h1 className="text-xl font-bold text-foreground">التقارير</h1>
+
+      {/* Download & Share Bar */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <p className="text-sm font-medium text-foreground">📥 تحميل ومشاركة التقارير</p>
+            <div className="flex gap-2 flex-wrap">
+              {[
+                { label: "يومي", key: "يومي" },
+                { label: "أسبوعي", key: "أسبوعي" },
+                { label: "شهري", key: "شهري" },
+              ].map(p => (
+                <div key={p.key} className="flex gap-1">
+                  <Button variant="outline" size="sm" onClick={() => downloadCSV(p.key)} className="gap-1.5">
+                    <Download className="h-3.5 w-3.5" />
+                    {p.label}
+                  </Button>
+                  <Button size="sm" onClick={() => shareWhatsApp(p.key)} className="gap-1.5 bg-[#25D366] hover:bg-[#1da851] text-white">
+                    <MessageCircle className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
