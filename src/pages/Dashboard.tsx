@@ -119,6 +119,30 @@ export default function Dashboard() {
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
+      {/* Landing Page Promo Banner */}
+      <motion.div variants={itemAnim}>
+        <Link to="/landing" className="block group">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-l from-primary/15 via-primary/8 to-transparent border border-primary/20 p-4 sm:p-5 hover:border-primary/40 transition-all">
+            <div className="absolute top-0 left-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2" />
+            <div className="flex items-center justify-between gap-4 relative">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">{lang === "ar" ? "شارك Smart Clinic مع العيادات" : "Share Smart Clinic with Clinics"}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">{lang === "ar" ? "صفحة تعريفية احترافية بجميع مميزات النظام" : "Professional page with all system features"}</p>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" className="gap-1.5 shrink-0 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
+                <ExternalLink className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{lang === "ar" ? "عرض الصفحة" : "View Page"}</span>
+              </Button>
+            </div>
+          </div>
+        </Link>
+      </motion.div>
+
       {/* Header + Quick Actions */}
       <motion.div variants={itemAnim} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
