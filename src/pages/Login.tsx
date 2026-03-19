@@ -167,8 +167,8 @@ export default function Login() {
               <div>
                 <Label>{t("login.password")}</Label>
                 <div className="relative">
-                  <Input type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="mt-1.5 font-en pe-10" dir="ltr" minLength={6} required />
-                  <button type="button" tabIndex={-1} onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 -translate-y-1/2 mt-[3px] text-muted-foreground hover:text-foreground transition-colors">
+                  <Input type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="mt-1.5 font-en" dir="ltr" minLength={6} required />
+                  <button type="button" tabIndex={-1} onClick={() => setShowPassword(!showPassword)} className="absolute end-3 top-1/2 -translate-y-1/2 mt-[3px] text-muted-foreground hover:text-foreground transition-colors">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
