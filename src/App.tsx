@@ -116,6 +116,7 @@ function ProtectedRoutes() {
         <Route path="/onboarding" element={<OnboardingWizard />} />
         <Route path="/retention" element={<RetentionDashboard />} />
         <Route path="/referrals" element={<ClinicReferrals />} />
+        <Route path="/insurance" element={<Insurance />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ClinicLayout>
