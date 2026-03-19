@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   Users, Shield, ShieldCheck, UserCog, Trash2, Loader2,
   Mail, Phone, Stethoscope, Search,
-  AlertTriangle, Check, UserPlus, Eye, EyeOff, Lock
+  AlertTriangle, Check, UserPlus, Eye, EyeOff, Lock, Calculator
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
