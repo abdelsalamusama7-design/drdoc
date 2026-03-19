@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { User, Shield, Bell, Globe, Database, Download, Upload, Cloud, HardDrive, CheckCircle2, Loader2, Clock } from "lucide-react";
+import { User, Shield, Bell, Globe, Database, Download, Upload, Cloud, HardDrive, CheckCircle2, Loader2, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -311,6 +311,87 @@ export default function SettingsPage() {
           </SelectContent>
         </Select>
       </div>
+
+      {/* Install App */}
+      <PWAInstallSection />
     </motion.div>
+  );
+}
+
+/* ── PWA Install in Settings ── */
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
+function PWAInstallSection() {
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [installed, setInstalled] = useState(false);
+
+  useEffect(() => {
+    const standalone = window.matchMedia("(display-mode: standalone)").matches
+      || (navigator as any).standalone === true;
+    setIsStandalone(standalone);
+
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    setIsIOS(ios);
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") setInstalled(true);
+    setDeferredPrompt(null);
+  };
+
+  return (
+    <div className="clinic-card p-4 lg:p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <Smartphone className="h-5 w-5 text-primary" />
+        <h2 className="text-sm font-semibold text-foreground">تثبيت التطبيق</h2>
+      </div>
+
+      {isStandalone || installed ? (
+        <div className="flex items-center gap-2 text-sm text-green-500">
+          <CheckCircle2 className="h-4 w-4" />
+          <span>التطبيق مثبّت بالفعل على جهازك</span>
+        </div>
+      ) : isIOS ? (
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            لتثبيت التطبيق على جهاز iPhone أو iPad:
+          </p>
+          <ol className="text-sm text-muted-foreground list-decimal list-inside space-y-1">
+            <li>اضغط على أيقونة <strong>المشاركة</strong> (السهم للأعلى) في أسفل المتصفح</li>
+            <li>اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong></li>
+            <li>اضغط <strong>"إضافة"</strong></li>
+          </ol>
+        </div>
+      ) : deferredPrompt ? (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            ثبّت التطبيق على جهازك للوصول السريع والعمل بدون إنترنت
+          </p>
+          <Button onClick={handleInstall} size="sm" className="gap-2">
+            <Download className="h-4 w-4" />
+            تثبيت التطبيق
+          </Button>
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          يمكنك تثبيت التطبيق من إعدادات المتصفح عبر خيار "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية"
+        </p>
+      )}
+    </div>
   );
 }
