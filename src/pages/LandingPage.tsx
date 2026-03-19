@@ -16,6 +16,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Footer from "@/components/Footer";
+import screenshotDashboard from "@/assets/screenshot-dashboard.jpg";
+import screenshotPatients from "@/assets/screenshot-patients.jpg";
+import screenshotAppointments from "@/assets/screenshot-appointments.jpg";
+import screenshotMobile from "@/assets/screenshot-mobile.png";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
