@@ -26,6 +26,10 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.inventory": "المخزون",
     "nav.noShow": "إدارة الغياب",
     "nav.doctorPerformance": "أداء الأطباء",
+    "nav.aiAssistant": "مساعد AI",
+    "nav.medicalAlerts": "التنبيهات الطبية",
+    "nav.smartSearch": "البحث الذكي",
+    "nav.subscription": "الاشتراك",
 
     // Layout
     "layout.search": "بحث سريع...",
