@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/hooks/useTheme";
 import SplashScreen from "@/components/SplashScreen";
 
 import AIChatbot from "@/components/AIChatbot";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 import ClinicLayout from "@/components/ClinicLayout";
 import FeatureGuard from "@/components/FeatureGuard";
 import Dashboard from "@/pages/Dashboard";
@@ -144,6 +145,7 @@ const App = () => {
                     <Route path="/*" element={<ProtectedRoutes />} />
                   </Routes>
                   <AIChatbot />
+                  <WhatsAppFloat />
                 </ClinicProvider>
               </AuthProvider>
             </BrowserRouter>
