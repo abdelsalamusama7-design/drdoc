@@ -45,6 +45,7 @@ export default function PatientJourney() {
 
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);
   const [activeStage, setActiveStage] = useState<StageKey | null>(null);
+  const [createAccountPatient, setCreateAccountPatient] = useState<Patient | null>(null);
 
   const today = new Date().toISOString().split("T")[0];
 
