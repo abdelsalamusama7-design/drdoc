@@ -185,9 +185,18 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const { t, lang, toggleLang } = useI18n();
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => window.innerWidth < 1440);
   const [searchOpen, setSearchOpen] = useState(false);
   const { hasNavAccess, currentPlan } = useFeatureAccess();
+
+  // Auto-collapse on smaller desktop screens, expand on large
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1440px)");
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => setCollapsed(!e.matches);
+    handler(mq);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
 
   const filterItem = (item: NavItem) => {
