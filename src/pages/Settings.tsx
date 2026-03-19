@@ -287,17 +287,17 @@ export default function SettingsPage() {
         </div>
 
         {/* Restore Backup */}
-        <div className="border border-dashed border-border rounded-xl p-4 mt-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <div className="border border-dashed border-border rounded-xl p-4 mt-4">
+          <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 rounded-lg bg-warning/10 flex items-center justify-center">
               <RotateCcw className="h-4.5 w-4.5 text-warning" />
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">استعادة نسخة احتياطية</p>
-              <p className="text-[11px] text-muted-foreground">استعادة البيانات من ملف JSON محفوظ مسبقاً</p>
+              <p className="text-[11px] text-muted-foreground">استعادة البيانات من ملف محفوظ أو من السحابة</p>
             </div>
           </div>
-          <div>
+          <div className="flex flex-wrap gap-2">
             <label htmlFor="restore-backup-input" className="cursor-pointer">
               <input
                 id="restore-backup-input"
@@ -319,12 +319,26 @@ export default function SettingsPage() {
                   {restoreLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <RotateCcw className="h-4 w-4" />
+                    <HardDrive className="h-4 w-4" />
                   )}
-                  {restoreLoading ? "جاري الاستعادة..." : "استعادة نسخة"}
+                  {restoreLoading ? "جاري الاستعادة..." : "استعادة من الجهاز"}
                 </span>
               </Button>
             </label>
+            <Button
+              onClick={handleCloudRestore}
+              disabled={cloudRestoreLoading}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              {cloudRestoreLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Cloud className="h-4 w-4" />
+              )}
+              {cloudRestoreLoading ? "جاري الاستعادة..." : "استعادة من السحابة"}
+            </Button>
           </div>
         </div>
       </div>
