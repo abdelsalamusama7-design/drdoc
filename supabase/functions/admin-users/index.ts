@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
-        if (!role || !["admin", "doctor", "receptionist", "patient"].includes(role)) {
+        if (!role || !["admin", "doctor", "receptionist", "accountant", "patient"].includes(role)) {
           return new Response(JSON.stringify({ error: "Invalid role" }), {
             status: 400,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
