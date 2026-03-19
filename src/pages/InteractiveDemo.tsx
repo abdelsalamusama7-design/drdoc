@@ -5,7 +5,7 @@ import {
   Users, CalendarCheck, FileText, DollarSign, BarChart3, Brain,
   ListOrdered, Bell, Stethoscope, Search, Plus, ChevronLeft, ChevronRight,
   Clock, CheckCircle2, XCircle, Phone, User, Activity, Pill, Printer,
-  TrendingUp, ArrowLeft, Play, Eye, MessageCircle, FileText
+  TrendingUp, ArrowLeft, Play, Eye, MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
