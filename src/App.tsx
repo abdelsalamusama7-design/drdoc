@@ -38,6 +38,7 @@ import SubscriptionManagement from "@/pages/SubscriptionManagement";
 import AITreatmentAssistant from "@/pages/AITreatmentAssistant";
 import MedicalAlerts from "@/pages/MedicalAlerts";
 import SmartSearch from "@/pages/SmartSearch";
+import PatientJourney from "@/pages/PatientJourney";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
