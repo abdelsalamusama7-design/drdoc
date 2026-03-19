@@ -140,6 +140,7 @@ const App = () => {
               <AuthProvider>
                 <ClinicProvider>
                   <Routes>
+                    <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/landing" element={<LandingPage />} />
                     <Route path="/booking" element={<Booking />} />
