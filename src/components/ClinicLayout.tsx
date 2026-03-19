@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import Footer from "@/components/Footer";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -523,6 +524,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
         <div className="p-4 lg:p-6 max-w-[1400px]">
           {children}
         </div>
+        <Footer />
       </main>
     </div>
   );

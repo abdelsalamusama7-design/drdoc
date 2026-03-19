@@ -292,7 +292,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
             className="absolute bottom-8 text-xs font-mono"
             style={{ color: "hsl(215 20% 45%)" }}
           >
-            v2.0.0 — Powered by AI
+            v2.0.0
           </motion.p>
         </motion.div>
       )}
