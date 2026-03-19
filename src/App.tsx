@@ -92,10 +92,10 @@ function ProtectedRoutes() {
           element={isReceptionist || isAccountant ? <Navigate to="/" replace /> : <SettingsPage />}
         />
         <Route path="/users" element={<UserManagement />} />
-        <Route path="/queue" element={<QueueManagement />} />
-        <Route path="/doctor-performance" element={<DoctorPerformance />} />
-        <Route path="/inventory" element={<InventoryPage />} />
-        <Route path="/no-show" element={<NoShowManagement />} />
+        <Route path="/queue" element={<FeatureGuard path="/queue"><QueueManagement /></FeatureGuard>} />
+        <Route path="/doctor-performance" element={<FeatureGuard path="/doctor-performance"><DoctorPerformance /></FeatureGuard>} />
+        <Route path="/inventory" element={<FeatureGuard path="/inventory"><InventoryPage /></FeatureGuard>} />
+        <Route path="/no-show" element={<FeatureGuard path="/no-show"><NoShowManagement /></FeatureGuard>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ClinicLayout>
