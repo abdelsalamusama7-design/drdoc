@@ -92,8 +92,11 @@ const App = () => {
               <AuthProvider>
                 <Routes>
                   <Route path="/login" element={<Login />} />
+                  <Route path="/booking" element={<Booking />} />
+                  <Route path="/pricing" element={<Pricing />} />
                   <Route path="/*" element={<ProtectedRoutes />} />
                 </Routes>
+                <AIChatbot />
               </AuthProvider>
             </BrowserRouter>
           </TooltipProvider>
