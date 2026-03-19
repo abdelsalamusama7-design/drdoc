@@ -126,8 +126,14 @@ function ProtectedRoutes() {
 }
 
 const App = () => {
-  const [showSplash, setShowSplash] = useState(true);
-  const handleSplashComplete = useCallback(() => setShowSplash(false), []);
+  const [showSplash, setShowSplash] = useState(() => {
+    if (sessionStorage.getItem('splash_shown')) return false;
+    return true;
+  });
+  const handleSplashComplete = useCallback(() => {
+    sessionStorage.setItem('splash_shown', '1');
+    setShowSplash(false);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
