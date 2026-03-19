@@ -5,10 +5,6 @@ import logoClinic3 from "@/assets/logo-clinic-3.png";
 import logoClinic4 from "@/assets/logo-clinic-4.png";
 import logoClinic5 from "@/assets/logo-clinic-5.png";
 import logoClinic6 from "@/assets/logo-clinic-6.png";
-import partnersContract from "@/assets/partners-contract.jpg";
-import partnersTeam from "@/assets/partners-team.jpg";
-import partnersConference from "@/assets/partners-conference.jpg";
-import partnersTraining from "@/assets/partners-training.jpg";
 import { Handshake } from "lucide-react";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
