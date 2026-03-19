@@ -29,6 +29,8 @@ import Booking from "@/pages/Booking";
 import Pricing from "@/pages/Pricing";
 import RegisterClinic from "@/pages/RegisterClinic";
 import ReceptionDashboard from "@/pages/ReceptionDashboard";
+import DoctorDashboard from "@/pages/DoctorDashboard";
+import DrugIndex from "@/pages/DrugIndex";
 import AccountantDashboard from "@/pages/AccountantDashboard";
 import PatientPortal from "@/pages/PatientPortal";
 import QueueManagement from "@/pages/QueueManagement";
@@ -95,7 +97,7 @@ function ProtectedRoutes() {
   const isAccountant = role === "accountant";
 
   // Pick the right dashboard based on role
-  const DashboardComponent = isReceptionist ? ReceptionDashboard : isAccountant ? AccountantDashboard : Dashboard;
+  const DashboardComponent = isReceptionist ? ReceptionDashboard : isAccountant ? AccountantDashboard : role === "doctor" ? DoctorDashboard : Dashboard;
 
   return (
     <ClinicLayout>
@@ -133,6 +135,8 @@ function ProtectedRoutes() {
         <Route path="/retention" element={<RetentionDashboard />} />
         <Route path="/referrals" element={<ClinicReferrals />} />
         <Route path="/insurance" element={<Insurance />} />
+        <Route path="/drug-index" element={<FeatureGuard path="/drug-index"><DrugIndex /></FeatureGuard>} />
+        <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ClinicLayout>
