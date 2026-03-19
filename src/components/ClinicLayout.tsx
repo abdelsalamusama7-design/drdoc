@@ -425,33 +425,47 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="py-3 px-2.5 space-y-0.5">
-                {navItems.filter(item => {
-                  if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
-                  if (role === "accountant" && ["/prescriptions", "/services", "/reports", "/settings"].includes(item.path)) return false;
-                  if (role === "patient") return ["/"].includes(item.path);
-                  if (item.adminOnly && role !== "admin") return false;
-                  return true;
-                }).map((item) => {
-                  const isActive = location.pathname === item.path;
-                  const isLocked = !hasNavAccess(item.labelKey);
+              <nav className="py-2 px-2.5 overflow-y-auto space-y-1">
+                {navGroups.map(group => {
+                  const visibleItems = group.items.filter(filterItem);
+                  if (visibleItems.length === 0) return null;
+                  const isOpen = openGroups[group.groupKey];
                   return (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setSidebarOpen(false)}
-                      className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-colors ${
-                        isLocked
-                          ? "text-muted-foreground/50"
-                          : isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                      }`}
-                    >
-                      <item.icon className="h-[18px] w-[18px] shrink-0" />
-                      <span>{t(item.labelKey)}</span>
-                      {isLocked && <Lock className="h-3 w-3 mr-auto text-muted-foreground/40" />}
-                    </Link>
+                    <div key={group.groupKey}>
+                      <button
+                        onClick={() => toggleGroup(group.groupKey)}
+                        className="w-full flex items-center justify-between px-3 py-1.5 text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-wider hover:text-muted-foreground transition-colors"
+                      >
+                        <span>{t(group.groupKey)}</span>
+                        <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${isOpen ? '' : '-rotate-90'}`} />
+                      </button>
+                      {isOpen && (
+                        <div className="space-y-0.5">
+                          {visibleItems.map(item => {
+                            const isActive = location.pathname === item.path;
+                            const isLocked = !hasNavAccess(item.labelKey);
+                            return (
+                              <Link
+                                key={item.path}
+                                to={item.path}
+                                onClick={() => setSidebarOpen(false)}
+                                className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-colors ${
+                                  isLocked
+                                    ? "text-muted-foreground/50"
+                                    : isActive
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                }`}
+                              >
+                                <item.icon className="h-[18px] w-[18px] shrink-0" />
+                                <span>{t(item.labelKey)}</span>
+                                {isLocked && <Lock className="h-3 w-3 mr-auto text-muted-foreground/40" />}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </nav>
