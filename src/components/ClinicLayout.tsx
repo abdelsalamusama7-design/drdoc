@@ -6,7 +6,8 @@ import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
   DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
   Search, Bell, UserPlus, ShieldCheck, Moon, Sun, Languages,
-  ListOrdered, Activity, Package, UserX, Lock, Brain, AlertTriangle, CreditCard
+  ListOrdered, Activity, Package, UserX, Lock, Brain, AlertTriangle, CreditCard,
+  ChevronDown
 } from "lucide-react";
 import NotificationPanel from "@/components/NotificationPanel";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,26 +24,59 @@ interface NavItem {
   adminOnly?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { path: "/", labelKey: "nav.dashboard", icon: LayoutDashboard },
-  { path: "/patient-journey", labelKey: "nav.patientJourney", icon: Activity },
-  { path: "/patients", labelKey: "nav.patients", icon: Users },
-  { path: "/appointments", labelKey: "nav.appointments", icon: CalendarDays },
-  { path: "/queue", labelKey: "nav.queue", icon: ListOrdered },
-  { path: "/prescriptions", labelKey: "nav.prescriptions", icon: FileText },
-  { path: "/services", labelKey: "nav.services", icon: Stethoscope },
-  { path: "/inventory", labelKey: "nav.inventory", icon: Package },
-  { path: "/finance", labelKey: "nav.finance", icon: DollarSign },
-  { path: "/no-show", labelKey: "nav.noShow", icon: UserX },
-  { path: "/doctor-performance", labelKey: "nav.doctorPerformance", icon: Activity },
-  { path: "/reports", labelKey: "nav.reports", icon: BarChart3 },
-  { path: "/ai-assistant", labelKey: "nav.aiAssistant", icon: Brain },
-  { path: "/medical-alerts", labelKey: "nav.medicalAlerts", icon: AlertTriangle },
-  { path: "/smart-search", labelKey: "nav.smartSearch", icon: Search },
-  { path: "/subscription", labelKey: "nav.subscription", icon: CreditCard },
-  { path: "/users", labelKey: "nav.users", icon: ShieldCheck, adminOnly: true },
-  { path: "/settings", labelKey: "nav.settings", icon: Settings },
+interface NavGroup {
+  groupKey: string;
+  items: NavItem[];
+}
+
+const navGroups: NavGroup[] = [
+  {
+    groupKey: "navGroup.main",
+    items: [
+      { path: "/", labelKey: "nav.dashboard", icon: LayoutDashboard },
+      { path: "/patient-journey", labelKey: "nav.patientJourney", icon: Activity },
+      { path: "/queue", labelKey: "nav.queue", icon: ListOrdered },
+    ],
+  },
+  {
+    groupKey: "navGroup.clinical",
+    items: [
+      { path: "/patients", labelKey: "nav.patients", icon: Users },
+      { path: "/appointments", labelKey: "nav.appointments", icon: CalendarDays },
+      { path: "/prescriptions", labelKey: "nav.prescriptions", icon: FileText },
+      { path: "/services", labelKey: "nav.services", icon: Stethoscope },
+    ],
+  },
+  {
+    groupKey: "navGroup.management",
+    items: [
+      { path: "/finance", labelKey: "nav.finance", icon: DollarSign },
+      { path: "/inventory", labelKey: "nav.inventory", icon: Package },
+      { path: "/no-show", labelKey: "nav.noShow", icon: UserX },
+      { path: "/doctor-performance", labelKey: "nav.doctorPerformance", icon: Activity },
+      { path: "/reports", labelKey: "nav.reports", icon: BarChart3 },
+    ],
+  },
+  {
+    groupKey: "navGroup.tools",
+    items: [
+      { path: "/ai-assistant", labelKey: "nav.aiAssistant", icon: Brain },
+      { path: "/medical-alerts", labelKey: "nav.medicalAlerts", icon: AlertTriangle },
+      { path: "/smart-search", labelKey: "nav.smartSearch", icon: Search },
+    ],
+  },
+  {
+    groupKey: "navGroup.system",
+    items: [
+      { path: "/subscription", labelKey: "nav.subscription", icon: CreditCard },
+      { path: "/users", labelKey: "nav.users", icon: ShieldCheck, adminOnly: true },
+      { path: "/settings", labelKey: "nav.settings", icon: Settings },
+    ],
+  },
 ];
+
+// Flatten for bottom nav and page title lookup
+const allNavItems = navGroups.flatMap(g => g.items);
 
 interface ClinicLayoutProps {
   children: React.ReactNode;
