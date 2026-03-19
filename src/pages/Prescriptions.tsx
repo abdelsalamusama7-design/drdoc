@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Plus, Printer, Pill, Loader2 } from "lucide-react";
+import { Plus, Printer, Pill, Loader2, Share2 } from "lucide-react";
 import { usePrescriptions, createPrescription, usePatients } from "@/hooks/useSupabaseData";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -81,6 +81,14 @@ export default function Prescriptions() {
     setSubmitting(false);
   };
 
+  const shareWhatsApp = (rx: typeof prescriptions[0]) => {
+    const meds = (rx.medications || []).map(m => 
+      `💊 ${m.name}${m.dosage ? ` • ${m.dosage}` : ''}${m.duration ? ` • ${m.duration}` : ''}`
+    ).join('\n');
+    const text = `🏥 *وصفة طبية - Smart Clinic*\n👤 المريض: *${rx.patient_name}*\n📅 التاريخ: ${rx.date}\n\n*الأدوية:*\n${meds}${rx.doctor_notes ? `\n\n📝 *ملاحظات:* ${rx.doctor_notes}` : ''}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
   const handlePrint = (rx: typeof prescriptions[0]) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
@@ -147,9 +155,14 @@ export default function Prescriptions() {
                   <p className="text-sm font-medium text-foreground">{rx.patient_name}</p>
                   <p className="text-xs text-muted-foreground font-en">{rx.date}</p>
                 </div>
-                <Button size="sm" variant="outline" className="gap-1.5 h-8" onClick={() => handlePrint(rx)}>
-                  <Printer className="h-3.5 w-3.5" />طباعة
-                </Button>
+                <div className="flex gap-1.5">
+                  <Button size="sm" variant="outline" className="gap-1.5 h-8" onClick={() => shareWhatsApp(rx)}>
+                    <Share2 className="h-3.5 w-3.5" />واتساب
+                  </Button>
+                  <Button size="sm" variant="outline" className="gap-1.5 h-8" onClick={() => handlePrint(rx)}>
+                    <Printer className="h-3.5 w-3.5" />طباعة
+                  </Button>
+                </div>
               </div>
               <div className="space-y-2">
                 {(rx.medications || []).map((med, i) => (
