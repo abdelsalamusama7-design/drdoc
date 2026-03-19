@@ -132,8 +132,7 @@ function GlobalSearch({ open, onClose }: { open: boolean; onClose: () => void })
   );
 }
 
-// Notification Panel
-function NotificationPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
+// Old NotificationPanel removed - using imported component
   const { t } = useI18n();
   if (!open) return null;
   
