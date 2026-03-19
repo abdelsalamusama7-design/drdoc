@@ -236,19 +236,25 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
             return true;
           }).map((item) => {
             const isExactActive = location.pathname === item.path;
+            const isLocked = !hasNavAccess(item.labelKey);
             return (
               <Link
                 key={item.path}
                 to={item.path}
                 className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-all duration-150 ${
-                  isExactActive
+                  isLocked
+                    ? "text-muted-foreground/50 hover:bg-muted/30"
+                    : isExactActive
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 } ${collapsed ? "justify-center px-0" : ""}`}
               >
-                <item.icon className={`h-[18px] w-[18px] shrink-0 ${isExactActive ? 'text-primary' : ''}`} />
+                <item.icon className={`h-[18px] w-[18px] shrink-0 ${isExactActive && !isLocked ? 'text-primary' : ''}`} />
                 {!collapsed && <span>{t(item.labelKey)}</span>}
-                {isExactActive && !collapsed && (
+                {isLocked && !collapsed && (
+                  <Lock className="h-3 w-3 mr-auto text-muted-foreground/40" />
+                )}
+                {isExactActive && !collapsed && !isLocked && (
                   <div className="mr-auto w-1.5 h-1.5 rounded-full bg-primary" />
                 )}
               </Link>
