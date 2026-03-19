@@ -25,7 +25,7 @@ interface ManagedUser {
   full_name: string;
   phone: string;
   specialty: string;
-  role: "admin" | "doctor" | "receptionist" | "patient" | null;
+  role: "admin" | "doctor" | "receptionist" | "accountant" | "patient" | null;
 }
 
 const roleLabels: Record<string, string> = {
