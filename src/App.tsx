@@ -12,6 +12,7 @@ import SplashScreen from "@/components/SplashScreen";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import AIChatbot from "@/components/AIChatbot";
 import ClinicLayout from "@/components/ClinicLayout";
+import FeatureGuard from "@/components/FeatureGuard";
 import Dashboard from "@/pages/Dashboard";
 import Patients from "@/pages/Patients";
 import PatientDetail from "@/pages/PatientDetail";
@@ -84,17 +85,17 @@ function ProtectedRoutes() {
         />
         <Route
           path="/reports"
-          element={isReceptionist || isAccountant ? <Navigate to="/" replace /> : <Reports />}
+          element={isReceptionist || isAccountant ? <Navigate to="/" replace /> : <FeatureGuard path="/reports"><Reports /></FeatureGuard>}
         />
         <Route
           path="/settings"
           element={isReceptionist || isAccountant ? <Navigate to="/" replace /> : <SettingsPage />}
         />
         <Route path="/users" element={<UserManagement />} />
-        <Route path="/queue" element={<QueueManagement />} />
-        <Route path="/doctor-performance" element={<DoctorPerformance />} />
-        <Route path="/inventory" element={<InventoryPage />} />
-        <Route path="/no-show" element={<NoShowManagement />} />
+        <Route path="/queue" element={<FeatureGuard path="/queue"><QueueManagement /></FeatureGuard>} />
+        <Route path="/doctor-performance" element={<FeatureGuard path="/doctor-performance"><DoctorPerformance /></FeatureGuard>} />
+        <Route path="/inventory" element={<FeatureGuard path="/inventory"><InventoryPage /></FeatureGuard>} />
+        <Route path="/no-show" element={<FeatureGuard path="/no-show"><NoShowManagement /></FeatureGuard>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ClinicLayout>

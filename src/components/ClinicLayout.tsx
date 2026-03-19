@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
   DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
   Search, Bell, UserPlus, ShieldCheck, Moon, Sun, Languages,
-  ListOrdered, Activity, Package, UserX
+  ListOrdered, Activity, Package, UserX, Lock
 } from "lucide-react";
 import NotificationPanel from "@/components/NotificationPanel";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,6 +14,7 @@ import ClinicSwitcher from "@/components/ClinicSwitcher";
 import { useI18n } from "@/hooks/useI18n";
 import { useTheme } from "@/hooks/useTheme";
 import { mockPatients } from "@/data/mockData";
+import { useFeatureAccess, getPlanLabel, getPlanColor } from "@/hooks/useFeatureAccess";
 
 interface NavItem {
   path: string;
@@ -147,7 +148,8 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  
+  const { hasNavAccess, currentPlan } = useFeatureAccess();
+
 
   const displayName = profile?.full_name || (lang === "ar" ? "مستخدم" : "User");
   const roleLabel = t(`role.${role || "user"}`);
@@ -191,7 +193,9 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
               </div>
               <div>
                 <h1 className="text-sm font-bold text-foreground leading-none">Smart Clinic</h1>
-                <p className="text-[9px] text-muted-foreground mt-0.5">Management System</p>
+                <span className={`inline-block mt-1 text-[9px] px-1.5 py-0.5 rounded-full font-bold ${getPlanColor(currentPlan)}`}>
+                  {getPlanLabel(currentPlan, lang)}
+                </span>
               </div>
             </div>
           )}
@@ -234,19 +238,25 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
             return true;
           }).map((item) => {
             const isExactActive = location.pathname === item.path;
+            const isLocked = !hasNavAccess(item.labelKey);
             return (
               <Link
                 key={item.path}
                 to={item.path}
                 className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-all duration-150 ${
-                  isExactActive
+                  isLocked
+                    ? "text-muted-foreground/50 hover:bg-muted/30"
+                    : isExactActive
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 } ${collapsed ? "justify-center px-0" : ""}`}
               >
-                <item.icon className={`h-[18px] w-[18px] shrink-0 ${isExactActive ? 'text-primary' : ''}`} />
+                <item.icon className={`h-[18px] w-[18px] shrink-0 ${isExactActive && !isLocked ? 'text-primary' : ''}`} />
                 {!collapsed && <span>{t(item.labelKey)}</span>}
-                {isExactActive && !collapsed && (
+                {isLocked && !collapsed && (
+                  <Lock className="h-3 w-3 mr-auto text-muted-foreground/40" />
+                )}
+                {isExactActive && !collapsed && !isLocked && (
                   <div className="mr-auto w-1.5 h-1.5 rounded-full bg-primary" />
                 )}
               </Link>
@@ -345,19 +355,23 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                   return true;
                 }).map((item) => {
                   const isActive = location.pathname === item.path;
+                  const isLocked = !hasNavAccess(item.labelKey);
                   return (
                     <Link
                       key={item.path}
                       to={item.path}
                       onClick={() => setSidebarOpen(false)}
                       className={`touch-target flex items-center gap-3 px-3 rounded-xl text-[13px] font-medium transition-colors ${
-                        isActive
+                        isLocked
+                          ? "text-muted-foreground/50"
+                          : isActive
                           ? "bg-primary/10 text-primary"
                           : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       }`}
                     >
                       <item.icon className="h-[18px] w-[18px] shrink-0" />
                       <span>{t(item.labelKey)}</span>
+                      {isLocked && <Lock className="h-3 w-3 mr-auto text-muted-foreground/40" />}
                     </Link>
                   );
                 })}
