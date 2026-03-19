@@ -230,21 +230,21 @@ export default function Pricing() {
           <p className="text-muted-foreground mb-6">تواصل معنا الآن واحصل على استشارة مجانية</p>
           <div className="flex items-center justify-center gap-3 flex-wrap">
             <Button asChild size="lg">
-              <a href="https://wa.me/201227080430" target="_blank" rel="noopener noreferrer" className="gap-2">
+              <a href="https://wa.me/201554400044" target="_blank" rel="noopener noreferrer" className="gap-2">
                 <MessageCircle className="h-5 w-5" />
                 واتساب
               </a>
             </Button>
             <Button variant="outline" asChild size="lg">
-              <a href="tel:+201227080430" className="gap-2">
+              <a href="tel:+201554400044" className="gap-2">
                 <Phone className="h-5 w-5" />
-                01227080430
+                المبيعات: 01554400044
               </a>
             </Button>
             <Button variant="outline" asChild size="lg">
-              <a href="tel:+201554400044" className="gap-2">
+              <a href="tel:+201227080430" className="gap-2">
                 <Phone className="h-5 w-5" />
-                01554400044
+                الدعم الفني: 01227080430
               </a>
             </Button>
           </div>
