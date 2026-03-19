@@ -100,6 +100,7 @@ export default function PatientPortal() {
 
   const tabs = [
     { key: "overview" as const, label: "نظرة عامة", icon: Activity },
+    { key: "booking" as const, label: "حجز موعد", icon: CalendarPlus },
     { key: "history" as const, label: "الزيارات", icon: Calendar },
     { key: "files" as const, label: "الملفات", icon: FlaskConical },
     { key: "prescriptions" as const, label: "الوصفات", icon: Pill },
