@@ -7,6 +7,7 @@ import {
   Search, Bell, UserPlus, ShieldCheck, Moon, Sun, Languages
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import ClinicSwitcher from "@/components/ClinicSwitcher";
 import { useI18n } from "@/hooks/useI18n";
 import { useTheme } from "@/hooks/useTheme";
 import { mockPatients } from "@/data/mockData";
@@ -329,6 +330,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
             <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
           <h1 className="text-sm font-bold text-foreground">Smart Clinic</h1>
+          <ClinicSwitcher />
         </div>
         <div className="flex items-center gap-0.5">
           <button onClick={() => setSearchOpen(true)} className="p-2 rounded-lg hover:bg-muted transition-colors">

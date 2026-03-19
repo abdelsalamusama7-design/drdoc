@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { ClinicProvider } from "@/hooks/useClinic";
 import { I18nProvider } from "@/hooks/useI18n";
 import { ThemeProvider } from "@/hooks/useTheme";
 import SplashScreen from "@/components/SplashScreen";
@@ -24,6 +25,7 @@ import Login from "@/pages/Login";
 import UserManagement from "@/pages/UserManagement";
 import Booking from "@/pages/Booking";
 import Pricing from "@/pages/Pricing";
+import RegisterClinic from "@/pages/RegisterClinic";
 import ReceptionDashboard from "@/pages/ReceptionDashboard";
 import AccountantDashboard from "@/pages/AccountantDashboard";
 import PatientPortal from "@/pages/PatientPortal";
@@ -106,13 +108,16 @@ const App = () => {
             <PWAInstallPrompt />
             <BrowserRouter>
               <AuthProvider>
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/booking" element={<Booking />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/*" element={<ProtectedRoutes />} />
-                </Routes>
-                <AIChatbot />
+                <ClinicProvider>
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/booking" element={<Booking />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/register-clinic" element={<RegisterClinic />} />
+                    <Route path="/*" element={<ProtectedRoutes />} />
+                  </Routes>
+                  <AIChatbot />
+                </ClinicProvider>
               </AuthProvider>
             </BrowserRouter>
           </TooltipProvider>
