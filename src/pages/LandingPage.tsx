@@ -765,6 +765,7 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <SocialProofNotification />
       <Footer />
     </div>
   );
