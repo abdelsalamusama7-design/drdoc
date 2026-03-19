@@ -25,8 +25,8 @@ export default defineConfig(({ mode }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
       manifest: {
-        name: "د. خالد جادالله - إدارة العيادة الذكية",
-        short_name: "د. خالد جادالله",
+        name: "Smart Clinic - إدارة العيادة الذكية",
+        short_name: "Smart Clinic",
         description: "نظام إدارة العيادة الذكي",
         theme_color: "#1a1f2e",
         background_color: "#0d1117",

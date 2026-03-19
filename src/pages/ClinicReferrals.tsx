@@ -102,7 +102,7 @@ export default function ClinicReferrals() {
     setSubmitting(false);
   };
 
-  const shareLink = `https://wa.me/201227080430?text=${encodeURIComponent(`مرحباً، عيادة ${clinic?.name || ""} رشحت لي نظام د. خالد جادالله. أريد معرفة المزيد!`)}`;
+  const shareLink = `https://wa.me/201227080430?text=${encodeURIComponent(`مرحباً، عيادة ${clinic?.name || ""} رشحت لي نظام Smart Clinic. أريد معرفة المزيد!`)}`;
 
   const rewards = referrals.filter(r => r.reward_applied).length;
   const pendingRewards = referrals.filter(r => r.status === "converted" && !r.reward_applied).length;

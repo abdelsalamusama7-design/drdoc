@@ -87,7 +87,7 @@ const faqs = [
   { q: "هل بياناتي آمنة؟", a: "نعم، نستخدم تشفير على مستوى البنوك مع نسخ احتياطية تلقائية وصلاحيات متعددة المستويات." },
   { q: "هل يمكنني استخدام النظام من الجوال؟", a: "بالتأكيد! النظام متوافق مع جميع الأجهزة مع تطبيق PWA يمكن تثبيته." },
   { q: "ماذا لو لم يعجبني النظام؟", a: "نوفر ضمان استرداد كامل خلال 30 يوماً بدون أي أسئلة." },
-  { q: "هل النظام مناسب لتخصصي؟", a: "د. خالد جادالله مصمم لجميع التخصصات: أسنان، باطنة، جلدية، أطفال، مراكز طبية وغيرها." },
+  { q: "هل النظام مناسب لتخصصي؟", a: "Smart Clinic مصمم لجميع التخصصات: أسنان، باطنة، جلدية، أطفال، مراكز طبية وغيرها." },
 ];
 
 const clinicTypes = [
@@ -148,7 +148,7 @@ export default function LandingPage() {
               <Stethoscope className="h-5 w-5 text-primary-foreground" />
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-bold text-foreground leading-none">د. خالد جادالله</span>
+              <span className="text-lg font-bold text-foreground leading-none">Smart Clinic</span>
               <span className="text-[10px] text-muted-foreground leading-none mt-0.5">نظام إدارة العيادات</span>
             </div>
           </Link>
@@ -303,7 +303,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <img src={problemSolutionImg} alt="المشكلة والحل - د. خالد جادالله" className="w-full" loading="eager" />
+              <img src={problemSolutionImg} alt="المشكلة والحل - Smart Clinic" className="w-full" loading="eager" />
             </div>
           </motion.div>
         </div>
@@ -373,7 +373,7 @@ export default function LandingPage() {
             <motion.div variants={fadeUp}>
               <span className="inline-block px-3 py-1 rounded-full bg-success/10 text-success text-xs font-semibold mb-4">الحل</span>
               <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 leading-tight">
-                <span className="text-primary">د. خالد جادالله</span> يحوّل عيادتك لنظام رقمي ذكي
+                <span className="text-primary">Smart Clinic</span> يحوّل عيادتك لنظام رقمي ذكي
               </h2>
               <div className="space-y-3">
                 {[
@@ -454,7 +454,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div variants={fadeUp} className="flex justify-center">
-              <img src={screenshotMobile} alt="د. خالد جادالله على الهاتف" className="max-h-[500px] object-contain drop-shadow-2xl" loading="lazy" />
+              <img src={screenshotMobile} alt="Smart Clinic على الهاتف" className="max-h-[500px] object-contain drop-shadow-2xl" loading="lazy" />
             </motion.div>
             <motion.div variants={fadeUp} className="space-y-6">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-semibold border border-accent/20">
@@ -755,7 +755,7 @@ export default function LandingPage() {
               <Heart className="h-8 w-8 text-white" />
             </motion.div>
             <motion.h2 variants={fadeUp} className="text-3xl sm:text-5xl font-extrabold text-white mb-5 leading-tight">
-              جاهز تبدأ رحلتك مع<br />د. خالد جادالله؟
+              جاهز تبدأ رحلتك مع<br />Smart Clinic؟
             </motion.h2>
             <motion.p variants={fadeUp} className="text-lg text-white/80 mb-10 max-w-xl mx-auto">
               انضم لأكثر من 500 عيادة تستخدم النظام يومياً — وابدأ تجربتك المجانية الآن.

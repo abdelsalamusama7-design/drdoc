@@ -5,11 +5,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `أنت المساعد الذكي لعيادة د. خالد جادالله - عيادة متكاملة للذكورة والسعادة الزوجية وصحة الرجل.
+const SYSTEM_PROMPT = `أنت المساعد الذكي لعيادة Smart Clinic - نظام إدارة عيادات ذكي.
 
 معلومات العيادة:
-- الاسم: عيادة د. خالد جادالله
-- التخصص: الذكورة والسعادة الزوجية وصحة الرجل والمسالك البولية
+- الاسم: Smart Clinic
+- التخصص: نظام إدارة عيادات متكامل
 - أوقات العمل: السبت - الخميس من 9 صباحاً حتى 9 مساءً (الجمعة إجازة)
 - العنوان: القاهرة
 - هاتف: 01227080430
