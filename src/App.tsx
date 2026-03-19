@@ -97,7 +97,7 @@ function ProtectedRoutes() {
   const isAccountant = role === "accountant";
 
   // Pick the right dashboard based on role
-  const DashboardComponent = isReceptionist ? ReceptionDashboard : isAccountant ? AccountantDashboard : Dashboard;
+  const DashboardComponent = isReceptionist ? ReceptionDashboard : isAccountant ? AccountantDashboard : role === "doctor" ? DoctorDashboard : Dashboard;
 
   return (
     <ClinicLayout>
