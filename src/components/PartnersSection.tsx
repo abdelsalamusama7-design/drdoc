@@ -5,10 +5,6 @@ import logoClinic3 from "@/assets/logo-clinic-3.png";
 import logoClinic4 from "@/assets/logo-clinic-4.png";
 import logoClinic5 from "@/assets/logo-clinic-5.png";
 import logoClinic6 from "@/assets/logo-clinic-6.png";
-import partnersContract from "@/assets/partners-contract.jpg";
-import partnersTeam from "@/assets/partners-team.jpg";
-import partnersConference from "@/assets/partners-conference.jpg";
-import partnersTraining from "@/assets/partners-training.jpg";
 import { Handshake } from "lucide-react";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
@@ -23,12 +19,6 @@ const logos = [
   { src: logoClinic6, name: "عيادات البسمة" },
 ];
 
-const contractPhotos = [
-  { src: partnersContract, alt: "توقيع عقد شراكة" },
-  { src: partnersTeam, alt: "فريق العمل مع العملاء" },
-  { src: partnersConference, alt: "مؤتمر الشركاء" },
-  { src: partnersTraining, alt: "تدريب فريق العيادة" },
-];
 
 export default function PartnersSection() {
   return (
@@ -70,37 +60,6 @@ export default function PartnersSection() {
           ))}
         </motion.div>
 
-        {/* Contract Photos */}
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          variants={stagger}
-        >
-          <motion.h3 variants={fadeUp} className="text-xl font-bold text-foreground text-center mb-8">
-            لحظات من شراكاتنا 📸
-          </motion.h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {contractPhotos.map((photo, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                className="group relative rounded-xl overflow-hidden border border-border/40 aspect-[4/3]"
-              >
-                <img
-                  src={photo.src}
-                  alt={photo.alt}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute bottom-0 left-0 right-0 p-3 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
-                  {photo.alt}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
       </div>
     </section>
   );
