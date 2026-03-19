@@ -663,9 +663,10 @@ export default function LandingPage() {
 
               <div className="space-y-4">
                 {[
-                  { icon: Phone, label: "اتصل بنا", value: "+20 100 000 0000" },
-                  { icon: Mail, label: "البريد الإلكتروني", value: "info@smartclinic.com" },
-                  { icon: MessageCircle, label: "واتساب", value: "راسلنا على واتساب" },
+                  { icon: Phone, label: "المبيعات", value: "01554400044", href: "tel:+201554400044" },
+                  { icon: Phone, label: "الدعم الفني", value: "01227080430", href: "tel:+201227080430" },
+                  { icon: Mail, label: "البريد الإلكتروني", value: "info@smartclinic.com", href: "mailto:info@smartclinic.com" },
+                  { icon: MessageCircle, label: "واتساب", value: "راسلنا على واتساب", href: "https://wa.me/201554400044" },
                 ].map(c => (
                   <div key={c.label} className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border">
                     <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
