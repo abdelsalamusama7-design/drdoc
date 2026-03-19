@@ -14,6 +14,7 @@ import ClinicSwitcher from "@/components/ClinicSwitcher";
 import { useI18n } from "@/hooks/useI18n";
 import { useTheme } from "@/hooks/useTheme";
 import { mockPatients } from "@/data/mockData";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 
 interface NavItem {
   path: string;
