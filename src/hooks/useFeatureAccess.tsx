@@ -70,6 +70,9 @@ export const ROUTE_FEATURE_MAP: Record<string, string> = {
   "/inventory":           "inventory",
   "/no-show":             "noShow",
   "/doctor-performance":  "doctorPerformance",
+  "/ai-assistant":        "aiAssistant",
+  "/medical-alerts":      "medicalAlerts",
+  "/smart-search":        "smartSearch",
 };
 
 // Nav key (labelKey from ClinicLayout) → feature key
@@ -87,6 +90,9 @@ export const NAV_FEATURE_MAP: Record<string, string> = {
   "nav.inventory":          "inventory",
   "nav.noShow":             "noShow",
   "nav.doctorPerformance":  "doctorPerformance",
+  "nav.aiAssistant":        "aiAssistant",
+  "nav.medicalAlerts":      "medicalAlerts",
+  "nav.smartSearch":        "smartSearch",
 };
 
 // ── Hook ──────────────────────────────────────

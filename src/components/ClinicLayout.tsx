@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Users, CalendarDays, FileText, Stethoscope,
   DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
   Search, Bell, UserPlus, ShieldCheck, Moon, Sun, Languages,
-  ListOrdered, Activity, Package, UserX, Lock
+  ListOrdered, Activity, Package, UserX, Lock, Brain, AlertTriangle, CreditCard
 } from "lucide-react";
 import NotificationPanel from "@/components/NotificationPanel";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,6 +35,10 @@ const navItems: NavItem[] = [
   { path: "/no-show", labelKey: "nav.noShow", icon: UserX },
   { path: "/doctor-performance", labelKey: "nav.doctorPerformance", icon: Activity },
   { path: "/reports", labelKey: "nav.reports", icon: BarChart3 },
+  { path: "/ai-assistant", labelKey: "nav.aiAssistant", icon: Brain },
+  { path: "/medical-alerts", labelKey: "nav.medicalAlerts", icon: AlertTriangle },
+  { path: "/smart-search", labelKey: "nav.smartSearch", icon: Search },
+  { path: "/subscription", labelKey: "nav.subscription", icon: CreditCard },
   { path: "/users", labelKey: "nav.users", icon: ShieldCheck, adminOnly: true },
   { path: "/settings", labelKey: "nav.settings", icon: Settings },
 ];

@@ -34,6 +34,10 @@ import QueueManagement from "@/pages/QueueManagement";
 import DoctorPerformance from "@/pages/DoctorPerformance";
 import InventoryPage from "@/pages/Inventory";
 import NoShowManagement from "@/pages/NoShowManagement";
+import SubscriptionManagement from "@/pages/SubscriptionManagement";
+import AITreatmentAssistant from "@/pages/AITreatmentAssistant";
+import MedicalAlerts from "@/pages/MedicalAlerts";
+import SmartSearch from "@/pages/SmartSearch";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -96,6 +100,10 @@ function ProtectedRoutes() {
         <Route path="/doctor-performance" element={<FeatureGuard path="/doctor-performance"><DoctorPerformance /></FeatureGuard>} />
         <Route path="/inventory" element={<FeatureGuard path="/inventory"><InventoryPage /></FeatureGuard>} />
         <Route path="/no-show" element={<FeatureGuard path="/no-show"><NoShowManagement /></FeatureGuard>} />
+        <Route path="/subscription" element={<SubscriptionManagement />} />
+        <Route path="/ai-assistant" element={<FeatureGuard path="/ai-assistant"><AITreatmentAssistant /></FeatureGuard>} />
+        <Route path="/medical-alerts" element={<FeatureGuard path="/medical-alerts"><MedicalAlerts /></FeatureGuard>} />
+        <Route path="/smart-search" element={<FeatureGuard path="/smart-search"><SmartSearch /></FeatureGuard>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ClinicLayout>
