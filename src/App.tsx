@@ -149,7 +149,7 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+            
             
             <BrowserRouter>
               <AuthProvider>
