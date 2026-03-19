@@ -21,7 +21,7 @@ import { QRCodeSVG } from "qrcode.react";
 
 const anim = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.25 } };
 
-type TabKey = "overview" | "booking" | "history" | "files" | "prescriptions" | "sessions" | "notifications" | "medical-card" | "loyalty" | "referral" | "treatment-plan" | "progress" | "pre-visit" | "feedback" | "ai-assistant";
+type TabKey = "overview" | "payments" | "booking" | "history" | "files" | "prescriptions" | "sessions" | "notifications" | "medical-card" | "loyalty" | "referral" | "treatment-plan" | "progress" | "pre-visit" | "feedback" | "ai-assistant";
 
 export default function PatientPortal() {
   const { user, profile, signOut } = useAuth();
