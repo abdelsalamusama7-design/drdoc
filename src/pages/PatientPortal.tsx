@@ -157,6 +157,7 @@ export default function PatientPortal() {
 
   const tabs: { key: TabKey; label: string; icon: any }[] = [
     { key: "overview", label: "نظرة عامة", icon: Activity },
+    { key: "journey", label: "رحلة المريض", icon: MapPin },
     { key: "payments", label: "المدفوعات", icon: Wallet },
     { key: "booking", label: "حجز موعد", icon: CalendarPlus },
     { key: "pre-visit", label: "نموذج ما قبل الزيارة", icon: ClipboardList },
