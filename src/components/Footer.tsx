@@ -15,14 +15,14 @@ export default function Footer() {
         </a>
         <span className="hidden sm:inline mx-1">—</span>
         <div className="flex items-center gap-2">
-          <a href="tel:+201227080430" className="flex items-center gap-1 hover:text-foreground transition-colors">
-            <Phone className="h-3 w-3" />
-            01227080430
-          </a>
-          <span>-</span>
           <a href="tel:+201554400044" className="flex items-center gap-1 hover:text-foreground transition-colors">
             <Phone className="h-3 w-3" />
-            01554400044
+            المبيعات: 01554400044
+          </a>
+          <span>-</span>
+          <a href="tel:+201227080430" className="flex items-center gap-1 hover:text-foreground transition-colors">
+            <Phone className="h-3 w-3" />
+            الدعم الفني: 01227080430
           </a>
         </div>
       </div>
