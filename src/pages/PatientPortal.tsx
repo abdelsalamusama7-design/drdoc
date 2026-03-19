@@ -247,7 +247,7 @@ export default function PatientPortal() {
 
 
   return (
-    <motion.div {...anim} className="flex gap-0 lg:gap-5 min-h-screen">
+    <motion.div {...anim} className="flex flex-col lg:flex-row-reverse gap-0 lg:gap-5 min-h-[calc(100vh-10rem)] lg:min-h-[calc(100vh-6rem)]">
       {/* Sidebar - Desktop always visible, Mobile overlay */}
       <>
         {/* Mobile overlay backdrop */}
@@ -255,22 +255,24 @@ export default function PatientPortal() {
           <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
         )}
         <aside className={`
-          fixed top-0 right-0 z-50 h-full w-64 bg-card border-l border-border overflow-y-auto transition-transform duration-300
-          lg:sticky lg:top-0 lg:z-0 lg:translate-x-0 lg:w-56 lg:shrink-0 lg:rounded-xl lg:border lg:h-fit lg:max-h-[calc(100vh-2rem)]
+          fixed top-0 right-0 z-50 h-full w-[280px] bg-card border-l border-border overflow-y-auto transition-transform duration-300
+          lg:sticky lg:top-0 lg:z-0 lg:translate-x-0 lg:w-56 lg:shrink-0 lg:rounded-xl lg:border lg:h-fit lg:max-h-[calc(100vh-6rem)]
           ${sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}
-        `}>
+        `}
+        style={{ paddingTop: sidebarOpen ? 'env(safe-area-inset-top)' : undefined }}
+        >
           <div className="p-3 lg:p-2">
             {/* Mobile close */}
             <div className="flex items-center justify-between mb-3 lg:hidden">
               <span className="text-sm font-bold text-foreground">القائمة</span>
-              <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg hover:bg-muted">
+              <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-lg hover:bg-muted">
                 <LogOut className="h-4 w-4 text-muted-foreground rotate-180" />
               </button>
             </div>
             <nav className="space-y-0.5">
               {tabs.map(tab => (
                 <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSidebarOpen(false); }}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors text-right ${
+                  className={`w-full flex items-center gap-2.5 px-3 py-3 sm:py-2.5 rounded-lg text-xs font-medium transition-colors text-right touch-target ${
                     activeTab === tab.key
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -288,7 +290,7 @@ export default function PatientPortal() {
       </>
 
       {/* Main Content */}
-      <div className="flex-1 min-w-0 space-y-5">
+      <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
         {/* Patient Header */}
         <div className="clinic-card p-4 lg:p-6">
           <div className="flex items-center justify-between">
