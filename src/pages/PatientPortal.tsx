@@ -44,6 +44,7 @@ export default function PatientPortal() {
   const [payments, setPayments] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { data: appointments } = useAllAppointments();
   const { data: prescriptions } = usePrescriptions();
@@ -244,49 +245,83 @@ export default function PatientPortal() {
     { key: "notifications", label: "الإشعارات", icon: Bell },
   ];
 
+
   return (
-    <motion.div {...anim} className="space-y-5">
-      {/* Patient Header */}
-      <div className="clinic-card p-4 lg:p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-xl font-bold text-primary">
-              {patientData.name.charAt(0)}
+    <motion.div {...anim} className="flex gap-0 lg:gap-5 min-h-screen">
+      {/* Sidebar - Desktop always visible, Mobile overlay */}
+      <>
+        {/* Mobile overlay backdrop */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        )}
+        <aside className={`
+          fixed top-0 right-0 z-50 h-full w-64 bg-card border-l border-border overflow-y-auto transition-transform duration-300
+          lg:sticky lg:top-0 lg:z-0 lg:translate-x-0 lg:w-56 lg:shrink-0 lg:rounded-xl lg:border lg:h-fit lg:max-h-[calc(100vh-2rem)]
+          ${sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}
+        `}>
+          <div className="p-3 lg:p-2">
+            {/* Mobile close */}
+            <div className="flex items-center justify-between mb-3 lg:hidden">
+              <span className="text-sm font-bold text-foreground">القائمة</span>
+              <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg hover:bg-muted">
+                <LogOut className="h-4 w-4 text-muted-foreground rotate-180" />
+              </button>
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-foreground">{patientData.name}</h1>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {patientData.age && `${patientData.age} سنة`} · {patientData.phone}
-              </p>
-              {loyaltyData && (
-                <div className="flex items-center gap-1 mt-1">
-                  <Gift className="h-3 w-3 text-amber-500" />
-                  <span className="text-[10px] font-bold text-amber-500">{loyaltyData.total_points - loyaltyData.redeemed_points} نقطة</span>
-                </div>
-              )}
-            </div>
+            <nav className="space-y-0.5">
+              {tabs.map(tab => (
+                <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSidebarOpen(false); }}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors text-right ${
+                    activeTab === tab.key
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}>
+                  <tab.icon className="h-4 w-4 shrink-0" />
+                  <span>{tab.label}</span>
+                  {tab.key === "notifications" && unreadCount > 0 && (
+                    <span className="mr-auto w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">{unreadCount}</span>
+                  )}
+                </button>
+              ))}
+            </nav>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setActiveTab("notifications")} className="relative p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors">
-              {unreadCount > 0 ? <BellDot className="h-4.5 w-4.5 text-primary" /> : <Bell className="h-4.5 w-4.5" />}
-              {unreadCount > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">{unreadCount}</span>}
-            </button>
-            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5"><LogOut className="h-3.5 w-3.5" />خروج</Button>
+        </aside>
+      </>
+
+      {/* Main Content */}
+      <div className="flex-1 min-w-0 space-y-5">
+        {/* Patient Header */}
+        <div className="clinic-card p-4 lg:p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* Mobile menu trigger */}
+              <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-xl hover:bg-muted text-muted-foreground lg:hidden">
+                <ClipboardList className="h-5 w-5" />
+              </button>
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-xl font-bold text-primary">
+                {patientData.name.charAt(0)}
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-foreground">{patientData.name}</h1>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {patientData.age && `${patientData.age} سنة`} · {patientData.phone}
+                </p>
+                {loyaltyData && (
+                  <div className="flex items-center gap-1 mt-1">
+                    <Gift className="h-3 w-3 text-amber-500" />
+                    <span className="text-[10px] font-bold text-amber-500">{loyaltyData.total_points - loyaltyData.redeemed_points} نقطة</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setActiveTab("notifications")} className="relative p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors">
+                {unreadCount > 0 ? <BellDot className="h-4.5 w-4.5 text-primary" /> : <Bell className="h-4.5 w-4.5" />}
+                {unreadCount > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">{unreadCount}</span>}
+              </button>
+              <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5"><LogOut className="h-3.5 w-3.5" />خروج</Button>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Tabs - scrollable */}
-      <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-hide">
-        {tabs.map(tab => (
-          <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-colors ${
-              activeTab === tab.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}>
-            <tab.icon className="h-3.5 w-3.5" />{tab.label}
-          </button>
-        ))}
-      </div>
 
       {/* ── Overview Tab ── */}
       {activeTab === "overview" && (
@@ -664,6 +699,7 @@ export default function PatientPortal() {
           patientData={patientData}
         />
       )}
+      </div>{/* end main content */}
     </motion.div>
   );
 }
