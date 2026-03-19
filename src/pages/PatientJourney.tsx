@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   UserPlus, DollarSign, Stethoscope, CalendarCheck, ChevronLeft, ChevronRight,
   Search, Loader2, Phone, FileText, Brain, Pill, Plus, Upload, Clock,
-  AlertTriangle, Activity, X, Check, CreditCard
+  AlertTriangle, Activity, X, Check, CreditCard, KeyRound, Mail, Eye, EyeOff
 } from "lucide-react";
 import { useAllVisits, usePatients, useServices, updateVisit, createPayment, createPrescription,
   createFollowUp, createDoctorNote, uploadPatientFile, type Visit, type Patient, type Service
@@ -45,6 +45,7 @@ export default function PatientJourney() {
 
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);
   const [activeStage, setActiveStage] = useState<StageKey | null>(null);
+  const [createAccountPatient, setCreateAccountPatient] = useState<Patient | null>(null);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -175,8 +176,19 @@ export default function PatientJourney() {
                         </span>
                       </div>
                     )}
-                    {/* Next action hint */}
-                    <div className="flex justify-end">
+                    {/* Actions */}
+                    <div className="flex items-center justify-between">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (visit.patient) setCreateAccountPatient(visit.patient);
+                        }}
+                        className="flex items-center gap-1 text-[9px] text-primary hover:text-primary/80 transition-colors px-1.5 py-0.5 rounded-md hover:bg-primary/5"
+                        title={lang === "ar" ? "إنشاء حساب للمريض" : "Create patient account"}
+                      >
+                        <KeyRound className="h-3 w-3" />
+                        {lang === "ar" ? "إنشاء حساب" : "Account"}
+                      </button>
                       <Badge variant="outline" className="text-[9px] h-4 gap-1">
                         <ChevronLeft className="h-2.5 w-2.5" />
                         {lang === "ar" ? "تفاصيل" : "Details"}
@@ -209,6 +221,15 @@ export default function PatientJourney() {
           onClose={() => { setSelectedVisit(null); setActiveStage(null); }}
           onMoveNext={(nextStage) => handleMoveToStage(selectedVisit.id, nextStage)}
           refetch={refetch}
+        />
+      )}
+
+      {/* Create Patient Account Dialog */}
+      {createAccountPatient && (
+        <CreatePatientAccountDialog
+          patient={createAccountPatient}
+          lang={lang}
+          onClose={() => setCreateAccountPatient(null)}
         />
       )}
 
@@ -549,6 +570,119 @@ function StageDialog({ visit, stage, patient, services, user, clinic, lang, onCl
               )}
             </div>
           ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ── Create Patient Account Dialog ──
+interface CreatePatientAccountDialogProps {
+  patient: Patient;
+  lang: string;
+  onClose: () => void;
+}
+
+function CreatePatientAccountDialog({ patient, lang, onClose }: CreatePatientAccountDialogProps) {
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleCreate = async () => {
+    if (!email.trim() || !password) {
+      toast({ title: "خطأ", description: lang === "ar" ? "يرجى ملء البريد وكلمة المرور" : "Fill email & password", variant: "destructive" });
+      return;
+    }
+    if (password.length < 6) {
+      toast({ title: "خطأ", description: lang === "ar" ? "كلمة المرور ٦ أحرف على الأقل" : "Password min 6 chars", variant: "destructive" });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await supabase.functions.invoke("admin-users", {
+        body: {
+          action: "create_user",
+          email: email.trim(),
+          password,
+          full_name: patient.name,
+          phone: patient.phone,
+          role: "patient",
+        },
+      });
+      if (res.error) throw res.error;
+      if (res.data?.error) throw new Error(res.data.error);
+
+      toast({
+        title: lang === "ar" ? "تم إنشاء الحساب" : "Account Created",
+        description: lang === "ar" ? `تم إنشاء حساب ${patient.name} بنجاح` : `Account for ${patient.name} created`,
+      });
+      onClose();
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-sm" dir={lang === "ar" ? "rtl" : "ltr"}>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <KeyRound className="h-5 w-5 text-primary" />
+            {lang === "ar" ? "إنشاء حساب للمريض" : "Create Patient Account"}
+          </DialogTitle>
+        </DialogHeader>
+
+        {/* Patient info */}
+        <div className="bg-muted/30 rounded-xl p-3 border border-border/50 space-y-1">
+          <p className="text-sm font-bold text-foreground">{patient.name}</p>
+          <p className="text-[11px] text-muted-foreground font-en">{patient.phone}</p>
+        </div>
+
+        <div className="space-y-3">
+          <div>
+            <Label className="text-xs">{lang === "ar" ? "البريد الإلكتروني" : "Email"} <span className="text-destructive">*</span></Label>
+            <div className="relative mt-1">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="patient@email.com"
+                className="pl-9 font-en"
+                dir="ltr"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-xs">{lang === "ar" ? "كلمة المرور" : "Password"} <span className="text-destructive">*</span></Label>
+            <div className="relative mt-1">
+              <Input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="pl-9 font-en"
+                dir="ltr"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+
+          <Button className="w-full" onClick={handleCreate} disabled={submitting}>
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
+            {lang === "ar" ? "إنشاء الحساب" : "Create Account"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
