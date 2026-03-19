@@ -258,7 +258,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-border/80">
           {!collapsed && (
-            <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-all active:scale-90 duration-200">
+            <Link to="/landing" className="flex items-center gap-2.5 hover:opacity-80 transition-all active:scale-90 duration-200">
               <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
                 <Stethoscope className="h-4 w-4 text-primary-foreground" />
               </div>
@@ -383,7 +383,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           <Menu className="h-5 w-5 text-foreground" />
         </button>
         <div className="flex items-center gap-2">
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-all active:scale-90 duration-200">
+          <Link to="/landing" className="flex items-center gap-2 hover:opacity-80 transition-all active:scale-90 duration-200">
             <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
               <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
