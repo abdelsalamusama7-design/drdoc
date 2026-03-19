@@ -328,17 +328,17 @@ export default function PatientPortal() {
       {/* ── Overview Tab ── */}
       {activeTab === "overview" && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
             {[
               { label: "الزيارات", value: visits.length, icon: Calendar, color: "text-primary", bg: "bg-primary/10" },
               { label: "إجمالي المدفوع", value: `${totalPaid.toLocaleString()} ج.م`, icon: Wallet, color: "text-success", bg: "bg-success/10" },
               { label: "المتبقي", value: `${totalRemaining.toLocaleString()} ج.م`, icon: Wallet, color: "text-destructive", bg: "bg-destructive/10" },
               { label: "الوصفات", value: myPrescriptions.length, icon: Pill, color: "text-accent", bg: "bg-accent/10" },
             ].map((stat, i) => (
-              <div key={i} className="clinic-card p-4">
-                <div className={`w-9 h-9 rounded-lg ${stat.bg} flex items-center justify-center mb-2`}><stat.icon className={`h-4 w-4 ${stat.color}`} /></div>
-                <p className="text-lg font-bold text-foreground font-en">{stat.value}</p>
-                <p className="text-[11px] text-muted-foreground">{stat.label}</p>
+              <div key={i} className="clinic-card p-3 sm:p-4">
+                <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg ${stat.bg} flex items-center justify-center mb-1.5 sm:mb-2`}><stat.icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${stat.color}`} /></div>
+                <p className="text-base sm:text-lg font-bold text-foreground font-en">{stat.value}</p>
+                <p className="text-[10px] sm:text-[11px] text-muted-foreground">{stat.label}</p>
               </div>
             ))}
           </div>
