@@ -668,7 +668,7 @@ export default function LandingPage() {
                   { icon: Mail, label: "البريد الإلكتروني", value: "info@smartclinic.com", href: "mailto:info@smartclinic.com" },
                   { icon: MessageCircle, label: "واتساب", value: "راسلنا على واتساب", href: "https://wa.me/201554400044" },
                 ].map(c => (
-                  <div key={c.label} className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border">
+                  <a key={c.label} href={c.href} target={c.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-primary/30 transition-colors">
                     <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                       <c.icon className="h-5 w-5 text-primary" />
                     </div>
@@ -676,7 +676,7 @@ export default function LandingPage() {
                       <p className="text-xs text-muted-foreground">{c.label}</p>
                       <p className="font-semibold text-foreground text-sm font-en" dir="ltr">{c.value}</p>
                     </div>
-                  </div>
+                  </a>
                 ))}
               </div>
 
