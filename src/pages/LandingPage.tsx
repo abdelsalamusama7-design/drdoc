@@ -765,7 +765,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <PartnersSection />
+      
       <Footer />
     </div>
   );
