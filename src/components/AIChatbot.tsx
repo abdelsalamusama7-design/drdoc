@@ -78,7 +78,7 @@ export default function AIChatbot() {
               <div className="flex items-center gap-2">
                 <Bot className="h-5 w-5" />
                 <div>
-                  <h3 className="text-sm font-bold">المساعد الذكي</h3>
+                  <h3 className="text-sm font-bold">المساعد الطبي الذكي</h3>
                   <p className="text-[10px] opacity-80">متصل الآن</p>
                 </div>
               </div>
