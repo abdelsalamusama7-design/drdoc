@@ -39,6 +39,7 @@ export default function PatientPortal() {
   const [treatmentSteps, setTreatmentSteps] = useState<any[]>([]);
   const [progressData, setProgressData] = useState<any[]>([]);
   const [preVisitForms, setPreVisitForms] = useState<any[]>([]);
+  const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const { data: appointments } = useAllAppointments();
