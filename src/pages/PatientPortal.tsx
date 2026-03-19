@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useAllAppointments, usePrescriptions, usePatientRatings, getSignedFileUrl } from "@/hooks/useSupabaseData";
+import { useAllAppointments, usePrescriptions, usePatientRatings, getSignedFileUrl, createAppointment } from "@/hooks/useSupabaseData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
