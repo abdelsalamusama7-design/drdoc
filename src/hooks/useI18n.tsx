@@ -32,6 +32,13 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.subscription": "الأسعار والاشتراكات",
     "nav.patientJourney": "رحلة المريض",
 
+    // Nav Groups
+    "navGroup.main": "الرئيسية",
+    "navGroup.clinical": "العيادة",
+    "navGroup.management": "الإدارة",
+    "navGroup.tools": "أدوات ذكية",
+    "navGroup.system": "النظام",
+
     // Layout
     "layout.search": "بحث سريع...",
     "layout.quickActions": "إجراءات سريعة",
