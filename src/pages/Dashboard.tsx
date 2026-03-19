@@ -12,7 +12,7 @@ import {
 } from "recharts";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/hooks/useI18n";
-import { useAppointments, usePatients, useExpenses, useFollowUps, useServices } from "@/hooks/useSupabaseData";
+import { useAppointments, usePatients, useExpenses, useFollowUps, useServices, useAllPayments, useAllAppointments } from "@/hooks/useSupabaseData";
 
 const container = {
   hidden: { opacity: 0 },
