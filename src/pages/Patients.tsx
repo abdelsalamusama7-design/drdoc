@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Plus, Phone, AlertTriangle, X, Filter, Users, Loader2 } from "lucide-react";
+import { Search, Plus, Phone, AlertTriangle, X, Filter, Users, Loader2, Mail, Lock } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { usePatients, createPatient, type Patient } from "@/hooks/useSupabaseData";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
@@ -33,6 +34,7 @@ export default function Patients() {
     name: "", phone: "", age: "", address: "", gender: "male",
     maritalStatus: "single", allergies: "",
     medicalHistory: "", previousSurgeries: "", currentMedications: "",
+    email: "", password: "",
   });
 
   useEffect(() => {
@@ -66,8 +68,30 @@ export default function Patients() {
       toast({ title: "خطأ", description: "يرجى ملء الاسم ورقم الهاتف", variant: "destructive" });
       return;
     }
+    if (form.email && !form.password) {
+      toast({ title: "خطأ", description: "يرجى إدخال كلمة المرور لإنشاء حساب المريض", variant: "destructive" });
+      return;
+    }
+    if (form.password && form.password.length < 6) {
+      toast({ title: "خطأ", description: "كلمة المرور يجب أن تكون 6 أحرف على الأقل", variant: "destructive" });
+      return;
+    }
     setSubmitting(true);
     try {
+      // If email & password provided, create auth account first
+      if (form.email && form.password) {
+        const { data: regData, error: regError } = await supabase.functions.invoke("patient-register", {
+          body: {
+            email: form.email.trim(),
+            password: form.password,
+            full_name: form.name.trim(),
+            phone: form.phone.trim(),
+          },
+        });
+        if (regError) throw new Error(regError.message || "فشل إنشاء حساب المريض");
+        if (regData?.error) throw new Error(regData.error);
+      }
+
       await createPatient({
         name: form.name.trim(),
         phone: form.phone.trim(),
@@ -83,9 +107,9 @@ export default function Patients() {
         segment: 'new',
         visit_count: 0,
       });
-      toast({ title: "تم", description: "تم تسجيل المريض بنجاح" });
+      toast({ title: "تم", description: form.email ? "تم تسجيل المريض وإنشاء حسابه بنجاح" : "تم تسجيل المريض بنجاح" });
       setShowAddModal(false);
-      setForm({ name: "", phone: "", age: "", address: "", gender: "male", maritalStatus: "single", allergies: "", medicalHistory: "", previousSurgeries: "", currentMedications: "" });
+      setForm({ name: "", phone: "", age: "", address: "", gender: "male", maritalStatus: "single", allergies: "", medicalHistory: "", previousSurgeries: "", currentMedications: "", email: "", password: "" });
       refetch();
     } catch (err: any) {
       toast({ title: "خطأ", description: err.message, variant: "destructive" });
@@ -216,6 +240,23 @@ export default function Patients() {
               <div>
                 <Label>العمر</Label>
                 <Input type="number" value={form.age} onChange={e => setForm({...form, age: e.target.value})} placeholder="العمر" className="mt-1.5" />
+              </div>
+
+              {/* Patient Account Section */}
+              <div className="sm:col-span-2 border-t border-border pt-4 mt-2">
+                <p className="text-sm font-semibold text-foreground mb-1 flex items-center gap-1.5">
+                  <Lock className="h-4 w-4 text-primary" />
+                  حساب المريض (اختياري)
+                </p>
+                <p className="text-[11px] text-muted-foreground mb-3">أدخل الإيميل والباسورد لإنشاء حساب يدخل بيه المريض على بوابة المريض</p>
+              </div>
+              <div>
+                <Label className="flex items-center gap-1"><Mail className="h-3.5 w-3.5" />الإيميل</Label>
+                <Input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="patient@example.com" className="mt-1.5 font-en" dir="ltr" />
+              </div>
+              <div>
+                <Label className="flex items-center gap-1"><Lock className="h-3.5 w-3.5" />كلمة المرور</Label>
+                <Input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} placeholder="6 أحرف على الأقل" className="mt-1.5 font-en" dir="ltr" />
               </div>
               <div>
                 <Label>النوع</Label>
