@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Plus, Phone, AlertTriangle, X, Filter, Users, Loader2 } from "lucide-react";
+import { Search, Plus, Phone, AlertTriangle, X, Filter, Users, Loader2, Mail, Lock } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { usePatients, createPatient, type Patient } from "@/hooks/useSupabaseData";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
