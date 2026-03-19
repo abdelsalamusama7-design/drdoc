@@ -239,7 +239,7 @@ export default function UserManagement() {
       </motion.div>
 
       {/* Stats */}
-      <motion.div variants={item} className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+      <motion.div variants={item} className="grid grid-cols-4 sm:grid-cols-7 gap-3">
         {[
           { label: "إجمالي", count: roleCounts.all, color: "text-foreground", bg: "bg-muted" },
           { label: "مدراء", count: roleCounts.admin, color: "text-destructive", bg: "bg-destructive/10" },
