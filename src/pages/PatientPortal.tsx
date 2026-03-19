@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   User, FileText, FlaskConical, Image, Pill, Calendar, Clock,
   Activity, Loader2, Download, Star, Stethoscope, LogOut, CalendarPlus, Check, Bell, BellDot,
-  QrCode, Gift, Users, TrendingUp, ClipboardList, Repeat, Heart, Send, Mic, ChevronRight
+  QrCode, Gift, Users, TrendingUp, ClipboardList, Repeat, Heart, Send, Mic, ChevronRight, Wallet
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +21,7 @@ import { QRCodeSVG } from "qrcode.react";
 
 const anim = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.25 } };
 
-type TabKey = "overview" | "booking" | "history" | "files" | "prescriptions" | "sessions" | "notifications" | "medical-card" | "loyalty" | "referral" | "treatment-plan" | "progress" | "pre-visit" | "feedback" | "ai-assistant";
+type TabKey = "overview" | "payments" | "booking" | "history" | "files" | "prescriptions" | "sessions" | "notifications" | "medical-card" | "loyalty" | "referral" | "treatment-plan" | "progress" | "pre-visit" | "feedback" | "ai-assistant";
 
 export default function PatientPortal() {
   const { user, profile, signOut } = useAuth();
@@ -39,6 +39,7 @@ export default function PatientPortal() {
   const [treatmentSteps, setTreatmentSteps] = useState<any[]>([]);
   const [progressData, setProgressData] = useState<any[]>([]);
   const [preVisitForms, setPreVisitForms] = useState<any[]>([]);
+  const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const { data: appointments } = useAllAppointments();
@@ -56,7 +57,7 @@ export default function PatientPortal() {
           const cid = patient.clinic_id;
 
           // Parallel fetches
-          const [filesRes, visitsRes, sessRes, loyaltyRes, loyaltyTxRes, referralsRes, plansRes, progressRes, formsRes] = await Promise.all([
+          const [filesRes, visitsRes, sessRes, loyaltyRes, loyaltyTxRes, referralsRes, plansRes, progressRes, formsRes, paymentsRes] = await Promise.all([
             (supabase.from("patient_files" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
             (supabase.from("visits" as any) as any).select("*").eq("patient_id", pid).order("date", { ascending: false }),
             (supabase.from("therapy_sessions" as any) as any).select("*").eq("patient_id", pid).order("session_date", { ascending: true }),
@@ -66,6 +67,7 @@ export default function PatientPortal() {
             (supabase.from("treatment_plans" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
             (supabase.from("patient_progress" as any) as any).select("*").eq("patient_id", pid).order("date", { ascending: true }),
             (supabase.from("pre_visit_forms" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
+            (supabase.from("payments" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
           ]);
 
           setPatientFiles(filesRes.data || []);
@@ -77,6 +79,7 @@ export default function PatientPortal() {
           setTreatmentPlans(plansRes.data || []);
           setProgressData(progressRes.data || []);
           setPreVisitForms(formsRes.data || []);
+          setPayments(paymentsRes.data || []);
 
           // Fetch treatment steps for all plans
           if (plansRes.data?.length) {
@@ -125,6 +128,8 @@ export default function PatientPortal() {
   const myAppointments = appointments.filter(a => patientData && a.patient_id === patientData.id);
   const myPrescriptions = prescriptions.filter(p => patientData && p.patient_id === patientData.id);
   const lastAppointment = myAppointments.filter(a => a.status !== "cancelled").sort((a, b) => b.date.localeCompare(a.date))[0];
+  const totalPaid = payments.reduce((sum: number, p: any) => sum + (Number(p.amount) || 0), 0);
+  const totalRemaining = payments.reduce((sum: number, p: any) => sum + (Number(p.remaining_amount) || 0), 0);
 
   const handleDownload = async (filePath: string) => {
     try {
@@ -151,6 +156,7 @@ export default function PatientPortal() {
 
   const tabs: { key: TabKey; label: string; icon: any }[] = [
     { key: "overview", label: "نظرة عامة", icon: Activity },
+    { key: "payments", label: "المدفوعات", icon: Wallet },
     { key: "booking", label: "حجز موعد", icon: CalendarPlus },
     { key: "pre-visit", label: "نموذج ما قبل الزيارة", icon: ClipboardList },
     { key: "history", label: "الزيارات", icon: Calendar },
@@ -217,9 +223,9 @@ export default function PatientPortal() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               { label: "الزيارات", value: visits.length, icon: Calendar, color: "text-primary", bg: "bg-primary/10" },
-              { label: "الملفات", value: patientFiles.length, icon: FileText, color: "text-accent", bg: "bg-accent/10" },
-              { label: "الوصفات", value: myPrescriptions.length, icon: Pill, color: "text-success", bg: "bg-success/10" },
-              { label: "الجلسات", value: sessions.length, icon: Stethoscope, color: "text-warning", bg: "bg-warning/10" },
+              { label: "إجمالي المدفوع", value: `${totalPaid.toLocaleString()} ج.م`, icon: Wallet, color: "text-success", bg: "bg-success/10" },
+              { label: "المتبقي", value: `${totalRemaining.toLocaleString()} ج.م`, icon: Wallet, color: "text-destructive", bg: "bg-destructive/10" },
+              { label: "الوصفات", value: myPrescriptions.length, icon: Pill, color: "text-accent", bg: "bg-accent/10" },
             ].map((stat, i) => (
               <div key={i} className="clinic-card p-4">
                 <div className={`w-9 h-9 rounded-lg ${stat.bg} flex items-center justify-center mb-2`}><stat.icon className={`h-4 w-4 ${stat.color}`} /></div>
@@ -289,6 +295,53 @@ export default function PatientPortal() {
                       <p className="text-[10px] text-muted-foreground font-en">{apt.time?.substring(0, 5)} · {apt.doctor}</p>
                     </div>
                     <Badge variant="secondary" className="text-[10px]">{apt.status === "scheduled" ? "مجدول" : apt.status}</Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Payments ── */}
+      {activeTab === "payments" && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="clinic-card p-4 text-center">
+              <Wallet className="h-5 w-5 text-success mx-auto mb-1" />
+              <p className="text-lg font-bold text-foreground font-en">{totalPaid.toLocaleString()}</p>
+              <p className="text-[10px] text-muted-foreground">إجمالي المدفوع (ج.م)</p>
+            </div>
+            <div className="clinic-card p-4 text-center">
+              <Wallet className="h-5 w-5 text-destructive mx-auto mb-1" />
+              <p className="text-lg font-bold text-foreground font-en">{totalRemaining.toLocaleString()}</p>
+              <p className="text-[10px] text-muted-foreground">المتبقي (ج.م)</p>
+            </div>
+          </div>
+          <div className="clinic-card">
+            <div className="p-4 border-b border-border"><h2 className="text-sm font-semibold text-foreground">سجل المدفوعات</h2></div>
+            {payments.length === 0 ? <div className="p-8 text-center text-sm text-muted-foreground">لا توجد مدفوعات</div> : (
+              <div className="divide-y divide-border">
+                {payments.map((pay: any) => (
+                  <div key={pay.id} className="p-4 flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${Number(pay.remaining_amount) > 0 ? "bg-warning/10" : "bg-success/10"}`}>
+                      <Wallet className={`h-4 w-4 ${Number(pay.remaining_amount) > 0 ? "text-warning" : "text-success"}`} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium text-foreground font-en">{Number(pay.amount).toLocaleString()} ج.م</p>
+                        <Badge variant={Number(pay.remaining_amount) > 0 ? "secondary" : "default"} className="text-[9px]">
+                          {Number(pay.remaining_amount) > 0 ? "جزئي" : "مكتمل"}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] text-muted-foreground font-en">{new Date(pay.created_at).toLocaleDateString("ar-SA")}</span>
+                        <span className="text-[10px] text-muted-foreground">· {pay.payment_method === "cash" ? "نقدي" : pay.payment_method === "card" ? "بطاقة" : pay.payment_method || "نقدي"}</span>
+                      </div>
+                      {Number(pay.remaining_amount) > 0 && (
+                        <p className="text-[10px] text-destructive mt-0.5">متبقي: {Number(pay.remaining_amount).toLocaleString()} ج.م</p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
