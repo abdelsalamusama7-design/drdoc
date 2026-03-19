@@ -1,199 +1,230 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function SplashScreen({ onComplete }: { onComplete: () => void }) {
   const [phase, setPhase] = useState(0);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 800);
-    const t2 = setTimeout(() => setPhase(2), 2000);
-    const t3 = setTimeout(() => setPhase(3), 7200);
-    const t4 = setTimeout(() => onComplete(), 8000);
-    return () => {
-      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4);
-    };
+    const t1 = setTimeout(() => setPhase(1), 600);
+    const t2 = setTimeout(() => setPhase(2), 1400);
+    const t3 = setTimeout(() => setPhase(3), 5500);
+    const t4 = setTimeout(() => onComplete(), 6200);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
   }, [onComplete]);
 
+  // Particle canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
+    const dpr = window.devicePixelRatio || 1;
+    const resize = () => {
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.scale(dpr, dpr);
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
+    };
+    resize();
+
+    const particles: { x: number; y: number; vx: number; vy: number; size: number; alpha: number; pulse: number }[] = [];
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        size: Math.random() * 2 + 0.5,
+        alpha: Math.random() * 0.4 + 0.1,
+        pulse: Math.random() * Math.PI * 2,
+      });
+    }
+
+    let animId: number;
+    const draw = () => {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.pulse += 0.02;
+        if (p.x < 0) p.x = window.innerWidth;
+        if (p.x > window.innerWidth) p.x = 0;
+        if (p.y < 0) p.y = window.innerHeight;
+        if (p.y > window.innerHeight) p.y = 0;
+        const a = p.alpha * (0.6 + 0.4 * Math.sin(p.pulse));
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(96, 165, 250, ${a})`;
+        ctx.fill();
+      });
+
+      // Draw connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(96, 165, 250, ${0.06 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => cancelAnimationFrame(animId);
+  }, []);
 
   return (
     <AnimatePresence>
       {phase < 3 && (
         <motion.div
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
-          style={{ background: "linear-gradient(135deg, hsl(222 47% 4%), hsl(222 47% 8%), hsl(217 50% 12%))" }}
-          exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 0.8, ease: [0.2, 0, 0, 1] }}
+          style={{ background: "linear-gradient(160deg, #030712 0%, #0a1628 40%, #0c1a30 70%, #060e1a 100%)" }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7, ease: [0.4, 0, 0, 1] }}
         >
-          {/* Grid */}
-          <div className="absolute inset-0 opacity-[0.06]" style={{
-            backgroundImage: `linear-gradient(hsl(217 91% 60% / 0.4) 1px, transparent 1px),
-                              linear-gradient(90deg, hsl(217 91% 60% / 0.4) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px",
-          }} />
+          <canvas ref={canvasRef} className="absolute inset-0" />
 
-          {/* Orbs */}
-          <motion.div
-            className="absolute w-[500px] h-[500px] rounded-full"
-            style={{ background: "radial-gradient(circle, hsl(217 91% 60% / 0.15), transparent 70%)" }}
-            animate={{ x: [0, 80, -40, 0], y: [0, -60, 30, 0], scale: [1, 1.2, 0.9, 1] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          {/* Radial glow behind logo */}
+          <div className="absolute w-[600px] h-[600px] rounded-full opacity-20"
+            style={{ background: "radial-gradient(circle, hsl(217 91% 60% / 0.3), transparent 70%)" }}
           />
-          <motion.div
-            className="absolute w-[350px] h-[350px] rounded-full"
-            style={{ background: "radial-gradient(circle, hsl(199 89% 48% / 0.12), transparent 70%)" }}
-            animate={{ x: [0, -60, 40, 0], y: [0, 40, -30, 0], scale: [1, 0.8, 1.1, 1] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          />
-
-          {/* Scan line */}
-          <motion.div
-            className="absolute inset-x-0 h-[1px]"
-            style={{ background: "linear-gradient(90deg, transparent, hsl(217 91% 60% / 0.5), transparent)" }}
-            animate={{ top: ["-5%", "105%"] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          />
-
-          {/* Rotating rings */}
-          <motion.div
-            className="absolute w-[280px] h-[280px] sm:w-[360px] sm:h-[360px] rounded-full border border-primary/10"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          >
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary/60" />
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1.5 h-1.5 rounded-full bg-accent/50" />
-          </motion.div>
-          <motion.div
-            className="absolute w-[200px] h-[200px] sm:w-[260px] sm:h-[260px] rounded-full border border-accent/5"
-            animate={{ rotate: -360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          >
-            <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary/40" />
-          </motion.div>
 
           {/* Center content */}
-          <div className="relative z-10 flex flex-col items-center gap-6">
-            {/* Logo - Medical Cross + Pulse */}
+          <div className="relative z-10 flex flex-col items-center gap-8">
+            {/* Logo */}
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ duration: 1, ease: [0.2, 0, 0, 1], delay: 0.2 }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.8, ease: [0, 0.7, 0.3, 1], delay: 0.1 }}
               className="relative"
             >
-              <div
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl flex items-center justify-center relative"
-                style={{ background: "linear-gradient(135deg, hsl(217 91% 60%), hsl(199 89% 48%))" }}
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-[1.75rem] flex items-center justify-center relative overflow-hidden"
+                style={{ background: "linear-gradient(135deg, hsl(217 91% 55%), hsl(199 89% 45%))" }}
               >
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" className="sm:w-14 sm:h-14">
-                  {/* Medical cross */}
-                  <rect x="18" y="10" width="12" height="28" rx="3" fill="white" fillOpacity="0.95"/>
-                  <rect x="10" y="18" width="28" height="12" rx="3" fill="white" fillOpacity="0.95"/>
-                  {/* Heartbeat pulse line */}
+                {/* Glass overlay */}
+                <div className="absolute inset-0 opacity-20"
+                  style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%)" }}
+                />
+                <svg width="52" height="52" viewBox="0 0 48 48" fill="none" className="relative z-10 sm:w-[60px] sm:h-[60px]">
+                  <rect x="19" y="10" width="10" height="28" rx="2.5" fill="white" fillOpacity="0.95"/>
+                  <rect x="10" y="19" width="28" height="10" rx="2.5" fill="white" fillOpacity="0.95"/>
                   <motion.path
                     d="M8 30 L16 30 L19 22 L22 34 L25 18 L28 30 L31 26 L34 30 L40 30"
-                    stroke="hsl(217 91% 60%)"
-                    strokeWidth="2.5"
+                    stroke="rgba(255,255,255,0.7)"
+                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     fill="none"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 2, delay: 0.8, ease: "easeInOut" }}
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{ duration: 1.5, delay: 0.6, ease: "easeInOut" }}
                   />
                 </svg>
-                <div className="absolute inset-0 rounded-3xl" style={{
-                  boxShadow: "0 0 60px hsl(217 91% 60% / 0.4), 0 0 120px hsl(217 91% 60% / 0.1)"
-                }} />
               </div>
+
+              {/* Glow ring */}
+              <motion.div
+                className="absolute -inset-1 rounded-[2rem]"
+                style={{ background: "linear-gradient(135deg, hsl(217 91% 60% / 0.4), hsl(199 89% 48% / 0.2))", filter: "blur(12px)" }}
+                animate={{ opacity: [0.4, 0.7, 0.4] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              />
 
               {/* Pulse rings */}
               <motion.div
-                className="absolute inset-0 rounded-3xl border-2 border-primary/30"
-                animate={{ scale: [1, 1.6], opacity: [0.5, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-              />
-              <motion.div
-                className="absolute inset-0 rounded-3xl border border-primary/20"
-                animate={{ scale: [1, 2], opacity: [0.3, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeOut", delay: 0.5 }}
+                className="absolute -inset-2 rounded-[2.2rem] border border-primary/20"
+                animate={{ scale: [1, 1.5], opacity: [0.4, 0] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
               />
             </motion.div>
 
-            {/* App name */}
+            {/* Brand text */}
             <AnimatePresence>
               {phase >= 1 && (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, ease: [0.2, 0, 0, 1] }}
-                  className="flex flex-col items-center gap-2"
+                  initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.7, ease: [0, 0.7, 0.3, 1] }}
+                  className="flex flex-col items-center gap-3"
                 >
-                  <h1 className="text-3xl sm:text-4xl font-bold tracking-tight" style={{
-                    background: "linear-gradient(135deg, hsl(0 0% 100%), hsl(217 91% 80%))",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}>
+                  <h1 className="text-4xl sm:text-5xl font-bold tracking-tight"
+                    style={{
+                      background: "linear-gradient(180deg, #f8fafc 0%, #94a3b8 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
                     Smart Clinic
                   </h1>
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: "3rem" }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="h-[2px] rounded-full"
+                    style={{ background: "linear-gradient(90deg, hsl(217 91% 60%), hsl(199 89% 48%))" }}
+                  />
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                    className="text-sm sm:text-base tracking-[0.3em] uppercase"
-                    style={{ color: "hsl(215 20% 55%)" }}
+                    transition={{ delay: 0.4, duration: 0.5 }}
+                    className="text-sm tracking-[0.25em] uppercase font-light"
+                    style={{ color: "hsl(215 20% 50%)" }}
                   >
-                    Clinic Management System
+                    إدارة العيادات الذكية
                   </motion.p>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Loading bar */}
+            {/* Loading indicator */}
             <AnimatePresence>
               {phase >= 2 && (
                 <motion.div
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "200px" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ duration: 0.4 }}
-                  className="mt-4"
+                  className="mt-6 flex flex-col items-center gap-4"
                 >
-                  <div className="h-[2px] w-[200px] rounded-full overflow-hidden" style={{ background: "hsl(217 33% 17%)" }}>
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, hsl(217 91% 60%), hsl(199 89% 48%))" }}
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 5, ease: "easeInOut" }}
-                    />
+                  {/* Dots loader */}
+                  <div className="flex gap-2">
+                    {[0, 1, 2].map((i) => (
+                      <motion.div
+                        key={i}
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{ background: "hsl(217 91% 60%)" }}
+                        animate={{ opacity: [0.2, 1, 0.2], scale: [0.8, 1.2, 0.8] }}
+                        transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2, ease: "easeInOut" }}
+                      />
+                    ))}
                   </div>
-                  <motion.div
-                    className="flex justify-between mt-2"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <LoadingText />
-                  </motion.div>
+                  <LoadingText />
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* Corner decorations */}
-          <div className="absolute top-6 left-6 w-12 h-12 border-t border-l border-primary/20 rounded-tl-lg" />
-          <div className="absolute top-6 right-6 w-12 h-12 border-t border-r border-primary/20 rounded-tr-lg" />
-          <div className="absolute bottom-6 left-6 w-12 h-12 border-b border-l border-primary/20 rounded-bl-lg" />
-          <div className="absolute bottom-6 right-6 w-12 h-12 border-b border-r border-primary/20 rounded-br-lg" />
-
-          <motion.p
+          {/* Bottom branding */}
+          <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.3 }}
-            transition={{ delay: 2.5 }}
-            className="absolute bottom-8 text-xs font-mono"
-            style={{ color: "hsl(215 20% 45%)" }}
+            animate={{ opacity: 0.25 }}
+            transition={{ delay: 2 }}
+            className="absolute bottom-8 flex flex-col items-center gap-1"
           >
-            v2.0.0
-          </motion.p>
+            <p className="text-[10px] font-mono tracking-widest" style={{ color: "hsl(215 20% 40%)" }}>
+              POWERED BY AI
+            </p>
+            <p className="text-[10px] font-mono" style={{ color: "hsl(215 20% 30%)" }}>v2.0</p>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
@@ -201,25 +232,25 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
 }
 
 function LoadingText() {
-  const [textIndex, setTextIndex] = useState(0);
+  const [idx, setIdx] = useState(0);
   const texts = ["جاري التحميل...", "تهيئة النظام...", "جاري الاتصال...", "جاهز!"];
 
   useEffect(() => {
-    const t1 = setTimeout(() => setTextIndex(1), 1500);
-    const t2 = setTimeout(() => setTextIndex(2), 3000);
-    const t3 = setTimeout(() => setTextIndex(3), 4500);
+    const t1 = setTimeout(() => setIdx(1), 1200);
+    const t2 = setTimeout(() => setIdx(2), 2400);
+    const t3 = setTimeout(() => setIdx(3), 3600);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
   return (
     <motion.span
-      key={textIndex}
-      initial={{ opacity: 0, y: 5 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="text-xs w-full text-center"
+      key={idx}
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 0.6, y: 0 }}
+      className="text-xs text-center"
       style={{ color: "hsl(215 20% 55%)" }}
     >
-      {texts[textIndex]}
+      {texts[idx]}
     </motion.span>
   );
 }
