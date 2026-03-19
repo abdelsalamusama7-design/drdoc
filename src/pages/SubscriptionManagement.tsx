@@ -23,9 +23,9 @@ interface Invoice {
 }
 
 const PLAN_PRICES: Record<SubscriptionPlan, { setup: number; monthly: number }> = {
-  starter: { setup: 10000, monthly: 750 },
-  professional: { setup: 18000, monthly: 1000 },
-  premium: { setup: 25000, monthly: 1500 },
+  starter: { setup: 10000, monthly: 2000 },
+  professional: { setup: 18000, monthly: 3000 },
+  premium: { setup: 25000, monthly: 4000 },
 };
 
 const PLAN_ICONS: Record<SubscriptionPlan, any> = {
