@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   User, FileText, FlaskConical, Image, Pill, Calendar, Clock,
-  Activity, Loader2, Download, Star, Stethoscope, LogOut
+  Activity, Loader2, Download, Star, Stethoscope, LogOut, CalendarPlus, Check
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
