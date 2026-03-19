@@ -176,8 +176,19 @@ export default function PatientJourney() {
                         </span>
                       </div>
                     )}
-                    {/* Next action hint */}
-                    <div className="flex justify-end">
+                    {/* Actions */}
+                    <div className="flex items-center justify-between">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (visit.patient) setCreateAccountPatient(visit.patient);
+                        }}
+                        className="flex items-center gap-1 text-[9px] text-primary hover:text-primary/80 transition-colors px-1.5 py-0.5 rounded-md hover:bg-primary/5"
+                        title={lang === "ar" ? "إنشاء حساب للمريض" : "Create patient account"}
+                      >
+                        <KeyRound className="h-3 w-3" />
+                        {lang === "ar" ? "إنشاء حساب" : "Account"}
+                      </button>
                       <Badge variant="outline" className="text-[9px] h-4 gap-1">
                         <ChevronLeft className="h-2.5 w-2.5" />
                         {lang === "ar" ? "تفاصيل" : "Details"}
