@@ -217,6 +217,16 @@ export default function Patients() {
                 <Label>العمر</Label>
                 <Input type="number" value={form.age} onChange={e => setForm({...form, age: e.target.value})} placeholder="العمر" className="mt-1.5" />
               </div>
+              <div>
+                <Label>النوع</Label>
+                <Select value={form.gender} onValueChange={v => setForm({...form, gender: v})}>
+                  <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">ذكر</SelectItem>
+                    <SelectItem value="female">أنثى</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="sm:col-span-2">
                 <Label>العنوان</Label>
                 <Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="المدينة، الحي" className="mt-1.5" />
