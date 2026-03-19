@@ -54,7 +54,7 @@ export default function AIChatbot() {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             onClick={() => setOpen(true)}
-            className="fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+            className="fixed bottom-24 left-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
           >
             <MessageCircle className="h-6 w-6" />
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-success rounded-full border-2 border-background" />
