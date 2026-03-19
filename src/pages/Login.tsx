@@ -131,7 +131,7 @@ export default function Login() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">
-                Dr.Doc<span className="text-white/70">.</span>
+                Smart Clinic
               </h2>
               <p className="text-xs text-white/60">Smart Clinic System</p>
             </div>
