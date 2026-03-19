@@ -173,15 +173,6 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
                     className="h-[2px] rounded-full"
                     style={{ background: "linear-gradient(90deg, hsl(217 91% 60%), hsl(199 89% 48%))" }}
                   />
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                    className="text-sm tracking-[0.25em] uppercase font-light"
-                    style={{ color: "hsl(215 20% 50%)" }}
-                  >
-                    إدارة العيادات الذكية
-                  </motion.p>
                 </motion.div>
               )}
             </AnimatePresence>
