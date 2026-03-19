@@ -63,7 +63,10 @@ export default function Insurance() {
   const [selectedClaimsForInvoice, setSelectedClaimsForInvoice] = useState<string[]>([]);
 
   const fetchAll = useCallback(async () => {
-    if (!clinic?.id) return;
+    if (!clinic?.id) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const [compRes, claimRes, invRes, patRes] = await Promise.all([
