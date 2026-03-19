@@ -46,6 +46,7 @@ import RetentionDashboard from "@/pages/RetentionDashboard";
 import ClinicReferrals from "@/pages/ClinicReferrals";
 import InteractiveDemo from "@/pages/InteractiveDemo";
 import Insurance from "@/pages/Insurance";
+import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -142,6 +143,7 @@ const App = () => {
                   <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/landing" element={<LandingPage />} />
                     <Route path="/booking" element={<Booking />} />
                     <Route path="/pricing" element={<Pricing />} />
