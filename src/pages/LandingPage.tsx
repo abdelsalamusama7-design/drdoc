@@ -760,7 +760,7 @@ export default function LandingPage() {
 
             <motion.div variants={fadeUp} className="mt-8 flex items-center justify-center gap-6 text-sm text-white/70 flex-wrap">
               <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-white/80" />بدون بطاقة ائتمان</span>
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-white/80" />14 يوم تجربة مجانية</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-white/80" />تجربة مجانية</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-white/80" />ضمان استرداد 30 يوم</span>
             </motion.div>
           </motion.div>
