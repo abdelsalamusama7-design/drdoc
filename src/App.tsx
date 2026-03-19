@@ -47,6 +47,7 @@ import ClinicReferrals from "@/pages/ClinicReferrals";
 import InteractiveDemo from "@/pages/InteractiveDemo";
 import Insurance from "@/pages/Insurance";
 import ResetPassword from "@/pages/ResetPassword";
+import OnlinePayment from "@/pages/OnlinePayment";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -148,6 +149,7 @@ const App = () => {
                     <Route path="/booking" element={<Booking />} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/register-clinic" element={<RegisterClinic />} />
+                    <Route path="/pay" element={<OnlinePayment />} />
                     <Route path="/demo" element={<InteractiveDemo />} />
                     <Route path="/*" element={<ProtectedRoutes />} />
                   </Routes>
