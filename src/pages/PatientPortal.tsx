@@ -385,6 +385,53 @@ export default function PatientPortal() {
       {activeTab === "booking" && (
         <BookingForm patientData={patientData} onSuccess={() => { setActiveTab("overview"); }} />
       )}
+
+      {/* Notifications */}
+      {activeTab === "notifications" && (
+        <div className="clinic-card">
+          <div className="p-4 border-b border-border flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-foreground">الإشعارات</h2>
+            {unreadCount > 0 && (
+              <Button variant="ghost" size="sm" onClick={markAllRead} className="text-xs h-7">
+                تحديد الكل كمقروء
+              </Button>
+            )}
+          </div>
+          {notifications.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">لا توجد إشعارات</div>
+          ) : (
+            <div className="divide-y divide-border">
+              {notifications.map(notif => (
+                <div
+                  key={notif.id}
+                  className={`p-4 flex items-start gap-3 transition-colors cursor-pointer hover:bg-muted/30 ${!notif.is_read ? "bg-primary/5" : ""}`}
+                  onClick={() => { if (!notif.is_read) markAsRead(notif.id); if (notif.reference_type === "patient_file") setActiveTab("files"); }}
+                >
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${!notif.is_read ? "bg-primary/10" : "bg-muted"}`}>
+                    {notif.type === "patient_file" ? (
+                      <FlaskConical className={`h-4 w-4 ${!notif.is_read ? "text-primary" : "text-muted-foreground"}`} />
+                    ) : (
+                      <Bell className={`h-4 w-4 ${!notif.is_read ? "text-primary" : "text-muted-foreground"}`} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm ${!notif.is_read ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+                      {notif.title}
+                    </p>
+                    {notif.body && <p className="text-[11px] text-muted-foreground mt-0.5">{notif.body}</p>}
+                    <p className="text-[10px] text-muted-foreground/60 mt-1 font-en">
+                      {new Date(notif.created_at).toLocaleDateString("ar-SA")} · {new Date(notif.created_at).toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
+                  {!notif.is_read && (
+                    <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 }
