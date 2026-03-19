@@ -59,40 +59,9 @@ export default function Login() {
     if (!email.trim() || !password.trim()) return;
 
     setSubmitting(true);
-
-    if (isSignUp) {
-      // Patient registration via edge function
-      if (!fullName.trim() || !phone.trim()) {
-        toast({ title: lang === "ar" ? "خطأ" : "Error", description: lang === "ar" ? "جميع الحقول مطلوبة" : "All fields required", variant: "destructive" });
-        setSubmitting(false);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase.functions.invoke("patient-register", {
-          body: { email: email.trim(), password, full_name: fullName.trim(), phone: phone.trim() },
-        });
-
-        if (error || data?.error) {
-          toast({ title: lang === "ar" ? "خطأ" : "Error", description: data?.error || error?.message, variant: "destructive" });
-          setSubmitting(false);
-          return;
-        }
-
-        // Auto sign-in after registration
-        const { error: signInError } = await signIn(email.trim(), password);
-        if (signInError) {
-          toast({ title: lang === "ar" ? "تم التسجيل" : "Registered", description: lang === "ar" ? "تم إنشاء حسابك، سجل دخول الآن" : "Account created, please sign in" });
-          setIsSignUp(false);
-        }
-      } catch (err: any) {
-        toast({ title: lang === "ar" ? "خطأ" : "Error", description: err.message, variant: "destructive" });
-      }
-    } else {
-      const { error } = await signIn(email.trim(), password);
-      if (error) {
-        toast({ title: t("login.error"), description: error.message, variant: "destructive" });
-      }
+    const { error } = await signIn(email.trim(), password);
+    if (error) {
+      toast({ title: t("login.error"), description: error.message, variant: "destructive" });
     }
     setSubmitting(false);
   };
