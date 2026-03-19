@@ -241,6 +241,23 @@ export default function Patients() {
                 <Label>العمر</Label>
                 <Input type="number" value={form.age} onChange={e => setForm({...form, age: e.target.value})} placeholder="العمر" className="mt-1.5" />
               </div>
+
+              {/* Patient Account Section */}
+              <div className="sm:col-span-2 border-t border-border pt-4 mt-2">
+                <p className="text-sm font-semibold text-foreground mb-1 flex items-center gap-1.5">
+                  <Lock className="h-4 w-4 text-primary" />
+                  حساب المريض (اختياري)
+                </p>
+                <p className="text-[11px] text-muted-foreground mb-3">أدخل الإيميل والباسورد لإنشاء حساب يدخل بيه المريض على بوابة المريض</p>
+              </div>
+              <div>
+                <Label className="flex items-center gap-1"><Mail className="h-3.5 w-3.5" />الإيميل</Label>
+                <Input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="patient@example.com" className="mt-1.5 font-en" dir="ltr" />
+              </div>
+              <div>
+                <Label className="flex items-center gap-1"><Lock className="h-3.5 w-3.5" />كلمة المرور</Label>
+                <Input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} placeholder="6 أحرف على الأقل" className="mt-1.5 font-en" dir="ltr" />
+              </div>
               <div>
                 <Label>النوع</Label>
                 <Select value={form.gender} onValueChange={v => setForm({...form, gender: v})}>
