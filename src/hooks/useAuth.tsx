@@ -8,7 +8,7 @@ type AppRole = Database["public"]["Enums"]["app_role"];
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  profile: { full_name: string | null; specialty: string | null } | null;
+  profile: { full_name: string | null; specialty: string | null; phone: string | null } | null;
   role: AppRole | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
