@@ -431,7 +431,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="py-2 px-2.5 overflow-y-auto space-y-1">
+              <nav className="py-2 px-2.5 overflow-y-auto space-y-1" style={{ maxHeight: 'calc(100vh - 56px - 70px)' }}>
                 {navGroups.map(group => {
                   const visibleItems = group.items.filter(filterItem);
                   if (visibleItems.length === 0) return null;
