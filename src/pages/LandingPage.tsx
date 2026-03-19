@@ -21,7 +21,7 @@ import problemSolutionImg from "@/assets/problem-solution.png";
 import screenshotPatients from "@/assets/screenshot-patients.jpg";
 import screenshotAppointments from "@/assets/screenshot-appointments.jpg";
 import screenshotMobile from "@/assets/screenshot-mobile.png";
-import SocialProofNotification from "@/components/SocialProofNotification";
+import PartnersSection from "@/components/PartnersSection";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
 const fadeIn = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.5 } } };
@@ -765,7 +765,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <SocialProofNotification />
+      <PartnersSection />
       <Footer />
     </div>
   );
