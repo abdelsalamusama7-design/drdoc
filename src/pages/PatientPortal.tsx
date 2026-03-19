@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
+import jsPDF from "jspdf";
 import { motion } from "framer-motion";
 import {
   User, FileText, FlaskConical, Image, Pill, Calendar, Clock,
