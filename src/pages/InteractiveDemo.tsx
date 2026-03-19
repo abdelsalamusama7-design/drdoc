@@ -476,6 +476,7 @@ export default function InteractiveDemo() {
       case "dashboard": return <DemoDashboard />;
       case "patients": return <DemoPatients />;
       case "appointments": return <DemoAppointments />;
+      case "prescriptions": return <DemoPrescriptions />;
       case "queue": return <DemoQueue />;
       case "finance": return <DemoFinance />;
       case "ai": return <DemoAI />;
