@@ -511,6 +511,28 @@ function StageDialog({ visit, stage, patient, services, user, clinic, lang, onCl
           </div>
         )}
 
+        {/* Admin manual stage control */}
+        <div className="border-t border-border/50 pt-3 space-y-2">
+          <Label className="text-xs text-muted-foreground">
+            {lang === "ar" ? "⚙️ تحكم يدوي — نقل المريض لمرحلة أخرى" : "⚙️ Manual Control — Move to stage"}
+          </Label>
+          <div className="flex flex-wrap gap-1.5">
+            {STAGES.map((s) => (
+              <Button
+                key={s.key}
+                size="sm"
+                variant={s.key === stage ? "default" : "outline"}
+                disabled={s.key === stage || submitting}
+                className={`text-xs gap-1.5 h-8 ${s.key === stage ? "" : "hover:bg-muted"}`}
+                onClick={() => onMoveNext(s.key)}
+              >
+                <s.icon className="h-3 w-3" />
+                {lang === "ar" ? s.label : s.labelEn}
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Stage progress indicator */}
         <div className="flex items-center justify-center gap-1 pt-2">
           {STAGES.map((s, i) => (
