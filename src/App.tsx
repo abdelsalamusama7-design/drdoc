@@ -46,6 +46,7 @@ import RetentionDashboard from "@/pages/RetentionDashboard";
 import ClinicReferrals from "@/pages/ClinicReferrals";
 import InteractiveDemo from "@/pages/InteractiveDemo";
 import Insurance from "@/pages/Insurance";
+import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
