@@ -75,11 +75,11 @@ export default function SettingsPage() {
   const handleLocalBackup = async () => {
     setLocalBackupLoading(true);
     try {
-      const data = await fetchAllData(currentClinicId);
+      const data = await fetchAllData(clinicId);
       const backupPayload = {
         version: "1.0",
         created_at: new Date().toISOString(),
-        clinic_id: currentClinicId,
+        clinic_id: clinicId,
         tables: data,
       };
       const date = new Date().toISOString().slice(0, 10);
@@ -96,15 +96,15 @@ export default function SettingsPage() {
   const handleCloudBackup = async () => {
     setCloudBackupLoading(true);
     try {
-      const data = await fetchAllData(currentClinicId);
+      const data = await fetchAllData(clinicId);
       const backupPayload = {
         version: "1.0",
         created_at: new Date().toISOString(),
-        clinic_id: currentClinicId,
+        clinic_id: clinicId,
         tables: data,
       };
       const date = new Date().toISOString().slice(0, 10);
-      const fileName = `backups/clinic-${currentClinicId || "all"}/backup-${date}.json`;
+      const fileName = `backups/clinic-${clinicId || "all"}/backup-${date}.json`;
       const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: "application/json" });
       const file = new File([blob], `backup-${date}.json`, { type: "application/json" });
 
