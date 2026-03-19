@@ -22,6 +22,10 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.reports": "التقارير",
     "nav.users": "المستخدمين",
     "nav.settings": "الإعدادات",
+    "nav.queue": "الطابور",
+    "nav.inventory": "المخزون",
+    "nav.noShow": "إدارة الغياب",
+    "nav.doctorPerformance": "أداء الأطباء",
 
     // Layout
     "layout.search": "بحث سريع...",
