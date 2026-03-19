@@ -255,7 +255,7 @@ export default function Pricing() {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-4">
-            🌐 <a href="https://www.instatech.site/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.instatech.site</a>
+            🌐 <a href="https://www.facebook.com/share/1DHbu6vRUo/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Insta-Tech Labs</a>
           </p>
         </div>
       </div>
