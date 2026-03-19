@@ -351,6 +351,9 @@ export default function LandingPage() {
                   "مفيش تتبع حقيقي للإيرادات والمصروفات",
                   "المريض مش عارف يتابع حالته أو نتائجه",
                   "وقت الانتظار طويل وبيأثر على رضا المرضى",
+                  "الروشتات بخط اليد والصيدلية مش بتفهمها",
+                  "مفيش تنبيهات لحساسية الأدوية أو التعارضات",
+                  "صعب تعرف أداء كل دكتور أو نسبة رجوع المرضى",
                 ].map((problem, i) => (
                   <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-destructive/5 border border-destructive/10">
                     <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center shrink-0 mt-0.5">
