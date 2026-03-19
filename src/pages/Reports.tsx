@@ -1,9 +1,11 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { FileBarChart, Users, DollarSign, Loader2, Star, TrendingUp, Download, MessageCircle } from "lucide-react";
+import { FileBarChart, Users, DollarSign, Loader2, Star, TrendingUp, Download, MessageCircle, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import { useAllAppointments, usePatients, useServices, useExpenses, usePatientRatings } from "@/hooks/useSupabaseData";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
