@@ -70,37 +70,6 @@ export default function PartnersSection() {
           ))}
         </motion.div>
 
-        {/* Contract Photos */}
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          variants={stagger}
-        >
-          <motion.h3 variants={fadeUp} className="text-xl font-bold text-foreground text-center mb-8">
-            لحظات من شراكاتنا 📸
-          </motion.h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {contractPhotos.map((photo, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                className="group relative rounded-xl overflow-hidden border border-border/40 aspect-[4/3]"
-              >
-                <img
-                  src={photo.src}
-                  alt={photo.alt}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute bottom-0 left-0 right-0 p-3 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
-                  {photo.alt}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
       </div>
     </section>
   );
