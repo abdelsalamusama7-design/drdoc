@@ -266,9 +266,11 @@ export default function Login() {
               </h1>
               <p className="text-muted-foreground text-sm">
                 {mode === "staff"
-                  ? (isSignUp
-                    ? (lang === "ar" ? "أنشئ حسابك وابدأ في إدارة عيادتك" : "Create your account to start managing your clinic")
-                    : (lang === "ar" ? "سجّل دخولك للوصول إلى لوحة التحكم" : "Sign in to access your dashboard"))
+                  ? (forgotMode
+                    ? (lang === "ar" ? "أدخل بريدك الإلكتروني لاستعادة كلمة المرور" : "Enter your email to reset your password")
+                    : isSignUp
+                      ? (lang === "ar" ? "أنشئ حسابك وابدأ في إدارة عيادتك" : "Create your account to start managing your clinic")
+                      : (lang === "ar" ? "سجّل دخولك للوصول إلى لوحة التحكم" : "Sign in to access your dashboard"))
                   : (lang === "ar" ? "سجّل دخولك لمتابعة مواعيدك وملفك الطبي" : "Sign in to view your appointments and medical records")
                 }
               </p>
