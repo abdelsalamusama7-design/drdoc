@@ -699,6 +699,7 @@ export default function PatientPortal() {
           patientData={patientData}
         />
       )}
+      </div>{/* end main content */}
     </motion.div>
   );
 }
