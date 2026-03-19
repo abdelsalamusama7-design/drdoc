@@ -44,6 +44,7 @@ import LandingPage from "@/pages/LandingPage";
 import OnboardingWizard from "@/pages/OnboardingWizard";
 import RetentionDashboard from "@/pages/RetentionDashboard";
 import ClinicReferrals from "@/pages/ClinicReferrals";
+import InteractiveDemo from "@/pages/InteractiveDemo";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
