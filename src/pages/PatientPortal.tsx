@@ -2,22 +2,26 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   User, FileText, FlaskConical, Image, Pill, Calendar, Clock,
-  Activity, Loader2, Download, Star, Stethoscope, LogOut
+  Activity, Loader2, Download, Star, Stethoscope, LogOut, CalendarPlus, Check
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useAllAppointments, usePrescriptions, usePatientRatings, getSignedFileUrl } from "@/hooks/useSupabaseData";
+import { useAllAppointments, usePrescriptions, usePatientRatings, getSignedFileUrl, createAppointment } from "@/hooks/useSupabaseData";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const anim = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.25 } };
 
 export default function PatientPortal() {
   const { user, profile, signOut } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<"overview" | "history" | "files" | "prescriptions" | "sessions">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "history" | "files" | "prescriptions" | "sessions" | "booking">("overview");
   const [patientData, setPatientData] = useState<any>(null);
   const [patientFiles, setPatientFiles] = useState<any[]>([]);
   const [visits, setVisits] = useState<any[]>([]);
@@ -96,6 +100,7 @@ export default function PatientPortal() {
 
   const tabs = [
     { key: "overview" as const, label: "نظرة عامة", icon: Activity },
+    { key: "booking" as const, label: "حجز موعد", icon: CalendarPlus },
     { key: "history" as const, label: "الزيارات", icon: Calendar },
     { key: "files" as const, label: "الملفات", icon: FlaskConical },
     { key: "prescriptions" as const, label: "الوصفات", icon: Pill },
@@ -337,6 +342,118 @@ export default function PatientPortal() {
           )}
         </div>
       )}
+
+      {/* Booking */}
+      {activeTab === "booking" && (
+        <BookingForm patientData={patientData} onSuccess={() => { setActiveTab("overview"); }} />
+      )}
     </motion.div>
+  );
+}
+
+// ── Booking Form Component ──
+function BookingForm({ patientData, onSuccess }: { patientData: any; onSuccess: () => void }) {
+  const { toast } = useToast();
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [visitType, setVisitType] = useState("consultation");
+  const [notes, setNotes] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = tomorrow.toISOString().split("T")[0];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!date || !time) {
+      toast({ title: "خطأ", description: "اختر التاريخ والوقت", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await createAppointment({
+        patient_id: patientData.id,
+        patient_name: patientData.name,
+        phone: patientData.phone,
+        date,
+        time,
+        visit_type: visitType,
+        notes: notes || null,
+        doctor: null,
+        status: "scheduled",
+        created_by: null,
+      }, patientData.clinic_id);
+      toast({ title: "✅ تم حجز الموعد", description: `${date} الساعة ${time}` });
+      setDate("");
+      setTime("");
+      setNotes("");
+      onSuccess();
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
+  const timeSlots = [];
+  for (let h = 9; h <= 21; h++) {
+    timeSlots.push(`${String(h).padStart(2, "0")}:00`);
+    timeSlots.push(`${String(h).padStart(2, "0")}:30`);
+  }
+
+  return (
+    <div className="clinic-card p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+          <CalendarPlus className="h-4 w-4 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-sm font-bold text-foreground">حجز موعد جديد</h2>
+          <p className="text-[10px] text-muted-foreground">اختر التاريخ والوقت المناسب</p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs">التاريخ</Label>
+            <Input type="date" value={date} onChange={e => setDate(e.target.value)} min={minDate} className="font-en" required />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">الوقت</Label>
+            <Select value={time} onValueChange={setTime}>
+              <SelectTrigger><SelectValue placeholder="اختر الوقت" /></SelectTrigger>
+              <SelectContent>
+                {timeSlots.map(t => (
+                  <SelectItem key={t} value={t} className="font-en">{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs">نوع الزيارة</Label>
+          <Select value={visitType} onValueChange={setVisitType}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="consultation">كشف جديد</SelectItem>
+              <SelectItem value="follow_up">متابعة</SelectItem>
+              <SelectItem value="urgent">طوارئ</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs">ملاحظات (اختياري)</Label>
+          <Textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} placeholder="أي ملاحظات تريد إبلاغ العيادة بها..." className="text-sm" />
+        </div>
+
+        <Button type="submit" className="w-full gap-2" disabled={submitting}>
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+          تأكيد الحجز
+        </Button>
+      </form>
+    </div>
   );
 }
