@@ -195,6 +195,69 @@ export default function Insurance() {
     }
   };
 
+  const exportInvoicePDF = async (inv: InsuranceInvoice) => {
+    const { default: jsPDF } = await import("jspdf");
+    const { default: autoTable } = await import("jspdf-autotable");
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+    const companyName = getCompanyName(inv.insurance_company_id);
+    const invoiceClaims = claims.filter(c => c.insurance_company_id === inv.insurance_company_id && c.status === "approved");
+
+    // Header
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Insurance Invoice", 105, 20, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Invoice #: ${inv.invoice_number || inv.id.substring(0, 8)}`, 15, 35);
+    doc.text(`Date: ${inv.invoice_date}`, 15, 42);
+    doc.text(`Due Date: ${inv.due_date || "N/A"}`, 15, 49);
+    doc.text(`Company: ${companyName}`, 15, 56);
+    doc.text(`Status: ${inv.status}`, 15, 63);
+
+    // Line
+    doc.setDrawColor(200);
+    doc.line(15, 68, 195, 68);
+
+    // Claims table
+    const tableData = invoiceClaims.map((cl, i) => [
+      String(i + 1),
+      getPatientName(cl.patient_id),
+      cl.claim_number || "-",
+      cl.claim_date || "-",
+      cl.total_amount.toLocaleString(),
+      (cl.approved_amount || 0).toLocaleString(),
+      (cl.patient_share || 0).toLocaleString(),
+    ]);
+
+    autoTable(doc, {
+      startY: 73,
+      head: [["#", "Patient", "Claim #", "Date", "Total", "Approved", "Patient Share"]],
+      body: tableData.length > 0 ? tableData : [["", "No claims", "", "", "", "", ""]],
+      theme: "grid",
+      headStyles: { fillColor: [41, 128, 185], fontSize: 8, halign: "center" },
+      bodyStyles: { fontSize: 8, halign: "center" },
+      columnStyles: { 1: { halign: "left" } },
+    });
+
+    // Totals
+    const finalY = (doc as any).lastAutoTable?.finalY || 120;
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Total Amount: ${inv.total_amount.toLocaleString()} EGP`, 15, finalY + 12);
+    doc.text(`Paid Amount: ${inv.paid_amount.toLocaleString()} EGP`, 15, finalY + 20);
+    doc.text(`Remaining: ${(inv.total_amount - inv.paid_amount).toLocaleString()} EGP`, 15, finalY + 28);
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(150);
+    doc.text("Smart Clinic - Insurance Invoice", 105, 285, { align: "center" });
+
+    doc.save(`invoice-${inv.invoice_number || inv.id.substring(0, 8)}.pdf`);
+    toast({ title: "✅", description: "تم تصدير الفاتورة بنجاح" });
+
   const claimStatusBadge = (status: string) => {
     const map: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
       pending: { label: "معلقة", variant: "secondary" },
