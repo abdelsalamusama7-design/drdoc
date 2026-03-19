@@ -3,10 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/hooks/useI18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
-import { Users, DollarSign, Star, TrendingUp, Download, Calendar } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Users, DollarSign, Star, Download, Plus, Pencil, Loader2, Trash2 } from "lucide-react";
 
 interface DoctorStats {
   name: string;
@@ -14,6 +17,7 @@ interface DoctorStats {
   revenue: number;
   avgRating: number;
   completedVisits: number;
+  isManual?: boolean;
 }
 
 export default function DoctorPerformance() {
@@ -21,6 +25,11 @@ export default function DoctorPerformance() {
   const [period, setPeriod] = useState("month");
   const [doctors, setDoctors] = useState<DoctorStats[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Add/Edit state
+  const [showDialog, setShowDialog] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [form, setForm] = useState({ name: "", patients: 0, revenue: 0, avgRating: 0 });
 
   useEffect(() => {
     fetchStats();
@@ -40,22 +49,18 @@ export default function DoctorPerformance() {
       startDate = `${now.getFullYear()}-01-01`;
     }
 
-    // Fetch visits with payments
     const { data: visits } = await supabase
       .from("visits")
       .select("*, payments(*)")
       .gte("date", startDate);
 
-    // Fetch appointments to get doctor names
     const { data: appointments } = await supabase
       .from("appointments")
       .select("doctor, patient_name")
       .gte("date", startDate);
 
-    // Fetch ratings
     const { data: ratings } = await supabase.from("patient_ratings").select("*");
 
-    // Aggregate by doctor from appointments
     const doctorMap: Record<string, DoctorStats> = {};
     appointments?.forEach(apt => {
       const doc = apt.doctor || (lang === "ar" ? "غير محدد" : "Unassigned");
@@ -63,12 +68,10 @@ export default function DoctorPerformance() {
       doctorMap[doc].patients++;
     });
 
-    // Add revenue from visits/payments
     visits?.forEach(v => {
       const payments = (v as any).payments as any[];
       if (payments) {
         payments.forEach(p => {
-          // Try to map to doctor - simplified
           const firstDoc = Object.keys(doctorMap)[0];
           if (firstDoc && doctorMap[firstDoc]) {
             doctorMap[firstDoc].revenue += Number(p.amount) || 0;
@@ -77,7 +80,6 @@ export default function DoctorPerformance() {
       }
     });
 
-    // Average ratings
     const ratingSum: Record<string, { total: number; count: number }> = {};
     ratings?.forEach(r => {
       const doc = Object.keys(doctorMap)[0] || "default";
@@ -92,17 +94,54 @@ export default function DoctorPerformance() {
       }
     });
 
-    setDoctors(Object.values(doctorMap));
+    setDoctors(prev => {
+      const manualDocs = prev.filter(d => d.isManual);
+      return [...Object.values(doctorMap), ...manualDocs];
+    });
     setLoading(false);
+  };
+
+  const openAdd = () => {
+    setEditIndex(null);
+    setForm({ name: "", patients: 0, revenue: 0, avgRating: 0 });
+    setShowDialog(true);
+  };
+
+  const openEdit = (index: number) => {
+    const doc = doctors[index];
+    setEditIndex(index);
+    setForm({ name: doc.name, patients: doc.patients, revenue: doc.revenue, avgRating: doc.avgRating });
+    setShowDialog(true);
+  };
+
+  const handleSubmit = () => {
+    if (!form.name.trim()) return;
+    const entry: DoctorStats = {
+      name: form.name.trim(),
+      patients: form.patients,
+      revenue: form.revenue,
+      avgRating: form.avgRating,
+      completedVisits: 0,
+      isManual: true,
+    };
+    if (editIndex !== null) {
+      setDoctors(prev => prev.map((d, i) => i === editIndex ? { ...d, ...entry, isManual: d.isManual ?? true } : d));
+    } else {
+      setDoctors(prev => [...prev, entry]);
+    }
+    setShowDialog(false);
+  };
+
+  const handleDelete = (index: number) => {
+    setDoctors(prev => prev.filter((_, i) => i !== index));
   };
 
   const totalPatients = doctors.reduce((s, d) => s + d.patients, 0);
   const totalRevenue = doctors.reduce((s, d) => s + d.revenue, 0);
-  const avgRating = doctors.length > 0
-    ? Math.round((doctors.reduce((s, d) => s + d.avgRating, 0) / doctors.filter(d => d.avgRating > 0).length || 1) * 10) / 10
+  const ratedDocs = doctors.filter(d => d.avgRating > 0);
+  const avgRating = ratedDocs.length > 0
+    ? Math.round((ratedDocs.reduce((s, d) => s + d.avgRating, 0) / ratedDocs.length) * 10) / 10
     : 0;
-
-  const COLORS = ["hsl(217, 91%, 60%)", "hsl(199, 89%, 48%)", "hsl(142, 76%, 36%)", "hsl(47, 100%, 68%)", "hsl(0, 84%, 60%)"];
 
   const exportReport = () => {
     const csv = [
@@ -119,7 +158,6 @@ export default function DoctorPerformance() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
@@ -131,9 +169,7 @@ export default function DoctorPerformance() {
         </div>
         <div className="flex gap-2">
           <Select value={period} onValueChange={setPeriod}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="week">{lang === "ar" ? "أسبوع" : "Week"}</SelectItem>
               <SelectItem value="month">{lang === "ar" ? "شهر" : "Month"}</SelectItem>
@@ -143,6 +179,10 @@ export default function DoctorPerformance() {
           <Button variant="outline" size="sm" onClick={exportReport}>
             <Download className="h-4 w-4 ml-1" />
             {lang === "ar" ? "تصدير" : "Export"}
+          </Button>
+          <Button size="sm" className="gap-1.5" onClick={openAdd}>
+            <Plus className="h-4 w-4" />
+            {lang === "ar" ? "إضافة يدوي" : "Add Manual"}
           </Button>
         </div>
       </div>
@@ -162,8 +202,8 @@ export default function DoctorPerformance() {
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-              <DollarSign className="h-5 w-5 text-emerald-500" />
+            <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
+              <DollarSign className="h-5 w-5 text-success" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{totalRevenue.toLocaleString()}</p>
@@ -173,8 +213,8 @@ export default function DoctorPerformance() {
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-              <Star className="h-5 w-5 text-amber-500" />
+            <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center">
+              <Star className="h-5 w-5 text-warning" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{avgRating || "-"}</p>
@@ -197,7 +237,7 @@ export default function DoctorPerformance() {
                 <XAxis dataKey="name" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="patients" fill="hsl(217, 91%, 60%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="patients" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -224,18 +264,31 @@ export default function DoctorPerformance() {
       {/* Doctor Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {doctors.map((doc, i) => (
-          <Card key={doc.name} className="hover:border-primary/30 transition-colors">
+          <Card key={`${doc.name}-${i}`} className="hover:border-primary/30 transition-colors">
             <CardContent className="p-4">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary font-bold">
                   {doc.name.charAt(0)}
                 </div>
-                <div>
-                  <p className="font-semibold text-foreground">{doc.name}</p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-foreground">{doc.name}</p>
+                    {doc.isManual && <Badge variant="outline" className="text-[10px] px-1.5 py-0">يدوي</Badge>}
+                  </div>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Star className="h-3 w-3 text-amber-500" />
+                    <Star className="h-3 w-3 text-warning" />
                     {doc.avgRating || "-"}
                   </div>
+                </div>
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(i)}>
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  {doc.isManual && (
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(i)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -257,6 +310,64 @@ export default function DoctorPerformance() {
           </div>
         )}
       </div>
+
+      {/* Add/Edit Dialog */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{editIndex !== null ? "تعديل بيانات الطبيب" : "إضافة طبيب يدوياً"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label>اسم الطبيب *</Label>
+              <Input
+                value={form.name}
+                onChange={e => setForm({ ...form, name: e.target.value })}
+                placeholder="د. أحمد..."
+                className="mt-1.5"
+              />
+            </div>
+            <div>
+              <Label>عدد المرضى</Label>
+              <Input
+                type="number"
+                min={0}
+                value={form.patients}
+                onChange={e => setForm({ ...form, patients: parseInt(e.target.value) || 0 })}
+                className="mt-1.5"
+              />
+            </div>
+            <div>
+              <Label>الإيرادات</Label>
+              <Input
+                type="number"
+                min={0}
+                value={form.revenue}
+                onChange={e => setForm({ ...form, revenue: parseInt(e.target.value) || 0 })}
+                className="mt-1.5"
+              />
+            </div>
+            <div>
+              <Label>التقييم (0-5)</Label>
+              <Input
+                type="number"
+                min={0}
+                max={5}
+                step={0.1}
+                value={form.avgRating}
+                onChange={e => setForm({ ...form, avgRating: Math.min(5, parseFloat(e.target.value) || 0) })}
+                className="mt-1.5"
+              />
+            </div>
+            <div className="flex gap-2 justify-end pt-2">
+              <Button variant="outline" onClick={() => setShowDialog(false)}>إلغاء</Button>
+              <Button onClick={handleSubmit} disabled={!form.name.trim()}>
+                {editIndex !== null ? "حفظ التعديل" : "إضافة"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
