@@ -153,6 +153,7 @@ export default function PatientPortal() {
     { key: "loyalty", label: "نقاط الولاء", icon: Gift },
     { key: "referral", label: "دعوة صديق", icon: Users },
     { key: "feedback", label: "تقييم الزيارة", icon: Star },
+    { key: "ai-assistant", label: "مساعد صحي", icon: Mic },
     { key: "notifications", label: "الإشعارات", icon: Bell },
   ];
 
