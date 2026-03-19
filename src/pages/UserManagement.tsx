@@ -531,7 +531,7 @@ export default function UserManagement() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 py-2">
-            {(["admin", "doctor", "receptionist"] as const).map((r) => {
+            {(["admin", "doctor", "receptionist", "patient"] as const).map((r) => {
               const Icon = roleIcons[r];
               return (
                 <button
@@ -553,7 +553,8 @@ export default function UserManagement() {
                     <p className="text-[10px] text-muted-foreground">
                       {r === "admin" ? "وصول كامل لجميع الأقسام" :
                        r === "doctor" ? "وصول للمرضى والمواعيد والوصفات" :
-                       "وصول للمرضى والمواعيد فقط"}
+                       r === "receptionist" ? "وصول للمرضى والمواعيد فقط" :
+                       "بوابة المريض - عرض السجل والمواعيد"}
                     </p>
                   </div>
                   {selectedRole === r && <Check className="h-4 w-4 text-primary mr-auto" />}
