@@ -30,56 +30,103 @@ const SYSTEM_PROMPT = `أنت المساعد الذكي لعيادة Smart Clini
 5. اجعل إجاباتك مختصرة ومفيدة
 6. أذكر رقم التواصل عند الحاجة`;
 
+const FALLBACK_REPLY = `أعتذر، المساعد الذكي غير متاح الآن بشكل مؤقت.
+
+يمكنني مساعدتك حالياً في:
+- حجز موعد من صفحة /booking
+- معرفة مواعيد العمل
+- رقم التواصل: 01227080430`;
+
+const MODELS = [
+  "google/gemini-3-flash-preview",
+  "google/gemini-2.5-flash",
+  "openai/gpt-5-mini",
+];
+
+function buildStaticReply(userMessage: string) {
+  const text = userMessage.toLowerCase();
+
+  if (text.includes("حجز") || text.includes("موعد") || text.includes("booking")) {
+    return "يمكنك حجز موعد من صفحة /booking، ولو تحب أقدر أوضح لك الخطوات أيضاً. رقم التواصل: 01227080430";
+  }
+
+  if (text.includes("سعر") || text.includes("تكلفة") || text.includes("الاسعار") || text.includes("الأسعار")) {
+    return "الأسعار التقريبية: الاستشارة الأولى 300 ج.م، المتابعة 150 ج.م، تحليل الهرمونات 450 ج.م، تحليل السائل المنوي 350 ج.م، وأشعة الدوبلر 500 ج.م. للتأكيد: 01227080430";
+  }
+
+  if (text.includes("عنوان") || text.includes("مكان") || text.includes("فين") || text.includes("العنوان")) {
+    return "العيادة في القاهرة، ومواعيد العمل من السبت إلى الخميس من 9 صباحاً إلى 9 مساءً، والجمعة إجازة. للتفاصيل: 01227080430";
+  }
+
+  return FALLBACK_REPLY;
+}
+
+async function callGateway(apiKey: string, messages: Array<{ role: string; content: string }>) {
+  let lastError = "";
+
+  for (const model of MODELS) {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages.slice(-12)],
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const reply = data.choices?.[0]?.message?.content?.trim();
+      if (reply) return reply;
+      lastError = `Empty response from ${model}`;
+      continue;
+    }
+
+    if (response.status === 429) return "عذراً، عدد الطلبات كبير حالياً. يرجى المحاولة بعد قليل.";
+    if (response.status === 402) return "الخدمة غير متاحة مؤقتاً حالياً. يمكنك التواصل معنا على 01227080430";
+
+    const errorText = await response.text();
+    lastError = `${model}: ${response.status} ${errorText}`;
+    console.error("AI gateway error:", lastError);
+  }
+
+  throw new Error(lastError || "All models failed");
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
     const { messages } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+    if (!lovableApiKey) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          ...messages.slice(-10), // Keep last 10 messages for context
-        ],
-      }),
-    });
+    const safeMessages = Array.isArray(messages)
+      ? messages.filter((m) => m?.role && typeof m?.content === "string")
+      : [];
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ reply: "عذراً، عدد الطلبات كثير. يرجى المحاولة بعد قليل." }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ reply: "عذراً، الخدمة غير متاحة مؤقتاً. تواصل معنا على 01227080430" }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error("AI gateway error");
+    const lastUserMessage = [...safeMessages].reverse().find((m) => m.role === "user")?.content || "";
+
+    try {
+      const reply = await callGateway(lovableApiKey, safeMessages);
+      return new Response(JSON.stringify({ reply }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    } catch (gatewayError) {
+      console.error("ai-chat gateway fallback:", gatewayError);
+      const fallbackReply = buildStaticReply(lastUserMessage);
+      return new Response(JSON.stringify({ reply: fallbackReply, fallback: true }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
-
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "عذراً، لم أتمكن من الإجابة.";
-
-    return new Response(JSON.stringify({ reply }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   } catch (e) {
     console.error("ai-chat error:", e);
-    return new Response(JSON.stringify({ reply: "عذراً، حدث خطأ. يرجى المحاولة مرة أخرى." }), {
+    return new Response(JSON.stringify({ reply: FALLBACK_REPLY, fallback: true }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
