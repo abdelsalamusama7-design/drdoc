@@ -548,19 +548,6 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
             </span>
           </button>
 
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
-            title={theme === "light" ? "Dark Mode" : "Light Mode"}
-          >
-            {theme === "light" ? (
-              <Moon className="h-[18px] w-[18px]" />
-            ) : (
-              <Sun className="h-[18px] w-[18px]" />
-            )}
-          </button>
-
           {/* Notifications */}
           <NotificationPanel />
         </div>
