@@ -221,6 +221,10 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.reports": "Reports",
     "nav.users": "Users",
     "nav.settings": "Settings",
+    "nav.queue": "Queue",
+    "nav.inventory": "Inventory",
+    "nav.noShow": "No-Show",
+    "nav.doctorPerformance": "Dr. Performance",
 
     // Layout
     "layout.search": "Quick search...",
