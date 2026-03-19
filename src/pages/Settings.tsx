@@ -80,12 +80,13 @@ export default function SettingsPage() {
     try {
       const text = await file.text();
       const backup = JSON.parse(text);
-      if (!backup.data || backup.version !== "1.0") {
+      const backupData = backup.data || backup.tables;
+      if (!backupData || backup.version !== "1.0") {
         throw new Error("ملف النسخة الاحتياطية غير صالح");
       }
       let totalInserted = 0;
       for (const table of BACKUP_TABLES) {
-        const rows = backup.data[table];
+        const rows = backupData[table];
         if (!rows || rows.length === 0) continue;
         const { error } = await supabase.from(table as any).upsert(rows as any[], { onConflict: "id" });
         if (error) {
