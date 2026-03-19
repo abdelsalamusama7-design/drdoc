@@ -126,6 +126,10 @@ export default function LandingPage() {
     setSubmitting(type);
     try {
       await (supabase.from("demo_requests" as any) as any).insert({ ...form, request_type: type });
+      // Send email notification
+      supabase.functions.invoke("notify-demo-request", {
+        body: { ...form, request_type: type },
+      }).catch(() => {});
       toast({ title: "✅ تم الإرسال بنجاح", description: "سنتواصل معك قريباً" });
       setContactForm({ clinic_name: "", contact_name: "", phone: "", email: "", specialty: "", patient_count: "", message: "" });
     } catch {
