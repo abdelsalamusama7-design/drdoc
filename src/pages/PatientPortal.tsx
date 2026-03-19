@@ -197,6 +197,7 @@ export default function PatientPortal() {
   };
 
   const handleDownload = async (filePath: string) => {
+    try {
       const url = await getSignedFileUrl(filePath);
       window.open(url, "_blank");
     } catch (err: any) {
