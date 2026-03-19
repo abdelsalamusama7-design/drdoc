@@ -1535,6 +1535,62 @@ export type Database = {
           },
         ]
       }
+      subscription_payments: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          clinic_id: string | null
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string | null
+          id: string
+          payment_method: string
+          plan: string
+          receipt_path: string | null
+          sender_name: string | null
+          sender_phone: string | null
+          status: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount?: number
+          clinic_id?: string | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string | null
+          id?: string
+          payment_method?: string
+          plan: string
+          receipt_path?: string | null
+          sender_name?: string | null
+          sender_phone?: string | null
+          status?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          clinic_id?: string | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string | null
+          id?: string
+          payment_method?: string
+          plan?: string
+          receipt_path?: string | null
+          sender_name?: string | null
+          sender_phone?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_payments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           auto_renew: boolean | null
