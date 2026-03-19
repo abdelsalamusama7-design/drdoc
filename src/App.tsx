@@ -29,6 +29,10 @@ import RegisterClinic from "@/pages/RegisterClinic";
 import ReceptionDashboard from "@/pages/ReceptionDashboard";
 import AccountantDashboard from "@/pages/AccountantDashboard";
 import PatientPortal from "@/pages/PatientPortal";
+import QueueManagement from "@/pages/QueueManagement";
+import DoctorPerformance from "@/pages/DoctorPerformance";
+import InventoryPage from "@/pages/Inventory";
+import NoShowManagement from "@/pages/NoShowManagement";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 

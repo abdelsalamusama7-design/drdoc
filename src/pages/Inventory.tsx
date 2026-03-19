@@ -360,5 +360,5 @@ export default function Inventory() {
   );
 }
 
-// Need to import DollarSign
-import { DollarSign } from "lucide-react";
+
+
