@@ -232,7 +232,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.aiAssistant": "AI Assistant",
     "nav.medicalAlerts": "Medical Alerts",
     "nav.smartSearch": "Smart Search",
-    "nav.subscription": "Subscription",
+    "nav.subscription": "Pricing & Subscriptions",
 
     // Layout
     "layout.search": "Quick search...",
