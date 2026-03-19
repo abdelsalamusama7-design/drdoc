@@ -17,6 +17,7 @@ export type Database = {
       appointments: {
         Row: {
           clinic_id: string | null
+          confirmation_status: string | null
           created_at: string | null
           created_by: string | null
           date: string
@@ -26,12 +27,14 @@ export type Database = {
           patient_id: string | null
           patient_name: string
           phone: string | null
+          reminder_sent: boolean | null
           status: string | null
           time: string
           visit_type: string | null
         }
         Insert: {
           clinic_id?: string | null
+          confirmation_status?: string | null
           created_at?: string | null
           created_by?: string | null
           date: string
@@ -41,12 +44,14 @@ export type Database = {
           patient_id?: string | null
           patient_name: string
           phone?: string | null
+          reminder_sent?: boolean | null
           status?: string | null
           time: string
           visit_type?: string | null
         }
         Update: {
           clinic_id?: string | null
+          confirmation_status?: string | null
           created_at?: string | null
           created_by?: string | null
           date?: string
@@ -56,6 +61,7 @@ export type Database = {
           patient_id?: string | null
           patient_name?: string
           phone?: string | null
+          reminder_sent?: boolean | null
           status?: string | null
           time?: string
           visit_type?: string | null
