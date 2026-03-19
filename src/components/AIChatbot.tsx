@@ -11,7 +11,7 @@ interface Message {
 export default function AIChatbot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "مرحباً! أنا المساعد الذكي لعيادة Smart Clinic. كيف يمكنني مساعدتك؟ 😊\n\nيمكنني مساعدتك في:\n- حجز موعد\n- الاستفسار عن الخدمات والأسعار\n- معلومات عن العيادة\n- أسئلة طبية عامة" }
+    { role: "assistant", content: "مرحباً! أنا المساعد الطبي الذكي لعيادة Smart Clinic 🩺\n\nيمكنني مساعدتك في:\n- 💬 أسئلة طبية عامة ونصائح صحية\n- 📋 معلومات عن التحاليل والفحوصات\n- 📅 حجز موعد مع الطبيب\n- 💰 الاستفسار عن الخدمات والأسعار\n- 🏥 معلومات عن العيادة\n\nكيف يمكنني مساعدتك؟ 😊" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
