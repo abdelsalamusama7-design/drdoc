@@ -1720,3 +1720,144 @@ function OnlineMeetingTab({ patientData }: { patientData: any }) {
     </div>
   );
 }
+
+// ── Manual Payment Section ──
+const PAYMENT_NUMBER = "01032320096";
+
+function ManualPaymentSection({ patientData, totalRemaining }: { patientData: any; totalRemaining: number }) {
+  const { toast } = useToast();
+  const [method, setMethod] = useState<"instapay" | "wallet">("instapay");
+  const [senderName, setSenderName] = useState("");
+  const [senderPhone, setSenderPhone] = useState("");
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const copyNumber = () => {
+    navigator.clipboard.writeText(PAYMENT_NUMBER);
+    toast({ title: "✅ تم النسخ", description: "تم نسخ الرقم بنجاح" });
+  };
+
+  const handleSubmit = async () => {
+    if (!senderName.trim() || !senderPhone.trim()) {
+      toast({ title: "خطأ", description: "يرجى ملء اسم المرسل ورقم الهاتف", variant: "destructive" });
+      return;
+    }
+    if (!receiptFile) {
+      toast({ title: "خطأ", description: "يرجى تحميل صورة الإيصال", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      let receiptPath = "";
+      const ext = receiptFile.name.split(".").pop();
+      const filePath = `receipts/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from("patient-files").upload(filePath, receiptFile);
+      if (uploadError) throw uploadError;
+      receiptPath = filePath;
+
+      const { error } = await (supabase.from("subscription_payments" as any) as any).insert({
+        plan: "patient_payment",
+        amount: totalRemaining,
+        payment_method: method,
+        sender_name: senderName,
+        sender_phone: senderPhone,
+        receipt_path: receiptPath,
+        status: "pending",
+      });
+      if (error) throw error;
+      setSubmitted(true);
+      toast({ title: "✅ تم إرسال الدفعة", description: "سيتم مراجعتها وتأكيدها خلال 24 ساعة" });
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
+  if (submitted) {
+    return (
+      <div className="clinic-card p-6 text-center space-y-3">
+        <div className="w-14 h-14 rounded-full bg-success/10 flex items-center justify-center mx-auto">
+          <Check className="h-7 w-7 text-success" />
+        </div>
+        <h3 className="text-sm font-bold text-foreground">تم إرسال إيصال الدفع</h3>
+        <p className="text-xs text-muted-foreground">سيتم مراجعة الدفعة وتأكيدها خلال 24 ساعة</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="clinic-card overflow-hidden">
+      <div className="p-4 border-b border-border bg-warning/5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
+            <DollarSign className="h-5 w-5 text-warning" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">لديك مبلغ متبقي: <span className="font-en text-destructive">{totalRemaining.toLocaleString()} ج.م</span></p>
+            <p className="text-[10px] text-muted-foreground">ادفع الآن عبر InstaPay أو المحفظة الإلكترونية</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 space-y-4">
+        {/* Payment Method */}
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { id: "instapay" as const, label: "InstaPay", icon: Smartphone },
+            { id: "wallet" as const, label: "محفظة إلكترونية", icon: Wallet },
+          ].map(m => (
+            <button key={m.id} onClick={() => setMethod(m.id)}
+              className={`p-3 rounded-xl border text-center transition-all ${method === m.id ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:border-muted-foreground/30"}`}>
+              <m.icon className={`h-5 w-5 mx-auto mb-1 ${method === m.id ? "text-primary" : "text-muted-foreground"}`} />
+              <p className={`text-xs font-medium ${method === m.id ? "text-primary" : "text-muted-foreground"}`}>{m.label}</p>
+            </button>
+          ))}
+        </div>
+
+        {/* Payment Number */}
+        <div className="bg-muted/50 rounded-lg p-3">
+          <p className="text-[10px] text-muted-foreground mb-1.5">{method === "instapay" ? "حوّل على رقم InstaPay:" : "حوّل على رقم المحفظة:"}</p>
+          <div className="flex items-center gap-2">
+            <span className="font-en font-bold text-lg text-foreground tracking-wider flex-1">{PAYMENT_NUMBER}</span>
+            <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={copyNumber}>
+              <Copy className="h-3 w-3" /> نسخ
+            </Button>
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-1">{method === "instapay" ? "بنك المشرق" : "فودافون كاش / أورانج / اتصالات"}</p>
+        </div>
+
+        {/* Form */}
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs">اسم المرسل</Label>
+            <Input value={senderName} onChange={e => setSenderName(e.target.value)} placeholder="الاسم كما يظهر في التحويل" className="text-sm" />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">رقم هاتف المرسل</Label>
+            <Input value={senderPhone} onChange={e => setSenderPhone(e.target.value)} placeholder="01xxxxxxxxx" className="text-sm font-en" dir="ltr" />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">صورة الإيصال</Label>
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e => setReceiptFile(e.target.files?.[0] || null)} />
+            <Button variant="outline" className="w-full gap-2 text-xs" onClick={() => fileRef.current?.click()}>
+              {receiptFile ? (
+                <><FileImage className="h-4 w-4 text-success" />{receiptFile.name}</>
+              ) : (
+                <><Upload className="h-4 w-4" />اختر صورة الإيصال</>
+              )}
+            </Button>
+          </div>
+        </div>
+
+        <Button className="w-full gap-2" onClick={handleSubmit} disabled={submitting}>
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          إرسال إيصال الدفع
+        </Button>
+
+        <p className="text-[9px] text-muted-foreground text-center">سيتم مراجعة الدفعة خلال 24 ساعة وتأكيدها</p>
+      </div>
+    </div>
+  );
+}
