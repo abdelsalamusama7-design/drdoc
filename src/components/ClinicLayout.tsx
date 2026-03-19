@@ -431,7 +431,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="py-2 px-2.5 overflow-y-auto space-y-1">
+              <nav className="py-2 px-2.5 overflow-y-auto space-y-1" style={{ maxHeight: 'calc(100vh - 56px - 70px)' }}>
                 {navGroups.map(group => {
                   const visibleItems = group.items.filter(filterItem);
                   if (visibleItems.length === 0) return null;
@@ -576,9 +576,9 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
       <main
         className={`flex-1 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
           collapsed ? "lg:mr-[72px]" : "lg:mr-[250px]"
-        } mt-14 lg:mt-14 mb-16 lg:mb-0`}
+        } mt-14 lg:mt-14 mb-[88px] lg:mb-0`}
       >
-        <div className="p-4 lg:p-6 max-w-[1400px]">
+        <div className="p-3 sm:p-4 md:p-5 lg:p-6 max-w-[1400px]">
           {children}
         </div>
         <Footer />
