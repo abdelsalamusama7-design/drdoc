@@ -636,6 +636,12 @@ export default function PatientPortal() {
       {/* ── Feedback ── */}
       {activeTab === "feedback" && <FeedbackTab patientData={patientData} appointments={myAppointments} />}
 
+      {/* ── Messages ── */}
+      {activeTab === "messages" && <MessagesTab patientData={patientData} messages={messages} onNewMessage={(m: any) => setMessages(prev => [...prev, m])} />}
+
+      {/* ── Online Meeting ── */}
+      {activeTab === "online-meeting" && <OnlineMeetingTab patientData={patientData} />}
+
       {/* ── AI Health Assistant ── */}
       {activeTab === "ai-assistant" && <AIHealthAssistantTab patientData={patientData} />}
 
