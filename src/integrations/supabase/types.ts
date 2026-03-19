@@ -1101,6 +1101,51 @@ export type Database = {
           },
         ]
       }
+      patient_messages: {
+        Row: {
+          clinic_id: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          patient_id: string
+          sender_type: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          patient_id: string
+          sender_type?: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          patient_id?: string
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_messages_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_messages_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patient_ratings: {
         Row: {
           appointment_id: string | null

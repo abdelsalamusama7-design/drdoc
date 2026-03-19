@@ -1,11 +1,11 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import jsPDF from "jspdf";
 import { motion } from "framer-motion";
 import {
   User, FileText, FlaskConical, Image, Pill, Calendar, Clock,
   Activity, Loader2, Download, Star, Stethoscope, LogOut, CalendarPlus, Check, Bell, BellDot,
   QrCode, Gift, Users, TrendingUp, ClipboardList, Repeat, Heart, Send, Mic, ChevronRight, Wallet,
-  UserPlus, DollarSign, CreditCard, CalendarCheck, MapPin
+  UserPlus, DollarSign, CreditCard, CalendarCheck, MapPin, MessageSquare, Video
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,7 +23,7 @@ import { QRCodeSVG } from "qrcode.react";
 
 const anim = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.25 } };
 
-type TabKey = "overview" | "journey" | "payments" | "booking" | "history" | "files" | "prescriptions" | "sessions" | "notifications" | "medical-card" | "loyalty" | "referral" | "treatment-plan" | "progress" | "pre-visit" | "feedback" | "ai-assistant";
+type TabKey = "overview" | "journey" | "payments" | "booking" | "history" | "files" | "prescriptions" | "sessions" | "notifications" | "medical-card" | "loyalty" | "referral" | "treatment-plan" | "progress" | "pre-visit" | "feedback" | "ai-assistant" | "messages" | "online-meeting";
 
 export default function PatientPortal() {
   const { user, profile, signOut } = useAuth();
@@ -42,6 +42,7 @@ export default function PatientPortal() {
   const [progressData, setProgressData] = useState<any[]>([]);
   const [preVisitForms, setPreVisitForms] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const { data: appointments } = useAllAppointments();
@@ -59,7 +60,7 @@ export default function PatientPortal() {
           const cid = patient.clinic_id;
 
           // Parallel fetches
-          const [filesRes, visitsRes, sessRes, loyaltyRes, loyaltyTxRes, referralsRes, plansRes, progressRes, formsRes, paymentsRes] = await Promise.all([
+          const [filesRes, visitsRes, sessRes, loyaltyRes, loyaltyTxRes, referralsRes, plansRes, progressRes, formsRes, paymentsRes, messagesRes] = await Promise.all([
             (supabase.from("patient_files" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
             (supabase.from("visits" as any) as any).select("*").eq("patient_id", pid).order("date", { ascending: false }),
             (supabase.from("therapy_sessions" as any) as any).select("*").eq("patient_id", pid).order("session_date", { ascending: true }),
@@ -70,6 +71,7 @@ export default function PatientPortal() {
             (supabase.from("patient_progress" as any) as any).select("*").eq("patient_id", pid).order("date", { ascending: true }),
             (supabase.from("pre_visit_forms" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
             (supabase.from("payments" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: false }),
+            (supabase.from("patient_messages" as any) as any).select("*").eq("patient_id", pid).order("created_at", { ascending: true }),
           ]);
 
           setPatientFiles(filesRes.data || []);
@@ -82,6 +84,7 @@ export default function PatientPortal() {
           setProgressData(progressRes.data || []);
           setPreVisitForms(formsRes.data || []);
           setPayments(paymentsRes.data || []);
+          setMessages(messagesRes.data || []);
 
           // Fetch treatment steps for all plans
           if (plansRes.data?.length) {
@@ -234,6 +237,8 @@ export default function PatientPortal() {
     { key: "medical-card", label: "البطاقة الطبية", icon: QrCode },
     { key: "loyalty", label: "نقاط الولاء", icon: Gift },
     { key: "referral", label: "دعوة صديق", icon: Users },
+    { key: "messages", label: "رسائل الطبيب", icon: MessageSquare },
+    { key: "online-meeting", label: "ميتنج أونلاين", icon: Video },
     { key: "feedback", label: "تقييم الزيارة", icon: Star },
     { key: "ai-assistant", label: "مساعد صحي", icon: Mic },
     { key: "notifications", label: "الإشعارات", icon: Bell },
@@ -630,6 +635,12 @@ export default function PatientPortal() {
 
       {/* ── Feedback ── */}
       {activeTab === "feedback" && <FeedbackTab patientData={patientData} appointments={myAppointments} />}
+
+      {/* ── Messages ── */}
+      {activeTab === "messages" && <MessagesTab patientData={patientData} messages={messages} onNewMessage={(m: any) => setMessages(prev => [...prev, m])} />}
+
+      {/* ── Online Meeting ── */}
+      {activeTab === "online-meeting" && <OnlineMeetingTab patientData={patientData} />}
 
       {/* ── AI Health Assistant ── */}
       {activeTab === "ai-assistant" && <AIHealthAssistantTab patientData={patientData} />}
@@ -1521,6 +1532,210 @@ function PatientJourneyTab({ visits }: { visits: any[] }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Messages Tab ──
+function MessagesTab({ patientData, messages, onNewMessage }: { patientData: any; messages: any[]; onNewMessage: (m: any) => void }) {
+  const { toast } = useToast();
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Realtime subscription for new messages
+  useEffect(() => {
+    if (!patientData?.id) return;
+    const channel = supabase
+      .channel("patient-messages-rt")
+      .on("postgres_changes", {
+        event: "INSERT", schema: "public", table: "patient_messages",
+        filter: `patient_id=eq.${patientData.id}`
+      }, (payload) => {
+        const newMsg = payload.new as any;
+        if (newMsg.sender_type === "doctor") {
+          onNewMessage(newMsg);
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [patientData?.id]);
+
+  const handleSend = async () => {
+    if (!text.trim()) return;
+    setSending(true);
+    try {
+      const { data, error } = await (supabase.from("patient_messages" as any) as any).insert({
+        patient_id: patientData.id,
+        clinic_id: patientData.clinic_id,
+        sender_type: "patient",
+        message: text.trim(),
+      }).select().single();
+      if (error) throw error;
+      onNewMessage(data);
+      setText("");
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+    setSending(false);
+  };
+
+  return (
+    <div className="clinic-card flex flex-col" style={{ height: "calc(100vh - 320px)", minHeight: "400px" }}>
+      <div className="p-4 border-b border-border flex items-center gap-2">
+        <MessageSquare className="h-4 w-4 text-primary" />
+        <h2 className="text-sm font-semibold text-foreground">رسائل الطبيب</h2>
+      </div>
+
+      {/* Messages list */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <MessageSquare className="h-10 w-10 text-muted-foreground/20 mb-3" />
+            <p className="text-sm text-muted-foreground">لا توجد رسائل بعد</p>
+            <p className="text-[10px] text-muted-foreground mt-1">ابدأ محادثة مع طبيبك</p>
+          </div>
+        ) : (
+          messages.map((msg: any) => (
+            <div key={msg.id} className={`flex ${msg.sender_type === "patient" ? "justify-start" : "justify-end"}`}>
+              <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
+                msg.sender_type === "patient"
+                  ? "bg-primary text-primary-foreground rounded-br-sm"
+                  : "bg-muted text-foreground rounded-bl-sm"
+              }`}>
+                <p className="text-sm leading-relaxed">{msg.message}</p>
+                <p className={`text-[9px] mt-1 ${msg.sender_type === "patient" ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
+                  {new Date(msg.created_at).toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}
+                  {msg.sender_type === "doctor" && " · الطبيب"}
+                </p>
+              </div>
+            </div>
+          ))
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input */}
+      <div className="p-3 border-t border-border flex items-center gap-2">
+        <Textarea
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="اكتب رسالتك للطبيب..."
+          className="flex-1 min-h-[40px] max-h-[80px] resize-none text-sm"
+          rows={1}
+          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+        />
+        <Button size="icon" onClick={handleSend} disabled={sending || !text.trim()}>
+          {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ── Online Meeting Tab ──
+function OnlineMeetingTab({ patientData }: { patientData: any }) {
+  const { toast } = useToast();
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [reason, setReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = tomorrow.toISOString().split("T")[0];
+
+  const timeSlots: string[] = [];
+  for (let h = 9; h <= 21; h++) { timeSlots.push(`${String(h).padStart(2, "0")}:00`); timeSlots.push(`${String(h).padStart(2, "0")}:30`); }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!date || !time) { toast({ title: "خطأ", description: "اختر التاريخ والوقت", variant: "destructive" }); return; }
+    setSubmitting(true);
+    try {
+      await createAppointment({
+        patient_id: patientData.id, patient_name: patientData.name, phone: patientData.phone,
+        date, time, visit_type: "online_meeting", notes: reason ? `ميتنج أونلاين: ${reason}` : "ميتنج أونلاين",
+        doctor: null, status: "scheduled", created_by: null,
+      }, patientData.clinic_id);
+      toast({ title: "✅ تم طلب الميتنج", description: `${date} الساعة ${time} - سيتم إرسال رابط الميتنج قبل الموعد` });
+      setDate(""); setTime(""); setReason("");
+    } catch (err: any) { toast({ title: "خطأ", description: err.message, variant: "destructive" }); }
+    setSubmitting(false);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="clinic-card p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+            <Video className="h-5 w-5 text-accent" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-foreground">حجز ميتنج أونلاين مع الطبيب</h2>
+            <p className="text-[10px] text-muted-foreground">استشارة طبية عن بعد عبر مكالمة فيديو</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">التاريخ</Label>
+              <Input type="date" value={date} onChange={e => setDate(e.target.value)} min={minDate} className="font-en" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">الوقت</Label>
+              <Select value={time} onValueChange={setTime}>
+                <SelectTrigger><SelectValue placeholder="اختر الوقت" /></SelectTrigger>
+                <SelectContent>{timeSlots.map(t => <SelectItem key={t} value={t} className="font-en">{t}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">سبب الاستشارة (اختياري)</Label>
+            <Textarea value={reason} onChange={e => setReason(e.target.value)} rows={3} placeholder="اشرح سبب الاستشارة أو الموضوع الذي تريد مناقشته..." className="text-sm" />
+          </div>
+
+          <div className="p-3 rounded-lg bg-muted/50 space-y-2">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Video className="h-3.5 w-3.5 text-primary" />
+              <span>سيتم إرسال رابط الميتنج إلى إشعاراتك قبل الموعد</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Clock className="h-3.5 w-3.5 text-primary" />
+              <span>مدة الميتنج: 15-30 دقيقة</span>
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full gap-2" disabled={submitting}>
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="h-4 w-4" />}
+            طلب ميتنج أونلاين
+          </Button>
+        </form>
+      </div>
+
+      {/* WhatsApp alternative */}
+      <div className="clinic-card p-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
+            <Send className="h-5 w-5 text-success" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-foreground">تواصل فوري عبر واتساب</p>
+            <p className="text-[10px] text-muted-foreground">للحالات العاجلة أو الاستفسارات السريعة</p>
+          </div>
+          <Button size="sm" variant="outline" className="gap-1.5" onClick={() => {
+            const msg = `مرحباً د. خالد، أنا ${patientData.name}. أريد استشارة أونلاين.`;
+            window.open(`https://wa.me/201227080430?text=${encodeURIComponent(msg)}`, "_blank");
+          }}>
+            <Send className="h-3.5 w-3.5" />واتساب
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
