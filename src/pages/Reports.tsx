@@ -174,8 +174,8 @@ export default function Reports() {
                 { label: "شهري", key: "شهري" },
               ].map(p => (
                 <div key={p.key} className="flex gap-1">
-                  <Button variant="outline" size="sm" onClick={() => downloadCSV(p.key)} className="gap-1.5">
-                    <Download className="h-3.5 w-3.5" />
+                  <Button variant="outline" size="sm" onClick={() => downloadPDF(p.key)} className="gap-1.5">
+                    <FileText className="h-3.5 w-3.5" />
                     {p.label}
                   </Button>
                   <Button size="sm" onClick={() => shareWhatsApp(p.key)} className="gap-1.5 bg-[#25D366] hover:bg-[#1da851] text-white">
