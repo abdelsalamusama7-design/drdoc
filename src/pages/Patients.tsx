@@ -68,8 +68,30 @@ export default function Patients() {
       toast({ title: "خطأ", description: "يرجى ملء الاسم ورقم الهاتف", variant: "destructive" });
       return;
     }
+    if (form.email && !form.password) {
+      toast({ title: "خطأ", description: "يرجى إدخال كلمة المرور لإنشاء حساب المريض", variant: "destructive" });
+      return;
+    }
+    if (form.password && form.password.length < 6) {
+      toast({ title: "خطأ", description: "كلمة المرور يجب أن تكون 6 أحرف على الأقل", variant: "destructive" });
+      return;
+    }
     setSubmitting(true);
     try {
+      // If email & password provided, create auth account first
+      if (form.email && form.password) {
+        const { data: regData, error: regError } = await supabase.functions.invoke("patient-register", {
+          body: {
+            email: form.email.trim(),
+            password: form.password,
+            full_name: form.name.trim(),
+            phone: form.phone.trim(),
+          },
+        });
+        if (regError) throw new Error(regError.message || "فشل إنشاء حساب المريض");
+        if (regData?.error) throw new Error(regData.error);
+      }
+
       await createPatient({
         name: form.name.trim(),
         phone: form.phone.trim(),
@@ -85,9 +107,9 @@ export default function Patients() {
         segment: 'new',
         visit_count: 0,
       });
-      toast({ title: "تم", description: "تم تسجيل المريض بنجاح" });
+      toast({ title: "تم", description: form.email ? "تم تسجيل المريض وإنشاء حسابه بنجاح" : "تم تسجيل المريض بنجاح" });
       setShowAddModal(false);
-      setForm({ name: "", phone: "", age: "", address: "", gender: "male", maritalStatus: "single", allergies: "", medicalHistory: "", previousSurgeries: "", currentMedications: "" });
+      setForm({ name: "", phone: "", age: "", address: "", gender: "male", maritalStatus: "single", allergies: "", medicalHistory: "", previousSurgeries: "", currentMedications: "", email: "", password: "" });
       refetch();
     } catch (err: any) {
       toast({ title: "خطأ", description: err.message, variant: "destructive" });
