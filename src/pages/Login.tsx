@@ -29,8 +29,6 @@ export default function Login() {
   const [fullName, setFullName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [forgotMode, setForgotMode] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
 
   if (loading) {
     return (
@@ -60,24 +58,6 @@ export default function Login() {
     setSubmitting(false);
   };
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!forgotEmail.trim()) return;
-    setSubmitting(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (error) {
-      toast({ title: t("login.error"), description: error.message, variant: "destructive" });
-    } else {
-      toast({
-        title: lang === "ar" ? "تم الإرسال" : "Email Sent",
-        description: lang === "ar" ? "تحقق من بريدك الإلكتروني لإعادة تعيين كلمة المرور" : "Check your email to reset your password",
-      });
-      setForgotMode(false);
-    }
-    setSubmitting(false);
-  };
 
   const handlePatientSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -257,9 +237,7 @@ export default function Login() {
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
                 {mode === "staff"
-                  ? (forgotMode
-                    ? (lang === "ar" ? "استعادة كلمة المرور" : "Reset Password")
-                    : isSignUp
+                  ? (isSignUp
                       ? (lang === "ar" ? "إنشاء حساب جديد" : "Create Account")
                       : (lang === "ar" ? "مرحباً بعودتك" : "Welcome Back"))
                   : (lang === "ar" ? "بوابة المريض" : "Patient Portal")
@@ -267,9 +245,7 @@ export default function Login() {
               </h1>
               <p className="text-muted-foreground text-sm">
                 {mode === "staff"
-                  ? (forgotMode
-                    ? (lang === "ar" ? "أدخل بريدك الإلكتروني لاستعادة كلمة المرور" : "Enter your email to reset your password")
-                    : isSignUp
+                  ? (isSignUp
                       ? (lang === "ar" ? "أنشئ حسابك وابدأ في إدارة عيادتك" : "Create your account to start managing your clinic")
                       : (lang === "ar" ? "سجّل دخولك للوصول إلى لوحة التحكم" : "Sign in to access your dashboard"))
                   : (lang === "ar" ? "سجّل دخولك لمتابعة مواعيدك وملفك الطبي" : "Sign in to view your appointments and medical records")
@@ -304,7 +280,7 @@ export default function Login() {
             </div>
 
             {/* Staff Form */}
-            {mode === "staff" && !forgotMode && (
+            {mode === "staff" && (
               <motion.form
                 key={isSignUp ? "signup" : "signin"}
                 initial={{ opacity: 0, x: isSignUp ? 20 : -20 }}
@@ -381,70 +357,10 @@ export default function Login() {
                   {isSignUp ? t("login.signUpBtn") : t("login.signInBtn")}
                 </Button>
 
-                {!isSignUp && (
-                  <button
-                    type="button"
-                    onClick={() => setForgotMode(true)}
-                    className="w-full text-center text-sm text-primary hover:text-primary/80 font-medium transition-colors mt-2"
-                  >
-                    {lang === "ar" ? "نسيت كلمة المرور؟" : "Forgot password?"}
-                  </button>
-                )}
 
               </motion.form>
             )}
 
-            {/* Forgot Password Form */}
-            {mode === "staff" && forgotMode && (
-              <motion.form
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
-                onSubmit={handleForgotPassword}
-                className="space-y-4"
-              >
-                <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/15">
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {lang === "ar"
-                      ? "💡 أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور."
-                      : "💡 Enter your email and we'll send you a link to reset your password."}
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-sm font-medium flex items-center gap-1.5">
-                    <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                    {t("login.email")}
-                  </Label>
-                  <Input
-                    type="email"
-                    value={forgotEmail}
-                    onChange={e => setForgotEmail(e.target.value)}
-                    placeholder="doctor@clinic.com"
-                    className="h-11 bg-muted/30 border-border/60 focus:bg-background transition-colors font-en"
-                    dir="ltr"
-                    required
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full h-11 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all"
-                  disabled={submitting}
-                >
-                  {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {lang === "ar" ? "إرسال رابط الاستعادة" : "Send Reset Link"}
-                </Button>
-
-                <button
-                  type="button"
-                  onClick={() => setForgotMode(false)}
-                  className="w-full text-center text-sm text-primary hover:text-primary/80 font-medium transition-colors"
-                >
-                  {lang === "ar" ? "العودة لتسجيل الدخول" : "Back to Sign In"}
-                </button>
-              </motion.form>
-            )}
 
             {/* Patient Form */}
             {mode === "patient" && (
@@ -519,7 +435,7 @@ export default function Login() {
             )}
 
             {/* Toggle Signup/Signin */}
-            {mode === "staff" && !forgotMode && (
+            {mode === "staff" && (
               <div className="text-center pt-2">
                 <button
                   onClick={() => setIsSignUp(!isSignUp)}
