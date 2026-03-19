@@ -147,9 +147,22 @@ export default function PatientPortal() {
               </p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5">
-            <LogOut className="h-3.5 w-3.5" />خروج
-          </Button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setActiveTab("notifications")}
+              className="relative p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
+            >
+              {unreadCount > 0 ? <BellDot className="h-4.5 w-4.5 text-primary" /> : <Bell className="h-4.5 w-4.5" />}
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5">
+              <LogOut className="h-3.5 w-3.5" />خروج
+            </Button>
+          </div>
         </div>
       </div>
 
