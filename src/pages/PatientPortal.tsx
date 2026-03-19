@@ -84,6 +84,7 @@ export default function PatientPortal() {
           setProgressData(progressRes.data || []);
           setPreVisitForms(formsRes.data || []);
           setPayments(paymentsRes.data || []);
+          setMessages(messagesRes.data || []);
 
           // Fetch treatment steps for all plans
           if (plansRes.data?.length) {
