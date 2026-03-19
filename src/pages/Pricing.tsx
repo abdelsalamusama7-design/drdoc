@@ -241,6 +241,12 @@ export default function Pricing() {
                 01227080430
               </a>
             </Button>
+            <Button variant="outline" asChild size="lg">
+              <a href="tel:+201554400044" className="gap-2">
+                <Phone className="h-5 w-5" />
+                01554400044
+              </a>
+            </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-4">
             🌐 <a href="https://www.instatech.site/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.instatech.site</a>
