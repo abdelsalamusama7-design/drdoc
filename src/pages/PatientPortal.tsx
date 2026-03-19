@@ -325,6 +325,48 @@ export default function PatientPortal() {
               <p className="text-[10px] text-muted-foreground">المتبقي (ج.م)</p>
             </div>
           </div>
+
+          {/* Manual Payment Notice */}
+          {totalRemaining > 0 && (
+            <div className="clinic-card p-4 border-r-4 border-r-warning">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
+                  <DollarSign className="h-5 w-5 text-warning" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-foreground">لديك مبلغ متبقي: <span className="font-en text-destructive">{totalRemaining.toLocaleString()} ج.م</span></p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">يمكنك الدفع نقداً في العيادة أو عبر التحويل البنكي</p>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => {
+                  const msg = `مرحباً، أود تسديد المبلغ المتبقي (${totalRemaining.toLocaleString()} ج.م) - ${patientData.name}`;
+                  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+                }}>
+                  <Send className="h-3.5 w-3.5" />
+                  تواصل لترتيب الدفع
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Visa Coming Soon */}
+          <div className="clinic-card p-4 bg-gradient-to-l from-primary/5 to-transparent">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <CreditCard className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-foreground">الدفع بفيزا / ماستركارد</p>
+                  <Badge className="text-[9px] bg-accent/10 text-accent border-accent/20">قريباً</Badge>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-0.5">نعمل على إتاحة الدفع الإلكتروني ببطاقات الائتمان قريباً</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment History */}
           <div className="clinic-card">
             <div className="p-4 border-b border-border"><h2 className="text-sm font-semibold text-foreground">سجل المدفوعات</h2></div>
             {payments.length === 0 ? <div className="p-8 text-center text-sm text-muted-foreground">لا توجد مدفوعات</div> : (
