@@ -7,6 +7,7 @@ import {
   Search, Bell, UserPlus, ShieldCheck, Moon, Sun, Languages
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import ClinicSwitcher from "@/components/ClinicSwitcher";
 import { useI18n } from "@/hooks/useI18n";
 import { useTheme } from "@/hooks/useTheme";
 import { mockPatients } from "@/data/mockData";
