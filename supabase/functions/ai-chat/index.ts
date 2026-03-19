@@ -5,10 +5,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `أنت المساعد الذكي لعيادة Smart Clinic المتخصصة في طب الذكورة والعقم.
+const SYSTEM_PROMPT = `أنت المساعد الذكي لعيادة د. خالد جادالله المتخصصة في طب الذكورة والعقم.
 
 معلومات العيادة:
-- الاسم: Smart Clinic
+- الاسم: د. خالد جادالله
 - التخصص: طب الذكورة والعقم والمسالك البولية
 - أوقات العمل: السبت - الخميس من 9 صباحاً حتى 9 مساءً (الجمعة إجازة)
 - العنوان: القاهرة
