@@ -79,6 +79,8 @@ export default function Patients() {
         allergies: form.allergies ? form.allergies.split(',').map(s => s.trim()).filter(Boolean) : [],
         current_medications: form.currentMedications ? form.currentMedications.split(',').map(s => s.trim()).filter(Boolean) : [],
         created_by: user?.id || null,
+        segment: 'new',
+        visit_count: 0,
       });
       toast({ title: "تم", description: "تم تسجيل المريض بنجاح" });
       setShowAddModal(false);
