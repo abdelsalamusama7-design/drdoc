@@ -626,12 +626,6 @@ export default function LandingPage() {
                   سجّل دخولك وابدأ مجاناً
                 </Button>
               </Link>
-              <Link to="/demo">
-                <Button size="lg" variant="outline" className="gap-3 h-14 px-10 text-lg border-2">
-                  <Play className="h-5 w-5" />
-                  جرّب الديمو التفاعلي
-                </Button>
-              </Link>
             </motion.div>
 
             <motion.div variants={fadeUp} className="mt-6 flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
