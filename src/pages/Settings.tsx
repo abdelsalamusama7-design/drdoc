@@ -251,27 +251,33 @@ export default function SettingsPage() {
             </div>
           </div>
           <div>
-            <input
-              ref={restoreInputRef}
-              type="file"
-              accept=".json"
-              className="hidden"
-              onChange={handleRestore}
-            />
-            <Button
-              onClick={() => restoreInputRef.current?.click()}
-              disabled={restoreLoading}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              {restoreLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <RotateCcw className="h-4 w-4" />
-              )}
-              {restoreLoading ? "جاري الاستعادة..." : "استعادة نسخة"}
-            </Button>
+            <label htmlFor="restore-backup-input" className="cursor-pointer">
+              <input
+                id="restore-backup-input"
+                ref={restoreInputRef}
+                type="file"
+                accept=".json"
+                className="sr-only"
+                onChange={handleRestore}
+              />
+              <Button
+                type="button"
+                asChild
+                disabled={restoreLoading}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+              >
+                <span>
+                  {restoreLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RotateCcw className="h-4 w-4" />
+                  )}
+                  {restoreLoading ? "جاري الاستعادة..." : "استعادة نسخة"}
+                </span>
+              </Button>
+            </label>
           </div>
         </div>
       </div>
