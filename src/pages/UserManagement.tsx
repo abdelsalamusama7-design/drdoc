@@ -487,7 +487,7 @@ export default function UserManagement() {
             {/* Role Selection */}
             <div>
               <Label className="text-[12px] mb-2 block">الدور <span className="text-destructive">*</span></Label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                 {(["doctor", "receptionist", "accountant", "admin", "patient"] as const).map((r) => {
                   const Icon = roleIcons[r];
                   return (
