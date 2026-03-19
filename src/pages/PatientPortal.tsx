@@ -196,7 +196,7 @@ export default function PatientPortal() {
     doc.save(`prescription-${rx.date || "rx"}.pdf`);
   };
 
-    try {
+  const handleDownload = async (filePath: string) => {
       const url = await getSignedFileUrl(filePath);
       window.open(url, "_blank");
     } catch (err: any) {
