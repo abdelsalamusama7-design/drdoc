@@ -303,6 +303,53 @@ export default function PatientPortal() {
         </div>
       )}
 
+      {/* ── Payments ── */}
+      {activeTab === "payments" && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="clinic-card p-4 text-center">
+              <Wallet className="h-5 w-5 text-success mx-auto mb-1" />
+              <p className="text-lg font-bold text-foreground font-en">{totalPaid.toLocaleString()}</p>
+              <p className="text-[10px] text-muted-foreground">إجمالي المدفوع (ج.م)</p>
+            </div>
+            <div className="clinic-card p-4 text-center">
+              <Wallet className="h-5 w-5 text-destructive mx-auto mb-1" />
+              <p className="text-lg font-bold text-foreground font-en">{totalRemaining.toLocaleString()}</p>
+              <p className="text-[10px] text-muted-foreground">المتبقي (ج.م)</p>
+            </div>
+          </div>
+          <div className="clinic-card">
+            <div className="p-4 border-b border-border"><h2 className="text-sm font-semibold text-foreground">سجل المدفوعات</h2></div>
+            {payments.length === 0 ? <div className="p-8 text-center text-sm text-muted-foreground">لا توجد مدفوعات</div> : (
+              <div className="divide-y divide-border">
+                {payments.map((pay: any) => (
+                  <div key={pay.id} className="p-4 flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${Number(pay.remaining_amount) > 0 ? "bg-warning/10" : "bg-success/10"}`}>
+                      <Wallet className={`h-4 w-4 ${Number(pay.remaining_amount) > 0 ? "text-warning" : "text-success"}`} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium text-foreground font-en">{Number(pay.amount).toLocaleString()} ج.م</p>
+                        <Badge variant={Number(pay.remaining_amount) > 0 ? "secondary" : "default"} className="text-[9px]">
+                          {Number(pay.remaining_amount) > 0 ? "جزئي" : "مكتمل"}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] text-muted-foreground font-en">{new Date(pay.created_at).toLocaleDateString("ar-SA")}</span>
+                        <span className="text-[10px] text-muted-foreground">· {pay.payment_method === "cash" ? "نقدي" : pay.payment_method === "card" ? "بطاقة" : pay.payment_method || "نقدي"}</span>
+                      </div>
+                      {Number(pay.remaining_amount) > 0 && (
+                        <p className="text-[10px] text-destructive mt-0.5">متبقي: {Number(pay.remaining_amount).toLocaleString()} ج.م</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ── Visits History ── */}
       {activeTab === "history" && (
         <div className="clinic-card">
