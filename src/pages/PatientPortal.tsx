@@ -305,6 +305,11 @@ export default function PatientPortal() {
         </div>
       )}
 
+      {/* ── Patient Journey ── */}
+      {activeTab === "journey" && (
+        <PatientJourneyTab visits={visits} />
+      )}
+
       {/* ── Payments ── */}
       {activeTab === "payments" && (
         <div className="space-y-4">
