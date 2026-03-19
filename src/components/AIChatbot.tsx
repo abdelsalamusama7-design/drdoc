@@ -87,7 +87,7 @@ export default function AIChatbot() {
                 <div>
                   <h3 className="text-sm font-bold text-primary-foreground">المساعد الطبي الذكي</h3>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: "hsl(142, 71%, 45%)" }} />
                     <p className="text-[10px] text-primary-foreground/80">متصل الآن • يرد فوراً</p>
                   </div>
                 </div>
