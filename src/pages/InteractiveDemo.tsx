@@ -424,6 +424,7 @@ function DemoPrescriptions() {
       </div>
     </div>
   );
+}
 
 
 function DemoAI() {
