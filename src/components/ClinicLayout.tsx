@@ -450,18 +450,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           </button>
 
           {/* Notifications */}
-          <div className="relative">
-            <button
-              onClick={() => setNotifOpen(!notifOpen)}
-              className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors relative"
-            >
-              <Bell className="h-[18px] w-[18px]" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
-            </button>
-            <AnimatePresence>
-              {notifOpen && <NotificationPanel open={notifOpen} onClose={() => setNotifOpen(false)} />}
-            </AnimatePresence>
-          </div>
+          <NotificationPanel />
         </div>
       </div>
 
