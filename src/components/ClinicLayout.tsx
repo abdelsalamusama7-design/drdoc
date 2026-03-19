@@ -148,7 +148,8 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  
+  const { hasNavAccess } = useFeatureAccess();
+
 
   const displayName = profile?.full_name || (lang === "ar" ? "مستخدم" : "User");
   const roleLabel = t(`role.${role || "user"}`);
