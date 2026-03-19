@@ -185,7 +185,7 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const { t, lang, toggleLang } = useI18n();
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { hasNavAccess, currentPlan } = useFeatureAccess();
 
