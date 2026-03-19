@@ -243,6 +243,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.smartSearch": "Smart Search",
     "nav.subscription": "Pricing & Subscriptions",
     "nav.patientJourney": "Patient Journey",
+    "nav.insurance": "Insurance",
 
     // Nav Groups
     "navGroup.main": "Main",
