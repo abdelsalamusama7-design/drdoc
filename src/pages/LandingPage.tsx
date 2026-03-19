@@ -298,7 +298,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-              <img src={screenshotDashboard} alt="لوحة تحكم Smart Clinic" className="w-full" loading="eager" />
+              <img src={problemSolutionImg} alt="المشكلة والحل - Smart Clinic" className="w-full" loading="eager" />
             </div>
           </motion.div>
         </div>
