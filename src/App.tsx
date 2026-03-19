@@ -12,6 +12,7 @@ import SplashScreen from "@/components/SplashScreen";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import AIChatbot from "@/components/AIChatbot";
 import ClinicLayout from "@/components/ClinicLayout";
+import FeatureGuard from "@/components/FeatureGuard";
 import Dashboard from "@/pages/Dashboard";
 import Patients from "@/pages/Patients";
 import PatientDetail from "@/pages/PatientDetail";
