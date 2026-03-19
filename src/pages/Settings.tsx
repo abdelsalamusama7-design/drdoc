@@ -204,6 +204,7 @@ export default function SettingsPage() {
     }
   };
 
+  return (
     <motion.div {...pageTransition} className="space-y-6">
       <h1 className="text-xl font-bold text-foreground">الإعدادات</h1>
 
