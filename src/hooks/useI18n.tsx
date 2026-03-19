@@ -234,6 +234,8 @@ const translations: Record<Language, Record<string, string>> = {
     "role.admin": "Admin",
     "role.doctor": "Doctor",
     "role.receptionist": "Receptionist",
+    "role.accountant": "Accountant",
+    "role.patient": "Patient",
     "role.user": "User",
 
     // Dashboard
