@@ -91,6 +91,10 @@ function ProtectedRoutes() {
           element={isReceptionist || isAccountant ? <Navigate to="/" replace /> : <SettingsPage />}
         />
         <Route path="/users" element={<UserManagement />} />
+        <Route path="/queue" element={<QueueManagement />} />
+        <Route path="/doctor-performance" element={<DoctorPerformance />} />
+        <Route path="/inventory" element={<InventoryPage />} />
+        <Route path="/no-show" element={<NoShowManagement />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ClinicLayout>

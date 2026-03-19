@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   Package, Plus, AlertTriangle, TrendingDown, Search, Pill,
-  ShoppingCart, Edit, Trash2, ArrowDownUp
+  ShoppingCart, Edit, Trash2, ArrowDownUp, DollarSign
 } from "lucide-react";
 
 interface InventoryItem {
