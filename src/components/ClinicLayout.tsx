@@ -190,6 +190,28 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
   const { hasNavAccess, currentPlan } = useFeatureAccess();
 
 
+  const filterItem = (item: NavItem) => {
+    if (role === "receptionist" && ["/finance", "/reports", "/settings"].includes(item.path)) return false;
+    if (role === "accountant" && ["/prescriptions", "/services", "/reports", "/settings"].includes(item.path)) return false;
+    if (role === "patient") return ["/"].includes(item.path);
+    if (item.adminOnly && role !== "admin") return false;
+    return true;
+  };
+
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    navGroups.forEach(g => {
+      initial[g.groupKey] = g.items.some(i => i.path === location.pathname);
+    });
+    // Always open main
+    initial["navGroup.main"] = true;
+    return initial;
+  });
+
+  const toggleGroup = (key: string) => {
+    setOpenGroups(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const displayName = profile?.full_name || (lang === "ar" ? "مستخدم" : "User");
   const roleLabel = t(`role.${role || "user"}`);
   const initials = displayName.slice(0, 2);
