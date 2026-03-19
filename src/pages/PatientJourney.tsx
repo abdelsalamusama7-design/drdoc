@@ -191,10 +191,16 @@ export default function PatientJourney() {
                         <KeyRound className="h-3 w-3" />
                         {lang === "ar" ? "إنشاء حساب" : "Account"}
                       </button>
-                      <Badge variant="outline" className="text-[9px] h-4 gap-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/patients/${visit.patient_id}`);
+                        }}
+                        className="flex items-center gap-1 text-[9px] text-accent hover:text-accent/80 transition-colors px-1.5 py-0.5 rounded-md hover:bg-accent/5"
+                      >
                         <ChevronLeft className="h-2.5 w-2.5" />
                         {lang === "ar" ? "تفاصيل" : "Details"}
-                      </Badge>
+                      </button>
                     </div>
                   </motion.div>
                 ))}
