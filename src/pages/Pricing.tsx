@@ -97,7 +97,7 @@ export default function Pricing() {
               <Stethoscope className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">Instatech AI</h1>
+              <h1 className="text-xl font-bold text-foreground">Smart Clinic</h1>
               <p className="text-xs text-muted-foreground">حلول ذكية للعيادات والمراكز الطبية</p>
             </div>
           </Link>

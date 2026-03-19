@@ -496,7 +496,7 @@ export default function InteractiveDemo() {
                 <Stethoscope className="h-4.5 w-4.5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-foreground">Instatech AI</h1>
+                <h1 className="text-lg font-bold text-foreground">Smart Clinic</h1>
                 <p className="text-[10px] text-muted-foreground leading-none">عرض توضيحي تفاعلي</p>
               </div>
             </Link>
