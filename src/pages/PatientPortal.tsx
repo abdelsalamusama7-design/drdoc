@@ -247,7 +247,7 @@ export default function PatientPortal() {
 
 
   return (
-    <motion.div {...anim} className="flex gap-0 lg:gap-5 min-h-screen">
+    <motion.div {...anim} className="flex flex-col lg:flex-row-reverse gap-0 lg:gap-5 min-h-[calc(100vh-10rem)] lg:min-h-[calc(100vh-6rem)]">
       {/* Sidebar - Desktop always visible, Mobile overlay */}
       <>
         {/* Mobile overlay backdrop */}
@@ -255,22 +255,24 @@ export default function PatientPortal() {
           <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
         )}
         <aside className={`
-          fixed top-0 right-0 z-50 h-full w-64 bg-card border-l border-border overflow-y-auto transition-transform duration-300
-          lg:sticky lg:top-0 lg:z-0 lg:translate-x-0 lg:w-56 lg:shrink-0 lg:rounded-xl lg:border lg:h-fit lg:max-h-[calc(100vh-2rem)]
+          fixed top-0 right-0 z-50 h-full w-[280px] bg-card border-l border-border overflow-y-auto transition-transform duration-300
+          lg:sticky lg:top-0 lg:z-0 lg:translate-x-0 lg:w-56 lg:shrink-0 lg:rounded-xl lg:border lg:h-fit lg:max-h-[calc(100vh-6rem)]
           ${sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}
-        `}>
+        `}
+        style={{ paddingTop: sidebarOpen ? 'env(safe-area-inset-top)' : undefined }}
+        >
           <div className="p-3 lg:p-2">
             {/* Mobile close */}
             <div className="flex items-center justify-between mb-3 lg:hidden">
               <span className="text-sm font-bold text-foreground">القائمة</span>
-              <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg hover:bg-muted">
+              <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-lg hover:bg-muted">
                 <LogOut className="h-4 w-4 text-muted-foreground rotate-180" />
               </button>
             </div>
             <nav className="space-y-0.5">
               {tabs.map(tab => (
                 <button key={tab.key} onClick={() => { setActiveTab(tab.key); setSidebarOpen(false); }}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors text-right ${
+                  className={`w-full flex items-center gap-2.5 px-3 py-3 sm:py-2.5 rounded-lg text-xs font-medium transition-colors text-right touch-target ${
                     activeTab === tab.key
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -288,21 +290,21 @@ export default function PatientPortal() {
       </>
 
       {/* Main Content */}
-      <div className="flex-1 min-w-0 space-y-5">
+      <div className="flex-1 min-w-0 space-y-4 sm:space-y-5">
         {/* Patient Header */}
-        <div className="clinic-card p-4 lg:p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="clinic-card p-3 sm:p-4 lg:p-6">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
               {/* Mobile menu trigger */}
-              <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-xl hover:bg-muted text-muted-foreground lg:hidden">
+              <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-xl hover:bg-muted text-muted-foreground lg:hidden shrink-0">
                 <ClipboardList className="h-5 w-5" />
               </button>
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-xl font-bold text-primary">
+              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl bg-primary/10 flex items-center justify-center text-lg sm:text-xl font-bold text-primary shrink-0">
                 {patientData.name.charAt(0)}
               </div>
-              <div>
-                <h1 className="text-lg font-bold text-foreground">{patientData.name}</h1>
-                <p className="text-xs text-muted-foreground mt-0.5">
+              <div className="min-w-0">
+                <h1 className="text-sm sm:text-lg font-bold text-foreground truncate">{patientData.name}</h1>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate">
                   {patientData.age && `${patientData.age} سنة`} · {patientData.phone}
                 </p>
                 {loyaltyData && (
@@ -313,12 +315,12 @@ export default function PatientPortal() {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <button onClick={() => setActiveTab("notifications")} className="relative p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors">
-                {unreadCount > 0 ? <BellDot className="h-4.5 w-4.5 text-primary" /> : <Bell className="h-4.5 w-4.5" />}
+                {unreadCount > 0 ? <BellDot className="h-4 w-4 sm:h-5 sm:w-5 text-primary" /> : <Bell className="h-4 w-4 sm:h-5 sm:w-5" />}
                 {unreadCount > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">{unreadCount}</span>}
               </button>
-              <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5"><LogOut className="h-3.5 w-3.5" />خروج</Button>
+              <Button variant="outline" size="sm" onClick={signOut} className="gap-1 sm:gap-1.5 text-[10px] sm:text-xs h-8 sm:h-9 px-2 sm:px-3"><LogOut className="h-3 w-3 sm:h-3.5 sm:w-3.5" /><span className="hidden sm:inline">خروج</span></Button>
             </div>
           </div>
         </div>
@@ -326,17 +328,17 @@ export default function PatientPortal() {
       {/* ── Overview Tab ── */}
       {activeTab === "overview" && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
             {[
               { label: "الزيارات", value: visits.length, icon: Calendar, color: "text-primary", bg: "bg-primary/10" },
               { label: "إجمالي المدفوع", value: `${totalPaid.toLocaleString()} ج.م`, icon: Wallet, color: "text-success", bg: "bg-success/10" },
               { label: "المتبقي", value: `${totalRemaining.toLocaleString()} ج.م`, icon: Wallet, color: "text-destructive", bg: "bg-destructive/10" },
               { label: "الوصفات", value: myPrescriptions.length, icon: Pill, color: "text-accent", bg: "bg-accent/10" },
             ].map((stat, i) => (
-              <div key={i} className="clinic-card p-4">
-                <div className={`w-9 h-9 rounded-lg ${stat.bg} flex items-center justify-center mb-2`}><stat.icon className={`h-4 w-4 ${stat.color}`} /></div>
-                <p className="text-lg font-bold text-foreground font-en">{stat.value}</p>
-                <p className="text-[11px] text-muted-foreground">{stat.label}</p>
+              <div key={i} className="clinic-card p-3 sm:p-4">
+                <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg ${stat.bg} flex items-center justify-center mb-1.5 sm:mb-2`}><stat.icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${stat.color}`} /></div>
+                <p className="text-base sm:text-lg font-bold text-foreground font-en">{stat.value}</p>
+                <p className="text-[10px] sm:text-[11px] text-muted-foreground">{stat.label}</p>
               </div>
             ))}
           </div>
