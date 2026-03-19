@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   Users, Shield, ShieldCheck, UserCog, Trash2, Loader2,
   Mail, Phone, Stethoscope, Search,
-  AlertTriangle, Check, UserPlus, Eye, EyeOff, Lock
+  AlertTriangle, Check, UserPlus, Eye, EyeOff, Lock, Calculator
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,13 +25,14 @@ interface ManagedUser {
   full_name: string;
   phone: string;
   specialty: string;
-  role: "admin" | "doctor" | "receptionist" | "patient" | null;
+  role: "admin" | "doctor" | "receptionist" | "accountant" | "patient" | null;
 }
 
 const roleLabels: Record<string, string> = {
   admin: "مدير",
   doctor: "طبيب",
   receptionist: "موظف استقبال",
+  accountant: "محاسب",
   patient: "مريض",
 };
 
@@ -39,6 +40,7 @@ const roleColors: Record<string, string> = {
   admin: "bg-destructive/10 text-destructive",
   doctor: "bg-primary/10 text-primary",
   receptionist: "bg-accent/10 text-accent",
+  accountant: "bg-warning/10 text-warning",
   patient: "bg-success/10 text-success",
 };
 
@@ -46,6 +48,7 @@ const roleIcons: Record<string, typeof Shield> = {
   admin: ShieldCheck,
   doctor: Stethoscope,
   receptionist: UserCog,
+  accountant: Calculator,
   patient: Users,
 };
 
@@ -202,6 +205,7 @@ export default function UserManagement() {
     admin: users.filter((u) => u.role === "admin").length,
     doctor: users.filter((u) => u.role === "doctor").length,
     receptionist: users.filter((u) => u.role === "receptionist").length,
+    accountant: users.filter((u) => u.role === "accountant").length,
     patient: users.filter((u) => u.role === "patient").length,
     none: users.filter((u) => !u.role).length,
   };
@@ -235,14 +239,15 @@ export default function UserManagement() {
       </motion.div>
 
       {/* Stats */}
-      <motion.div variants={item} className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+      <motion.div variants={item} className="grid grid-cols-4 sm:grid-cols-7 gap-3">
         {[
           { label: "إجمالي", count: roleCounts.all, color: "text-foreground", bg: "bg-muted" },
           { label: "مدراء", count: roleCounts.admin, color: "text-destructive", bg: "bg-destructive/10" },
           { label: "أطباء", count: roleCounts.doctor, color: "text-primary", bg: "bg-primary/10" },
           { label: "استقبال", count: roleCounts.receptionist, color: "text-accent", bg: "bg-accent/10" },
+          { label: "محاسبين", count: roleCounts.accountant, color: "text-warning", bg: "bg-warning/10" },
           { label: "مرضى", count: roleCounts.patient, color: "text-success", bg: "bg-success/10" },
-          { label: "بدون دور", count: roleCounts.none, color: "text-warning", bg: "bg-warning/10" },
+          { label: "بدون دور", count: roleCounts.none, color: "text-muted-foreground", bg: "bg-muted" },
         ].map((s) => (
           <div key={s.label} className="clinic-card p-3 text-center">
             <p className={`text-xl font-bold ${s.color}`}>{s.count}</p>
@@ -482,8 +487,8 @@ export default function UserManagement() {
             {/* Role Selection */}
             <div>
               <Label className="text-[12px] mb-2 block">الدور <span className="text-destructive">*</span></Label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {(["doctor", "receptionist", "admin", "patient"] as const).map((r) => {
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {(["doctor", "receptionist", "accountant", "admin", "patient"] as const).map((r) => {
                   const Icon = roleIcons[r];
                   return (
                     <button
@@ -531,7 +536,7 @@ export default function UserManagement() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 py-2">
-            {(["admin", "doctor", "receptionist", "patient"] as const).map((r) => {
+            {(["admin", "doctor", "receptionist", "accountant", "patient"] as const).map((r) => {
               const Icon = roleIcons[r];
               return (
                 <button
@@ -554,6 +559,7 @@ export default function UserManagement() {
                       {r === "admin" ? "وصول كامل لجميع الأقسام" :
                        r === "doctor" ? "وصول للمرضى والمواعيد والوصفات" :
                        r === "receptionist" ? "وصول للمرضى والمواعيد فقط" :
+                       r === "accountant" ? "وصول للحسابات والمدفوعات والمصروفات" :
                        "بوابة المريض - عرض السجل والمواعيد"}
                     </p>
                   </div>
