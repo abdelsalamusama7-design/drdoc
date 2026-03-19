@@ -507,6 +507,9 @@ export default function InteractiveDemo() {
               وضع العرض
             </Badge>
             <Link to="/login">
+              <Button size="sm" variant="ghost">تسجيل الدخول</Button>
+            </Link>
+            <Link to="/login">
               <Button size="sm">ابدأ الآن</Button>
             </Link>
           </div>
