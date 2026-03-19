@@ -99,6 +99,16 @@ export default function PatientPortal() {
     };
     fetchAll();
     fetchNotifications();
+
+    // Realtime notifications
+    if (user?.id) {
+      const channel = supabase
+        .channel("patient-notifications")
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
+          (payload) => setNotifications(prev => [payload.new as any, ...prev]))
+        .subscribe();
+      return () => { supabase.removeChannel(channel); };
+    }
   }, [profile?.phone, user?.id]);
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
