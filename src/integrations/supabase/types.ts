@@ -118,6 +118,91 @@ export type Database = {
           },
         ]
       }
+      clinic_referrals: {
+        Row: {
+          created_at: string | null
+          id: string
+          referred_clinic_name: string
+          referred_contact: string
+          referred_email: string | null
+          referred_phone: string | null
+          referrer_clinic_id: string | null
+          reward_applied: boolean | null
+          reward_type: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          referred_clinic_name: string
+          referred_contact: string
+          referred_email?: string | null
+          referred_phone?: string | null
+          referrer_clinic_id?: string | null
+          reward_applied?: boolean | null
+          reward_type?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          referred_clinic_name?: string
+          referred_contact?: string
+          referred_email?: string | null
+          referred_phone?: string | null
+          referrer_clinic_id?: string | null
+          reward_applied?: boolean | null
+          reward_type?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_referrals_referrer_clinic_id_fkey"
+            columns: ["referrer_clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinic_satisfaction: {
+        Row: {
+          category: string | null
+          clinic_id: string | null
+          comment: string | null
+          created_at: string | null
+          id: string
+          rating: number
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          clinic_id?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating: number
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          clinic_id?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_satisfaction_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinics: {
         Row: {
           address: string | null
@@ -169,6 +254,48 @@ export type Database = {
           subscription_plan?: string | null
           subscription_status?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      demo_requests: {
+        Row: {
+          clinic_name: string
+          contact_name: string
+          created_at: string | null
+          email: string | null
+          id: string
+          message: string | null
+          patient_count: string | null
+          phone: string | null
+          request_type: string | null
+          specialty: string | null
+          status: string | null
+        }
+        Insert: {
+          clinic_name: string
+          contact_name: string
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          message?: string | null
+          patient_count?: string | null
+          phone?: string | null
+          request_type?: string | null
+          specialty?: string | null
+          status?: string | null
+        }
+        Update: {
+          clinic_name?: string
+          contact_name?: string
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          message?: string | null
+          patient_count?: string | null
+          phone?: string | null
+          request_type?: string | null
+          specialty?: string | null
+          status?: string | null
         }
         Relationships: []
       }
@@ -608,6 +735,44 @@ export type Database = {
             foreignKeyName: "notifications_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_progress: {
+        Row: {
+          clinic_id: string | null
+          completed_steps: Json | null
+          created_at: string | null
+          current_step: number | null
+          id: string
+          is_completed: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          completed_steps?: Json | null
+          created_at?: string | null
+          current_step?: number | null
+          id?: string
+          is_completed?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          clinic_id?: string | null
+          completed_steps?: Json | null
+          created_at?: string | null
+          current_step?: number | null
+          id?: string
+          is_completed?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_progress_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: true
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
