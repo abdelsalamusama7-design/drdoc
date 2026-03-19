@@ -29,7 +29,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.aiAssistant": "مساعد AI",
     "nav.medicalAlerts": "التنبيهات الطبية",
     "nav.smartSearch": "البحث الذكي",
-    "nav.subscription": "الاشتراك",
+    "nav.subscription": "الأسعار والاشتراكات",
 
     // Layout
     "layout.search": "بحث سريع...",
@@ -232,7 +232,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.aiAssistant": "AI Assistant",
     "nav.medicalAlerts": "Medical Alerts",
     "nav.smartSearch": "Smart Search",
-    "nav.subscription": "Subscription",
+    "nav.subscription": "Pricing & Subscriptions",
 
     // Layout
     "layout.search": "Quick search...",

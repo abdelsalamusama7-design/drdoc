@@ -104,9 +104,7 @@ export function useFeatureAccess() {
 
   /** Check if a feature key is available on the current plan */
   const hasFeature = (featureKey: string): boolean => {
-    const feat = FEATURES.find(f => f.key === featureKey);
-    if (!feat) return true; // unknown features are allowed
-    return currentRank >= PLAN_RANK[feat.minPlan];
+    return true; // All features unlocked
   };
 
   /** Check if a route path is available */
