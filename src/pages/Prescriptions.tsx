@@ -107,7 +107,7 @@ export default function Prescriptions() {
         @media print { body { padding: 20px; } }
       </style></head><body>
         <h1>🏥 د. خالد جادالله</h1>
-        <p class="subtitle">عيادة أمراض الذكورة والعقم</p>
+        <p class="subtitle">عيادة متكاملة للذكورة والسعادة الزوجية وصحة الرجل</p>
         <div class="info">
           <span>المريض: <strong>${rx.patient_name}</strong></span>
           <span>التاريخ: ${rx.date}</span>
