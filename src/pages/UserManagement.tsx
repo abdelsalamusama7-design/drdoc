@@ -32,18 +32,21 @@ const roleLabels: Record<string, string> = {
   admin: "مدير",
   doctor: "طبيب",
   receptionist: "موظف استقبال",
+  patient: "مريض",
 };
 
 const roleColors: Record<string, string> = {
   admin: "bg-destructive/10 text-destructive",
   doctor: "bg-primary/10 text-primary",
   receptionist: "bg-accent/10 text-accent",
+  patient: "bg-success/10 text-success",
 };
 
 const roleIcons: Record<string, typeof Shield> = {
   admin: ShieldCheck,
   doctor: Stethoscope,
   receptionist: UserCog,
+  patient: Users,
 };
 
 const container = {
