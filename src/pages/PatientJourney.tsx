@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   UserPlus, DollarSign, Stethoscope, CalendarCheck, ChevronLeft, ChevronRight,
   Search, Loader2, Phone, FileText, Brain, Pill, Plus, Upload, Clock,
-  AlertTriangle, Activity, X, Check, CreditCard
+  AlertTriangle, Activity, X, Check, CreditCard, KeyRound, Mail, Eye, EyeOff
 } from "lucide-react";
 import { useAllVisits, usePatients, useServices, updateVisit, createPayment, createPrescription,
   createFollowUp, createDoctorNote, uploadPatientFile, type Visit, type Patient, type Service
