@@ -12,7 +12,7 @@ import {
 } from "recharts";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/hooks/useI18n";
-import { useAppointments, usePatients, useExpenses, useFollowUps, useServices } from "@/hooks/useSupabaseData";
+import { useAppointments, usePatients, useExpenses, useFollowUps, useServices, useAllPayments, useAllAppointments } from "@/hooks/useSupabaseData";
 
 const container = {
   hidden: { opacity: 0 },
@@ -30,34 +30,44 @@ export default function Dashboard() {
 
   const today = new Date().toISOString().split("T")[0];
   const { data: todayApts, loading: aptsLoading } = useAppointments(today);
+  const { data: allApts } = useAllAppointments();
   const { data: patients, loading: patsLoading } = usePatients();
   const { data: expenses } = useExpenses();
   const { data: followUps } = useFollowUps();
   const { data: services } = useServices();
+  const { data: payments } = useAllPayments();
 
   const loading = aptsLoading || patsLoading;
 
   const stats = useMemo(() => {
     const pendingFollowups = followUps.filter(f => f.status === "pending").length;
-    const avgServicePrice = services.length > 0 ? services.reduce((s, sv) => s + sv.price, 0) / services.length : 300;
-    const completedToday = todayApts.filter(a => a.status === "completed").length;
-    const todayRevenue = Math.round(completedToday * avgServicePrice);
+    const todayPayments = payments.filter(p => p.created_at?.startsWith(today));
+    const todayRevenue = todayPayments.reduce((s, p) => s + Number(p.amount), 0);
+    const todayExpenses = expenses.filter(e => e.date === today).reduce((s, e) => s + Number(e.amount), 0);
 
     return {
       patientsToday: todayApts.length,
       appointmentCount: todayApts.length,
-      todayRevenue,
+      todayRevenue: Math.round(todayRevenue),
+      todayExpenses: Math.round(todayExpenses),
       pendingFollowups,
     };
-  }, [todayApts, followUps, services]);
+  }, [todayApts, followUps, payments, expenses, today]);
 
   const revenueData = useMemo(() => {
-    const days = [t("day.sat"), t("day.sun"), t("day.mon"), t("day.tue"), t("day.wed"), t("day.thu"), t("day.fri")];
-    return days.map((day, i) => ({
-      day,
-      revenue: Math.round(Math.random() * 3000 + 1000) * (i === 6 ? 0 : 1),
-    }));
-  }, [t]);
+    const now = new Date();
+    const dayNames = [t("day.sun"), t("day.mon"), t("day.tue"), t("day.wed"), t("day.thu"), t("day.fri"), t("day.sat")];
+    const result: { day: string; revenue: number; expenses: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split("T")[0];
+      const dayRevenue = payments.filter(p => p.created_at?.startsWith(dateStr)).reduce((s, p) => s + Number(p.amount), 0);
+      const dayExp = expenses.filter(e => e.date === dateStr).reduce((s, e) => s + Number(e.amount), 0);
+      result.push({ day: dayNames[d.getDay()], revenue: Math.round(dayRevenue), expenses: Math.round(dayExp) });
+    }
+    return result;
+  }, [payments, expenses, t]);
 
   const quickActions = [
     { label: t("action.newPatient"), icon: UserPlus, path: "/patients" },
@@ -81,12 +91,26 @@ export default function Dashboard() {
     { label: t("dash.pendingFollowups"), value: String(stats.pendingFollowups), change: String(stats.pendingFollowups), up: false, icon: Clock, color: "text-warning", bg: "bg-warning/10", ringColor: "ring-warning/20" },
   ];
 
-  const performanceInsights = [
-    { label: t("dash.monthConsultations"), value: String(patients.length), icon: Stethoscope, color: "text-primary" },
-    { label: t("dash.followups"), value: String(followUps.length), icon: Calendar, color: "text-accent" },
-    { label: t("dash.topService"), value: services[0]?.name || "—", icon: Star, color: "text-warning" },
-    { label: t("dash.busiestDay"), value: t("perf.wednesday"), icon: Zap, color: "text-success" },
-  ];
+  const performanceInsights = useMemo(() => {
+    const thisMonth = new Date().toISOString().slice(0, 7);
+    const monthApts = allApts.filter(a => a.date?.startsWith(thisMonth));
+    const totalRevenue = payments.reduce((s, p) => s + Number(p.amount), 0);
+    const totalExp = expenses.reduce((s, e) => s + Number(e.amount), 0);
+
+    // Find busiest day of week
+    const dayCounts: Record<number, number> = {};
+    allApts.forEach(a => { const d = new Date(a.date).getDay(); dayCounts[d] = (dayCounts[d] || 0) + 1; });
+    const busiestDayIdx = Object.entries(dayCounts).sort((a, b) => Number(b[1]) - Number(a[1]))[0];
+    const dayKeys = ["day.sun", "day.mon", "day.tue", "day.wed", "day.thu", "day.fri", "day.sat"];
+    const busiestDay = busiestDayIdx ? t(dayKeys[Number(busiestDayIdx[0])]) : "—";
+
+    return [
+      { label: t("dash.monthConsultations"), value: String(monthApts.length), icon: Stethoscope, color: "text-primary" },
+      { label: t("dash.followups"), value: String(followUps.filter(f => f.status === "pending").length), icon: Calendar, color: "text-accent" },
+      { label: lang === "ar" ? "إجمالي الإيرادات" : "Total Revenue", value: totalRevenue.toLocaleString(), icon: DollarSign, color: "text-success" },
+      { label: t("dash.busiestDay"), value: busiestDay, icon: Zap, color: "text-warning" },
+    ];
+  }, [allApts, payments, expenses, followUps, t, lang]);
 
   if (loading) {
     return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
