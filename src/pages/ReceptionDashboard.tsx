@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Users, CalendarDays, Plus, UserPlus, Upload, FileText,
-  Loader2, Clock, Search
+  Loader2, Clock, Search, DollarSign, Receipt, Edit2,
+  Filter, Printer
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { usePatients, useAppointments, useAllVisits, createVisit } from "@/hooks/useSupabaseData";
+import {
+  usePatients, useAppointments, useAllVisits, createVisit,
+  useServices, useExpenses, createExpense, useAllPayments,
+  createPayment, updateAppointment
+} from "@/hooks/useSupabaseData";
 import { useAuth } from "@/hooks/useAuth";
+import { useClinic } from "@/hooks/useClinic";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -20,44 +26,113 @@ const anim = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, tra
 export default function ReceptionDashboard() {
   const today = new Date().toISOString().split("T")[0];
   const { data: patients, loading: pLoading } = usePatients();
-  const { data: todayApts, loading: aLoading } = useAppointments(today);
+  const { data: todayApts, loading: aLoading, refetch: refetchApts } = useAppointments(today);
   const { data: visits } = useAllVisits();
+  const { data: services } = useServices();
+  const { data: expenses, refetch: refetchExpenses } = useExpenses();
+  const { data: payments } = useAllPayments();
   const { user } = useAuth();
+  const { clinic } = useClinic();
   const { toast } = useToast();
+
   const [showNewVisit, setShowNewVisit] = useState(false);
-  const [visitForm, setVisitForm] = useState({
-    patientId: "", visitType: "diagnostic", paymentType: "paid",
-  });
+  const [showCashDialog, setShowCashDialog] = useState(false);
+  const [showExpenseDialog, setShowExpenseDialog] = useState(false);
+  const [showReschedule, setShowReschedule] = useState(false);
+  const [doctorFilter, setDoctorFilter] = useState("all");
   const [submitting, setSubmitting] = useState(false);
+
+  const [visitForm, setVisitForm] = useState({ patientId: "", visitType: "diagnostic", paymentType: "paid" });
+  const [cashForm, setCashForm] = useState({ patientId: "", visitId: "", amount: "", method: "cash", notes: "" });
+  const [expenseForm, setExpenseForm] = useState({ category: "", amount: "", notes: "" });
+  const [rescheduleForm, setRescheduleForm] = useState({ aptId: "", newDate: "", newTime: "" });
 
   const todayVisits = visits.filter(v => v.date === today);
   const pendingVisits = todayVisits.filter(v => v.status === "pending");
+  const todayRevenue = payments.filter(p => p.created_at?.startsWith(today)).reduce((s, p) => s + Number(p.amount), 0);
+  const todayExpenses = expenses.filter(e => e.date === today).reduce((s, e) => s + Number(e.amount), 0);
+
+  // Get unique doctors from today's appointments
+  const doctors = useMemo(() => {
+    const d = new Set(todayApts.map(a => a.doctor).filter(Boolean));
+    return Array.from(d) as string[];
+  }, [todayApts]);
+
+  const filteredApts = doctorFilter === "all" ? todayApts : todayApts.filter(a => a.doctor === doctorFilter);
 
   const handleCreateVisit = async () => {
-    if (!visitForm.patientId) {
-      toast({ title: "خطأ", description: "اختر مريض أولاً", variant: "destructive" });
-      return;
-    }
+    if (!visitForm.patientId) { toast({ title: "خطأ", description: "اختر مريض أولاً", variant: "destructive" }); return; }
     setSubmitting(true);
     try {
       await createVisit({
-        patient_id: visitForm.patientId,
-        appointment_id: null,
-        date: today,
-        time: new Date().toTimeString().split(" ")[0],
-        visit_type: visitForm.visitType,
-        payment_type: visitForm.paymentType,
-        status: "pending",
-        doctor_notes: null,
-        diagnosis: null,
-        created_by: user?.id || null,
-      });
+        patient_id: visitForm.patientId, appointment_id: null,
+        date: today, time: new Date().toTimeString().split(" ")[0],
+        visit_type: visitForm.visitType, payment_type: visitForm.paymentType,
+        status: "pending", doctor_notes: null, diagnosis: null, created_by: user?.id || null,
+      }, clinic?.id);
       toast({ title: "تم", description: "تم إنشاء الزيارة بنجاح" });
       setShowNewVisit(false);
       setVisitForm({ patientId: "", visitType: "diagnostic", paymentType: "paid" });
-    } catch (err: any) {
-      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    } catch (err: any) { toast({ title: "خطأ", description: err.message, variant: "destructive" }); }
+    setSubmitting(false);
+  };
+
+  const handleCashPayment = async () => {
+    if (!cashForm.patientId || !cashForm.amount) { toast({ title: "خطأ", description: "أدخل المريض والمبلغ", variant: "destructive" }); return; }
+    setSubmitting(true);
+    try {
+      // Find or create a visit
+      let visitId = cashForm.visitId;
+      if (!visitId) {
+        const v = await createVisit({
+          patient_id: cashForm.patientId, appointment_id: null,
+          date: today, time: new Date().toTimeString().split(" ")[0],
+          visit_type: "consultation", payment_type: "paid",
+          status: "completed", doctor_notes: null, diagnosis: null, created_by: user?.id || null,
+        }, clinic?.id);
+        visitId = v.id;
+      }
+      await createPayment({
+        visit_id: visitId, patient_id: cashForm.patientId,
+        amount: parseFloat(cashForm.amount), total_amount: parseFloat(cashForm.amount),
+        remaining_amount: 0, payment_method: cashForm.method,
+        notes: cashForm.notes || null, created_by: user?.id || null,
+      }, clinic?.id);
+      toast({ title: "تم", description: "تم تسجيل المبلغ" });
+      setShowCashDialog(false);
+      setCashForm({ patientId: "", visitId: "", amount: "", method: "cash", notes: "" });
+    } catch (err: any) { toast({ title: "خطأ", description: err.message, variant: "destructive" }); }
+    setSubmitting(false);
+  };
+
+  const handleAddExpense = async () => {
+    if (!expenseForm.category || !expenseForm.amount) { toast({ title: "خطأ", description: "أدخل التصنيف والمبلغ", variant: "destructive" }); return; }
+    setSubmitting(true);
+    try {
+      await createExpense({
+        category: expenseForm.category, amount: parseFloat(expenseForm.amount),
+        date: today, notes: expenseForm.notes || null, created_by: user?.id || null,
+      }, clinic?.id);
+      toast({ title: "تم", description: "تم تسجيل المصروف" });
+      setShowExpenseDialog(false);
+      setExpenseForm({ category: "", amount: "", notes: "" });
+      refetchExpenses();
+    } catch (err: any) { toast({ title: "خطأ", description: err.message, variant: "destructive" }); }
+    setSubmitting(false);
+  };
+
+  const handleReschedule = async () => {
+    if (!rescheduleForm.aptId || !rescheduleForm.newDate || !rescheduleForm.newTime) {
+      toast({ title: "خطأ", description: "أدخل التاريخ والوقت الجديد", variant: "destructive" }); return;
     }
+    setSubmitting(true);
+    try {
+      await updateAppointment(rescheduleForm.aptId, { date: rescheduleForm.newDate, time: rescheduleForm.newTime });
+      toast({ title: "تم", description: "تم تغيير الموعد" });
+      setShowReschedule(false);
+      setRescheduleForm({ aptId: "", newDate: "", newTime: "" });
+      refetchApts();
+    } catch (err: any) { toast({ title: "خطأ", description: err.message, variant: "destructive" }); }
     setSubmitting(false);
   };
 
@@ -67,20 +142,14 @@ export default function ReceptionDashboard() {
 
   return (
     <motion.div {...anim} className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <h1 className="text-xl font-bold text-foreground">لوحة الاستقبال</h1>
           <p className="text-xs text-muted-foreground mt-0.5">إدارة المرضى والزيارات</p>
         </div>
-        <div className="flex gap-2">
-          <Link to="/patients">
-            <Button size="sm" variant="outline" className="gap-1.5">
-              <UserPlus className="h-4 w-4" />مريض جديد
-            </Button>
-          </Link>
-          <Button size="sm" onClick={() => setShowNewVisit(true)} className="gap-1.5">
-            <Plus className="h-4 w-4" />زيارة جديدة
-          </Button>
+        <div className="flex gap-2 flex-wrap">
+          <Link to="/patients"><Button size="sm" variant="outline" className="gap-1.5"><UserPlus className="h-4 w-4" />مريض جديد</Button></Link>
+          <Button size="sm" onClick={() => setShowNewVisit(true)} className="gap-1.5"><Plus className="h-4 w-4" />زيارة جديدة</Button>
         </div>
       </div>
 
@@ -88,9 +157,9 @@ export default function ReceptionDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
           { label: "مرضى اليوم", value: todayApts.length, icon: Users, color: "text-primary", bg: "bg-primary/10" },
-          { label: "مواعيد اليوم", value: todayApts.length, icon: CalendarDays, color: "text-accent", bg: "bg-accent/10" },
-          { label: "زيارات اليوم", value: todayVisits.length, icon: FileText, color: "text-success", bg: "bg-success/10" },
           { label: "في الانتظار", value: pendingVisits.length, icon: Clock, color: "text-warning", bg: "bg-warning/10" },
+          { label: "إيرادات اليوم", value: `${todayRevenue.toLocaleString()} ج.م`, icon: DollarSign, color: "text-success", bg: "bg-success/10" },
+          { label: "مصروفات اليوم", value: `${todayExpenses.toLocaleString()} ج.م`, icon: Receipt, color: "text-destructive", bg: "bg-destructive/10" },
         ].map((stat, i) => (
           <div key={i} className="clinic-card p-4">
             <div className={`w-9 h-9 rounded-lg ${stat.bg} flex items-center justify-center mb-3`}>
@@ -103,46 +172,70 @@ export default function ReceptionDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
-          { label: "إضافة مريض", icon: UserPlus, path: "/patients", color: "text-primary", bg: "bg-primary/10" },
-          { label: "حجز موعد", icon: CalendarDays, path: "/appointments", color: "text-accent", bg: "bg-accent/10" },
-          { label: "رفع ملفات", icon: Upload, path: "/patients", color: "text-success", bg: "bg-success/10" },
-          { label: "بحث مريض", icon: Search, path: "/patients", color: "text-warning", bg: "bg-warning/10" },
-        ].map((action, i) => (
-          <Link key={i} to={action.path} className="clinic-card p-4 flex items-center gap-3 hover:border-primary/30 transition-all">
-            <div className={`w-10 h-10 rounded-xl ${action.bg} flex items-center justify-center`}>
-              <action.icon className={`h-5 w-5 ${action.color}`} />
+          { label: "إضافة مريض", icon: UserPlus, action: () => {}, path: "/patients", color: "text-primary", bg: "bg-primary/10" },
+          { label: "حجز موعد", icon: CalendarDays, action: () => {}, path: "/appointments", color: "text-accent", bg: "bg-accent/10" },
+          { label: "استلام نقدية", icon: DollarSign, action: () => setShowCashDialog(true), color: "text-success", bg: "bg-success/10" },
+          { label: "إضافة مصروف", icon: Receipt, action: () => setShowExpenseDialog(true), color: "text-warning", bg: "bg-warning/10" },
+          { label: "بحث مريض", icon: Search, action: () => {}, path: "/patients", color: "text-primary", bg: "bg-primary/10" },
+          { label: "التقارير", icon: Printer, action: () => {}, path: "/reports", color: "text-accent", bg: "bg-accent/10" },
+        ].map((action, i) => {
+          const content = (
+            <div className="clinic-card p-3 flex items-center gap-3 hover:border-primary/30 transition-all cursor-pointer" onClick={action.action}>
+              <div className={`w-9 h-9 rounded-xl ${action.bg} flex items-center justify-center shrink-0`}>
+                <action.icon className={`h-4 w-4 ${action.color}`} />
+              </div>
+              <span className="text-xs font-medium text-foreground">{action.label}</span>
             </div>
-            <span className="text-sm font-medium text-foreground">{action.label}</span>
-          </Link>
-        ))}
+          );
+          return action.path ? <Link key={i} to={action.path}>{content}</Link> : <div key={i}>{content}</div>;
+        })}
       </div>
 
-      {/* Today's Appointments */}
+      {/* Doctor Filter + Today's Appointments */}
       <div className="clinic-card">
-        <div className="p-4 border-b border-border flex items-center justify-between">
+        <div className="p-4 border-b border-border flex items-center justify-between flex-wrap gap-2">
           <h2 className="text-sm font-semibold text-foreground">مواعيد اليوم</h2>
-          <Link to="/appointments" className="text-xs text-primary hover:underline">عرض الكل</Link>
+          <div className="flex items-center gap-2">
+            {doctors.length > 0 && (
+              <Select value={doctorFilter} onValueChange={setDoctorFilter}>
+                <SelectTrigger className="h-8 text-xs w-auto min-w-[120px]">
+                  <Filter className="h-3 w-3 ml-1" /><SelectValue placeholder="كل الأطباء" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">كل الأطباء</SelectItem>
+                  {doctors.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
+            <Link to="/appointments" className="text-xs text-primary hover:underline">عرض الكل</Link>
+          </div>
         </div>
-        {todayApts.length === 0 ? (
-          <div className="p-8 text-center text-sm text-muted-foreground">لا توجد مواعيد اليوم</div>
+        {filteredApts.length === 0 ? (
+          <div className="p-8 text-center text-sm text-muted-foreground">لا توجد مواعيد</div>
         ) : (
           <div className="divide-y divide-border">
-            {todayApts.slice(0, 8).map(apt => (
+            {filteredApts.slice(0, 12).map(apt => (
               <div key={apt.id} className="p-3 flex items-center gap-3 hover:bg-muted/20">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
                   {apt.patient_name.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{apt.patient_name}</p>
-                  <p className="text-[10px] text-muted-foreground font-en">{apt.time?.substring(0, 5)} · {apt.phone}</p>
+                  <p className="text-[10px] text-muted-foreground font-en">{apt.time?.substring(0, 5)} · {apt.doctor || ''} · {apt.phone}</p>
                 </div>
-                <span className={`text-[10px] px-2 py-1 rounded-lg font-medium ${
-                  apt.status === 'completed' ? 'bg-success/10 text-success' :
-                  apt.status === 'in-progress' ? 'bg-primary/10 text-primary' :
-                  'bg-muted text-muted-foreground'
-                }`}>{apt.status === 'completed' ? 'مكتمل' : apt.status === 'in-progress' ? 'جاري' : 'مجدول'}</span>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className={`text-[10px] px-2 py-1 rounded-lg font-medium ${
+                    apt.status === 'completed' ? 'bg-success/10 text-success' :
+                    apt.status === 'in-progress' ? 'bg-primary/10 text-primary' :
+                    'bg-muted text-muted-foreground'
+                  }`}>{apt.status === 'completed' ? 'مكتمل' : apt.status === 'in-progress' ? 'جاري' : 'مجدول'}</span>
+                  <Button size="icon" variant="ghost" className="h-7 w-7" title="تغيير الموعد"
+                    onClick={() => { setRescheduleForm({ aptId: apt.id, newDate: apt.date, newTime: apt.time }); setShowReschedule(true); }}>
+                    <Edit2 className="h-3 w-3" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -158,9 +251,7 @@ export default function ReceptionDashboard() {
               <Label>المريض *</Label>
               <Select value={visitForm.patientId} onValueChange={v => setVisitForm({...visitForm, patientId: v})}>
                 <SelectTrigger className="mt-1.5"><SelectValue placeholder="اختر مريض" /></SelectTrigger>
-                <SelectContent>
-                  {patients.map(p => <SelectItem key={p.id} value={p.id}>{p.name} - {p.phone}</SelectItem>)}
-                </SelectContent>
+                <SelectContent>{patients.map(p => <SelectItem key={p.id} value={p.id}>{p.name} - {p.phone}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -190,9 +281,95 @@ export default function ReceptionDashboard() {
             </div>
             <div className="flex gap-2 justify-end">
               <Button variant="outline" onClick={() => setShowNewVisit(false)}>إلغاء</Button>
-              <Button onClick={handleCreateVisit} disabled={submitting}>
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "إنشاء الزيارة"}
-              </Button>
+              <Button onClick={handleCreateVisit} disabled={submitting}>{submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "إنشاء الزيارة"}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cash Payment Dialog */}
+      <Dialog open={showCashDialog} onOpenChange={setShowCashDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>استلام نقدية</DialogTitle></DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label>المريض *</Label>
+              <Select value={cashForm.patientId} onValueChange={v => setCashForm({...cashForm, patientId: v})}>
+                <SelectTrigger className="mt-1.5"><SelectValue placeholder="اختر مريض" /></SelectTrigger>
+                <SelectContent>{patients.map(p => <SelectItem key={p.id} value={p.id}>{p.name} - {p.phone}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>الخدمة</Label>
+              <Select value={cashForm.amount} onValueChange={v => setCashForm({...cashForm, amount: v})}>
+                <SelectTrigger className="mt-1.5"><SelectValue placeholder="اختر الخدمة أو أدخل المبلغ" /></SelectTrigger>
+                <SelectContent>
+                  {services.map(s => <SelectItem key={s.id} value={String(s.price)}>{s.name} - {s.price} ج.م</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Input value={cashForm.amount} onChange={e => setCashForm({...cashForm, amount: e.target.value})}
+                placeholder="أو أدخل المبلغ يدوياً" className="mt-1.5 font-en" dir="ltr" type="number" />
+            </div>
+            <div>
+              <Label>طريقة الدفع</Label>
+              <Select value={cashForm.method} onValueChange={v => setCashForm({...cashForm, method: v})}>
+                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">نقدي</SelectItem>
+                  <SelectItem value="card">بطاقة</SelectItem>
+                  <SelectItem value="instapay">InstaPay</SelectItem>
+                  <SelectItem value="wallet">محفظة إلكترونية</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div><Label>ملاحظات</Label><Input value={cashForm.notes} onChange={e => setCashForm({...cashForm, notes: e.target.value})} className="mt-1.5" /></div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowCashDialog(false)}>إلغاء</Button>
+              <Button onClick={handleCashPayment} disabled={submitting}>{submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "تسجيل المبلغ"}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expense Dialog */}
+      <Dialog open={showExpenseDialog} onOpenChange={setShowExpenseDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>إضافة مصروف</DialogTitle></DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label>التصنيف *</Label>
+              <Select value={expenseForm.category} onValueChange={v => setExpenseForm({...expenseForm, category: v})}>
+                <SelectTrigger className="mt-1.5"><SelectValue placeholder="اختر التصنيف" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="supplies">مستلزمات طبية</SelectItem>
+                  <SelectItem value="rent">إيجار</SelectItem>
+                  <SelectItem value="utilities">مرافق</SelectItem>
+                  <SelectItem value="salaries">رواتب</SelectItem>
+                  <SelectItem value="maintenance">صيانة</SelectItem>
+                  <SelectItem value="other">أخرى</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div><Label>المبلغ *</Label><Input value={expenseForm.amount} onChange={e => setExpenseForm({...expenseForm, amount: e.target.value})} className="mt-1.5 font-en" dir="ltr" type="number" /></div>
+            <div><Label>ملاحظات</Label><Input value={expenseForm.notes} onChange={e => setExpenseForm({...expenseForm, notes: e.target.value})} className="mt-1.5" /></div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowExpenseDialog(false)}>إلغاء</Button>
+              <Button onClick={handleAddExpense} disabled={submitting}>{submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "تسجيل المصروف"}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reschedule Dialog */}
+      <Dialog open={showReschedule} onOpenChange={setShowReschedule}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>تغيير الموعد</DialogTitle></DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div><Label>التاريخ الجديد</Label><Input type="date" value={rescheduleForm.newDate} onChange={e => setRescheduleForm({...rescheduleForm, newDate: e.target.value})} className="mt-1.5 font-en" dir="ltr" /></div>
+            <div><Label>الوقت الجديد</Label><Input type="time" value={rescheduleForm.newTime} onChange={e => setRescheduleForm({...rescheduleForm, newTime: e.target.value})} className="mt-1.5 font-en" dir="ltr" /></div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowReschedule(false)}>إلغاء</Button>
+              <Button onClick={handleReschedule} disabled={submitting}>{submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "تأكيد"}</Button>
             </div>
           </div>
         </DialogContent>
