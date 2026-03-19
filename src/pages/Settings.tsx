@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { User, Shield, Bell, Globe, Database, Download, Upload, Cloud, HardDrive, CheckCircle2, Loader2, Smartphone } from "lucide-react";
+import { User, Shield, Bell, Globe, Database, Download, Upload, Cloud, HardDrive, CheckCircle2, Loader2, Smartphone, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,8 +67,40 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const [localBackupLoading, setLocalBackupLoading] = useState(false);
   const [cloudBackupLoading, setCloudBackupLoading] = useState(false);
+  const [restoreLoading, setRestoreLoading] = useState(false);
   const [lastLocalBackup, setLastLocalBackup] = useState<string | null>(null);
   const [lastCloudBackup, setLastCloudBackup] = useState<string | null>(null);
+  const restoreInputRef = useRef<HTMLInputElement>(null);
+
+  const handleRestore = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setRestoreLoading(true);
+    try {
+      const text = await file.text();
+      const backup = JSON.parse(text);
+      if (!backup.data || backup.version !== "1.0") {
+        throw new Error("ملف النسخة الاحتياطية غير صالح");
+      }
+      let totalInserted = 0;
+      for (const table of BACKUP_TABLES) {
+        const rows = backup.data[table];
+        if (!rows || rows.length === 0) continue;
+        const { error } = await supabase.from(table as any).upsert(rows as any[], { onConflict: "id" });
+        if (error) {
+          console.error(`Error restoring ${table}:`, error);
+        } else {
+          totalInserted += rows.length;
+        }
+      }
+      toast({ title: "تمت الاستعادة", description: `تم استعادة ${totalInserted} سجل بنجاح` });
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message || "حدث خطأ أثناء استعادة النسخة الاحتياطية", variant: "destructive" });
+    } finally {
+      setRestoreLoading(false);
+      if (restoreInputRef.current) restoreInputRef.current.value = "";
+    }
+  };
 
   const handleLocalBackup = async () => {
     setLocalBackupLoading(true);
@@ -203,6 +235,42 @@ export default function SettingsPage() {
                 <Upload className="h-4 w-4" />
               )}
               {cloudBackupLoading ? "جاري الحفظ..." : "حفظ نسخة سحابية"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Restore Backup */}
+        <div className="border border-dashed border-border rounded-xl p-4 mt-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-warning/10 flex items-center justify-center">
+              <RotateCcw className="h-4.5 w-4.5 text-warning" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">استعادة نسخة احتياطية</p>
+              <p className="text-[11px] text-muted-foreground">استعادة البيانات من ملف JSON محفوظ مسبقاً</p>
+            </div>
+          </div>
+          <div>
+            <input
+              ref={restoreInputRef}
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={handleRestore}
+            />
+            <Button
+              onClick={() => restoreInputRef.current?.click()}
+              disabled={restoreLoading}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              {restoreLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RotateCcw className="h-4 w-4" />
+              )}
+              {restoreLoading ? "جاري الاستعادة..." : "استعادة نسخة"}
             </Button>
           </div>
         </div>
