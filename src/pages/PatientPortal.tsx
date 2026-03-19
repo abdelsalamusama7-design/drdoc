@@ -415,7 +415,10 @@ export default function PatientPortal() {
       {/* ── Feedback ── */}
       {activeTab === "feedback" && <FeedbackTab patientData={patientData} appointments={myAppointments} />}
 
-      {/* ── Notifications ── */}
+      {/* ── AI Health Assistant ── */}
+      {activeTab === "ai-assistant" && <AIHealthAssistantTab patientData={patientData} />}
+
+      {/* ── Notifications with Confirmation ── */}
       {activeTab === "notifications" && (
         <div className="clinic-card">
           <div className="p-4 border-b border-border flex items-center justify-between">
