@@ -193,7 +193,9 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
               </div>
               <div>
                 <h1 className="text-sm font-bold text-foreground leading-none">Smart Clinic</h1>
-                <p className="text-[9px] text-muted-foreground mt-0.5">Management System</p>
+                <span className={`inline-block mt-1 text-[9px] px-1.5 py-0.5 rounded-full font-bold ${getPlanColor(currentPlan)}`}>
+                  {getPlanLabel(currentPlan, lang)}
+                </span>
               </div>
             </div>
           )}
