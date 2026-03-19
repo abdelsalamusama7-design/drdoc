@@ -279,9 +279,15 @@ export default function PatientDetail() {
 
   return (
     <motion.div {...pageTransition} className="space-y-4">
-      <Link to="/patients" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <ArrowRight className="h-4 w-4" />العودة للمرضى
-      </Link>
+      <div className="flex items-center gap-3">
+        <Link to="/patients" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowRight className="h-4 w-4" />العودة للمرضى
+        </Link>
+        <span className="text-muted-foreground/30">|</span>
+        <Link to="/patient-journey" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Activity className="h-4 w-4" />رحلة المريض
+        </Link>
+      </div>
 
       {/* Patient Info Card */}
       <div className="clinic-card p-4 lg:p-6">
