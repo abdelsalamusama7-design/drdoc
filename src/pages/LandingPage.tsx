@@ -253,10 +253,34 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </motion.div>
+
+          {/* Feature Screenshots */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="mt-14 grid md:grid-cols-2 gap-6">
+            <motion.div variants={fadeUp} className="relative rounded-xl overflow-hidden border border-border/50 shadow-xl group hover:shadow-primary/10 transition-shadow">
+              <div className="bg-card/80 backdrop-blur-sm px-3 py-2 flex items-center gap-2 border-b border-border/50">
+                <div className="flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-destructive/60" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-warning/60" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-success/60" />
+                </div>
+                <span className="text-[10px] text-muted-foreground mx-auto font-mono">إدارة المرضى</span>
+              </div>
+              <img src={screenshotPatients} alt="إدارة المرضى" className="w-full" loading="lazy" />
+            </motion.div>
+            <motion.div variants={fadeUp} className="relative rounded-xl overflow-hidden border border-border/50 shadow-xl group hover:shadow-primary/10 transition-shadow">
+              <div className="bg-card/80 backdrop-blur-sm px-3 py-2 flex items-center gap-2 border-b border-border/50">
+                <div className="flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-destructive/60" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-warning/60" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-success/60" />
+                </div>
+                <span className="text-[10px] text-muted-foreground mx-auto font-mono">إدارة المواعيد</span>
+              </div>
+              <img src={screenshotAppointments} alt="إدارة المواعيد" className="w-full" loading="lazy" />
+            </motion.div>
+          </motion.div>
         </div>
       </section>
-
-      {/* ── Works on Any Device ── */}
       <section className="py-16 sm:py-20">
         <div className="max-w-5xl mx-auto px-4">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
