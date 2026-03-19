@@ -85,7 +85,7 @@ function ProtectedRoutes() {
         />
         <Route
           path="/reports"
-          element={isReceptionist || isAccountant ? <Navigate to="/" replace /> : <Reports />}
+          element={isReceptionist || isAccountant ? <Navigate to="/" replace /> : <FeatureGuard path="/reports"><Reports /></FeatureGuard>}
         />
         <Route
           path="/settings"
