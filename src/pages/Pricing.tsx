@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Check, Stethoscope, Star, Zap, Crown, MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import Footer from "@/components/Footer";
 
 const packages = [
   {
