@@ -30,7 +30,7 @@ export default function Patients() {
 
   // Form state
   const [form, setForm] = useState({
-    name: "", phone: "", age: "", address: "",
+    name: "", phone: "", age: "", address: "", gender: "male",
     maritalStatus: "single", allergies: "",
     medicalHistory: "", previousSurgeries: "", currentMedications: "",
   });
