@@ -256,9 +256,11 @@ export default function Login() {
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
                 {mode === "staff"
-                  ? (isSignUp
-                    ? (lang === "ar" ? "إنشاء حساب جديد" : "Create Account")
-                    : (lang === "ar" ? "مرحباً بعودتك" : "Welcome Back"))
+                  ? (forgotMode
+                    ? (lang === "ar" ? "استعادة كلمة المرور" : "Reset Password")
+                    : isSignUp
+                      ? (lang === "ar" ? "إنشاء حساب جديد" : "Create Account")
+                      : (lang === "ar" ? "مرحباً بعودتك" : "Welcome Back"))
                   : (lang === "ar" ? "بوابة المريض" : "Patient Portal")
                 }
               </h1>
