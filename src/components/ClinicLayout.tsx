@@ -7,6 +7,7 @@ import {
   DollarSign, BarChart3, Settings, Menu, X, ChevronLeft, LogOut,
   Search, Bell, UserPlus, ShieldCheck, Moon, Sun, Languages
 } from "lucide-react";
+import NotificationPanel from "@/components/NotificationPanel";
 import { useAuth } from "@/hooks/useAuth";
 import ClinicSwitcher from "@/components/ClinicSwitcher";
 import { useI18n } from "@/hooks/useI18n";
