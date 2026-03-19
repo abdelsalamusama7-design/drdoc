@@ -107,13 +107,15 @@ const App = () => {
             <PWAInstallPrompt />
             <BrowserRouter>
               <AuthProvider>
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/booking" element={<Booking />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/*" element={<ProtectedRoutes />} />
-                </Routes>
-                <AIChatbot />
+                <ClinicProvider>
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/booking" element={<Booking />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/*" element={<ProtectedRoutes />} />
+                  </Routes>
+                  <AIChatbot />
+                </ClinicProvider>
               </AuthProvider>
             </BrowserRouter>
           </TooltipProvider>
