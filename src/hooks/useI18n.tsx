@@ -22,6 +22,10 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.reports": "التقارير",
     "nav.users": "المستخدمين",
     "nav.settings": "الإعدادات",
+    "nav.queue": "الطابور",
+    "nav.inventory": "المخزون",
+    "nav.noShow": "إدارة الغياب",
+    "nav.doctorPerformance": "أداء الأطباء",
 
     // Layout
     "layout.search": "بحث سريع...",
@@ -217,6 +221,10 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.reports": "Reports",
     "nav.users": "Users",
     "nav.settings": "Settings",
+    "nav.queue": "Queue",
+    "nav.inventory": "Inventory",
+    "nav.noShow": "No-Show",
+    "nav.doctorPerformance": "Dr. Performance",
 
     // Layout
     "layout.search": "Quick search...",
