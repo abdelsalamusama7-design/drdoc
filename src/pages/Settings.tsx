@@ -102,7 +102,7 @@ export default function SettingsPage() {
     }
   };
 
-
+  const handleLocalBackup = async () => {
     setLocalBackupLoading(true);
     try {
       const data = await fetchAllData(clinicId);
