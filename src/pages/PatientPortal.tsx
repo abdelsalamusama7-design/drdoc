@@ -574,28 +574,41 @@ export default function PatientPortal() {
 
       {/* ── Files ── */}
       {activeTab === "files" && (
-        <div className="clinic-card">
-          {patientFiles.length === 0 ? <div className="p-8 text-center text-sm text-muted-foreground">لا توجد ملفات</div> : (
-            <div className="divide-y divide-border">
-              {patientFiles.map(file => (
-                <div key={file.id} className="p-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    {file.file_type === "lab" ? <FlaskConical className="h-4 w-4 text-primary" /> :
-                     file.file_type === "radiology" ? <Image className="h-4 w-4 text-primary" /> :
-                     <FileText className="h-4 w-4 text-primary" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{file.file_name}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <Badge variant="secondary" className="text-[9px]">{file.file_type === "lab" ? "تحليل" : file.file_type === "radiology" ? "أشعة" : file.file_type}</Badge>
-                      <span className="text-[10px] text-muted-foreground font-en">{new Date(file.created_at).toLocaleDateString("ar-SA")}</span>
-                    </div>
-                  </div>
-                  <Button size="sm" variant="ghost" onClick={() => handleDownload(file.file_path)}><Download className="h-4 w-4" /></Button>
-                </div>
-              ))}
+        <div className="space-y-4">
+          {/* Upload Section */}
+          <PatientFileUpload patientData={patientData} onUpload={(file: any) => setPatientFiles(prev => [file, ...prev])} />
+
+          {/* Files List */}
+          <div className="clinic-card">
+            <div className="p-4 border-b border-border">
+              <h2 className="text-sm font-semibold text-foreground">ملفاتي الطبية</h2>
             </div>
-          )}
+            {patientFiles.length === 0 ? <div className="p-8 text-center text-sm text-muted-foreground">لا توجد ملفات بعد - يمكنك رفع ملفاتك من الأعلى</div> : (
+              <div className="divide-y divide-border">
+                {patientFiles.map(file => (
+                  <div key={file.id} className="p-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      {file.file_type === "lab" ? <FlaskConical className="h-4 w-4 text-primary" /> :
+                       file.file_type === "radiology" ? <Image className="h-4 w-4 text-primary" /> :
+                       file.file_type === "prescription" ? <Pill className="h-4 w-4 text-primary" /> :
+                       <FileText className="h-4 w-4 text-primary" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{file.file_name}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <Badge variant="secondary" className="text-[9px]">
+                          {file.file_type === "lab" ? "تحليل" : file.file_type === "radiology" ? "أشعة" : file.file_type === "prescription" ? "روشتة" : file.file_type === "other" ? "ملف" : file.file_type}
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground font-en">{new Date(file.created_at).toLocaleDateString("ar-SA")}</span>
+                      </div>
+                      {file.notes && <p className="text-[10px] text-muted-foreground mt-0.5">{file.notes}</p>}
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={() => handleDownload(file.file_path)}><Download className="h-4 w-4" /></Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
