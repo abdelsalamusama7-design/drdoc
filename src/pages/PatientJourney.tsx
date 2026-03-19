@@ -239,6 +239,7 @@ export default function PatientJourney() {
         </div>
       )}
     </motion.div>
+  );
 }
 
 // ── Stage Dialog Component ──
