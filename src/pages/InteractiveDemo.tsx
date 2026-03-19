@@ -355,6 +355,77 @@ function DemoFinance() {
   );
 }
 
+const mockPrescriptions = [
+  {
+    id: 1, patient: "أحمد محمد علي", date: "2026-03-19",
+    medications: [
+      { name: "أملوديبين 5mg", dosage: "مرة يومياً", duration: "شهر" },
+      { name: "أتورفاستاتين 20mg", dosage: "قبل النوم", duration: "3 أشهر" },
+    ],
+    notes: "متابعة الضغط بعد أسبوعين",
+  },
+  {
+    id: 2, patient: "فاطمة حسن", date: "2026-03-18",
+    medications: [
+      { name: "كلوميفين 50mg", dosage: "مرتين يومياً", duration: "شهر" },
+      { name: "حمض الفوليك 5mg", dosage: "مرة يومياً", duration: "3 أشهر" },
+      { name: "فيتامين E 400mg", dosage: "مرة يومياً", duration: "شهرين" },
+    ],
+    notes: "",
+  },
+  {
+    id: 3, patient: "محمود السيد", date: "2026-03-17",
+    medications: [
+      { name: "تامسولوسين 0.4mg", dosage: "قبل النوم", duration: "شهر" },
+    ],
+    notes: "مراجعة بعد شهر مع تحليل PSA",
+  },
+];
+
+function DemoPrescriptions() {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-foreground">الوصفات الطبية</h2>
+        <Button size="sm" className="gap-1.5"><Plus className="h-4 w-4" />وصفة جديدة</Button>
+      </div>
+
+      <div className="space-y-3">
+        {mockPrescriptions.map((rx, i) => (
+          <motion.div key={rx.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+            <Card className="border-border/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{rx.patient}</p>
+                    <p className="text-xs text-muted-foreground font-mono">{rx.date}</p>
+                  </div>
+                  <Button size="sm" variant="outline" className="gap-1.5 h-8">
+                    <Printer className="h-3.5 w-3.5" />طباعة
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {rx.medications.map((med, j) => (
+                    <div key={j} className="flex items-center gap-2 bg-muted/50 rounded-lg px-3 py-2">
+                      <Pill className="h-3.5 w-3.5 text-primary shrink-0" />
+                      <span className="text-sm font-medium text-foreground">{med.name}</span>
+                      <span className="text-xs text-muted-foreground">• {med.dosage}</span>
+                      <span className="text-xs text-muted-foreground">• {med.duration}</span>
+                    </div>
+                  ))}
+                </div>
+                {rx.notes && (
+                  <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border">{rx.notes}</p>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+
+
 function DemoAI() {
   const [messages] = useState([
     { role: "user", text: "ما هي أعراض ارتفاع ضغط الدم؟" },
