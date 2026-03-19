@@ -147,8 +147,7 @@ const App = () => {
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/register-clinic" element={<RegisterClinic />} />
                     <Route path="/demo" element={<InteractiveDemo />} />
-                    <Route path="/app/*" element={<ProtectedRoutes />} />
-                  </Routes>
+                    <Route path="/*" element={<ProtectedRoutes />} />
                   </Routes>
                   <AIChatbot />
                   <WhatsAppFloat />
