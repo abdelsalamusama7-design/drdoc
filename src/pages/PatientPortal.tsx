@@ -21,7 +21,7 @@ import { QRCodeSVG } from "qrcode.react";
 
 const anim = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.25 } };
 
-type TabKey = "overview" | "booking" | "history" | "files" | "prescriptions" | "sessions" | "notifications" | "medical-card" | "loyalty" | "referral" | "treatment-plan" | "progress" | "pre-visit" | "feedback";
+type TabKey = "overview" | "booking" | "history" | "files" | "prescriptions" | "sessions" | "notifications" | "medical-card" | "loyalty" | "referral" | "treatment-plan" | "progress" | "pre-visit" | "feedback" | "ai-assistant";
 
 export default function PatientPortal() {
   const { user, profile, signOut } = useAuth();
@@ -99,6 +99,16 @@ export default function PatientPortal() {
     };
     fetchAll();
     fetchNotifications();
+
+    // Realtime notifications
+    if (user?.id) {
+      const channel = supabase
+        .channel("patient-notifications")
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
+          (payload) => setNotifications(prev => [payload.new as any, ...prev]))
+        .subscribe();
+      return () => { supabase.removeChannel(channel); };
+    }
   }, [profile?.phone, user?.id]);
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
@@ -153,6 +163,7 @@ export default function PatientPortal() {
     { key: "loyalty", label: "نقاط الولاء", icon: Gift },
     { key: "referral", label: "دعوة صديق", icon: Users },
     { key: "feedback", label: "تقييم الزيارة", icon: Star },
+    { key: "ai-assistant", label: "مساعد صحي", icon: Mic },
     { key: "notifications", label: "الإشعارات", icon: Bell },
   ];
 
@@ -414,34 +425,18 @@ export default function PatientPortal() {
       {/* ── Feedback ── */}
       {activeTab === "feedback" && <FeedbackTab patientData={patientData} appointments={myAppointments} />}
 
-      {/* ── Notifications ── */}
+      {/* ── AI Health Assistant ── */}
+      {activeTab === "ai-assistant" && <AIHealthAssistantTab patientData={patientData} />}
+
+      {/* ── Notifications with Appointment Confirmation ── */}
       {activeTab === "notifications" && (
-        <div className="clinic-card">
-          <div className="p-4 border-b border-border flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-foreground">الإشعارات</h2>
-            {unreadCount > 0 && <Button variant="ghost" size="sm" onClick={markAllRead} className="text-xs h-7">تحديد الكل كمقروء</Button>}
-          </div>
-          {notifications.length === 0 ? <div className="p-8 text-center text-sm text-muted-foreground">لا توجد إشعارات</div> : (
-            <div className="divide-y divide-border">
-              {notifications.map(notif => (
-                <div key={notif.id} className={`p-4 flex items-start gap-3 transition-colors cursor-pointer hover:bg-muted/30 ${!notif.is_read ? "bg-primary/5" : ""}`}
-                  onClick={() => { if (!notif.is_read) markAsRead(notif.id); }}>
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${!notif.is_read ? "bg-primary/10" : "bg-muted"}`}>
-                    <Bell className={`h-4 w-4 ${!notif.is_read ? "text-primary" : "text-muted-foreground"}`} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm ${!notif.is_read ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{notif.title}</p>
-                    {notif.body && <p className="text-[11px] text-muted-foreground mt-0.5">{notif.body}</p>}
-                    <p className="text-[10px] text-muted-foreground/60 mt-1 font-en">
-                      {new Date(notif.created_at).toLocaleDateString("ar-SA")} · {new Date(notif.created_at).toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}
-                    </p>
-                  </div>
-                  {!notif.is_read && <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <NotificationsWithConfirmation
+          notifications={notifications}
+          unreadCount={unreadCount}
+          markAsRead={markAsRead}
+          markAllRead={markAllRead}
+          patientData={patientData}
+        />
       )}
     </motion.div>
   );
@@ -1001,6 +996,156 @@ function FeedbackTab({ patientData, appointments }: { patientData: any; appointm
           {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}إرسال التقييم
         </Button>
       </div>
+    </div>
+  );
+}
+
+// ── AI Health Assistant ──
+function AIHealthAssistantTab({ patientData }: { patientData: any }) {
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const sendMessage = async () => {
+    if (!input.trim() || loading) return;
+    const userMsg = { role: "user" as const, content: input.trim() };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-medical", {
+        body: {
+          action: "health_assistant",
+          patient_id: patientData.id,
+          data: { question: userMsg.content },
+        },
+      });
+      if (error) throw error;
+      const reply = data?.answer || data?.raw || "عذراً، لم أتمكن من الإجابة حالياً.";
+      setMessages(prev => [...prev, { role: "assistant", content: reply }]);
+
+      if (data?.urgency === "high") {
+        setMessages(prev => [...prev, { role: "assistant", content: "⚠️ يُنصح بالتواصل مع العيادة في أقرب وقت." }]);
+      }
+    } catch {
+      setMessages(prev => [...prev, { role: "assistant", content: "عذراً، حدث خطأ. حاول مرة أخرى." }]);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="clinic-card flex flex-col" style={{ height: "70vh" }}>
+      <div className="p-4 border-b border-border flex items-center gap-2">
+        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center"><Mic className="h-4 w-4 text-primary" /></div>
+        <div>
+          <h2 className="text-sm font-bold text-foreground">المساعد الصحي الذكي</h2>
+          <p className="text-[10px] text-muted-foreground">اسأل عن أدويتك أو أي استفسار صحي عام</p>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {messages.length === 0 && (
+          <div className="text-center py-8">
+            <Mic className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground">اسألني عن أي شيء!</p>
+            <div className="flex flex-wrap gap-2 justify-center mt-4">
+              {["ما هي أوقات تناول أدويتي؟", "متى موعدي القادم؟", "نصائح للحفاظ على الصحة"].map(q => (
+                <button key={q} onClick={() => { setInput(q); }} className="text-[11px] px-3 py-1.5 rounded-xl bg-muted text-foreground hover:bg-primary/10 transition-colors">{q}</button>
+              ))}
+            </div>
+          </div>
+        )}
+        {messages.map((msg, i) => (
+          <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+              msg.role === "user" ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-muted text-foreground rounded-bl-sm"
+            }`}>{msg.content}</div>
+          </div>
+        ))}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-2.5"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
+          </div>
+        )}
+      </div>
+
+      <div className="p-3 border-t border-border flex gap-2">
+        <Input value={input} onChange={e => setInput(e.target.value)} placeholder="اكتب سؤالك..." className="text-sm"
+          onKeyDown={e => { if (e.key === "Enter") sendMessage(); }} />
+        <Button size="icon" onClick={sendMessage} disabled={loading || !input.trim()}><Send className="h-4 w-4" /></Button>
+      </div>
+    </div>
+  );
+}
+
+// ── Notifications with Appointment Confirmation ──
+function NotificationsWithConfirmation({ notifications, unreadCount, markAsRead, markAllRead, patientData }: {
+  notifications: any[]; unreadCount: number; markAsRead: (id: string) => void; markAllRead: () => void; patientData: any;
+}) {
+  const { toast } = useToast();
+  const [confirming, setConfirming] = useState<string | null>(null);
+
+  const handleConfirmAppointment = async (notif: any, action: "confirmed" | "cancelled") => {
+    if (!notif.reference_id) return;
+    setConfirming(notif.id);
+    try {
+      const updates: any = { confirmation_status: action };
+      if (action === "cancelled") updates.status = "cancelled";
+      await (supabase.from("appointments" as any) as any).update(updates).eq("id", notif.reference_id);
+      markAsRead(notif.id);
+      toast({
+        title: action === "confirmed" ? "✅ تم تأكيد الموعد" : "❌ تم إلغاء الموعد",
+        description: action === "confirmed" ? "سنراك في الموعد المحدد" : "تم إلغاء الموعد بنجاح",
+      });
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+    setConfirming(null);
+  };
+
+  return (
+    <div className="clinic-card">
+      <div className="p-4 border-b border-border flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-foreground">الإشعارات</h2>
+        {unreadCount > 0 && <Button variant="ghost" size="sm" onClick={markAllRead} className="text-xs h-7">تحديد الكل كمقروء</Button>}
+      </div>
+      {notifications.length === 0 ? <div className="p-8 text-center text-sm text-muted-foreground">لا توجد إشعارات</div> : (
+        <div className="divide-y divide-border">
+          {notifications.map(notif => {
+            const isAppointmentReminder = notif.type === "appointment_reminder" && notif.reference_id;
+            return (
+              <div key={notif.id} className={`p-4 transition-colors ${!notif.is_read ? "bg-primary/5" : ""}`}>
+                <div className="flex items-start gap-3 cursor-pointer" onClick={() => { if (!notif.is_read) markAsRead(notif.id); }}>
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${!notif.is_read ? "bg-primary/10" : "bg-muted"}`}>
+                    <Bell className={`h-4 w-4 ${!notif.is_read ? "text-primary" : "text-muted-foreground"}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm ${!notif.is_read ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{notif.title}</p>
+                    {notif.body && <p className="text-[11px] text-muted-foreground mt-0.5">{notif.body}</p>}
+                    <p className="text-[10px] text-muted-foreground/60 mt-1 font-en">
+                      {new Date(notif.created_at).toLocaleDateString("ar-SA")} · {new Date(notif.created_at).toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
+                  {!notif.is_read && <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />}
+                </div>
+                {/* Appointment Confirmation Buttons */}
+                {isAppointmentReminder && (
+                  <div className="flex items-center gap-2 mt-3 mr-12">
+                    <Button size="sm" variant="default" className="gap-1.5 text-xs h-8" disabled={confirming === notif.id}
+                      onClick={() => handleConfirmAppointment(notif, "confirmed")}>
+                      {confirming === notif.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}تأكيد الحضور
+                    </Button>
+                    <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8" disabled={confirming === notif.id}
+                      onClick={() => handleConfirmAppointment(notif, "cancelled")}>إلغاء الموعد
+                    </Button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
