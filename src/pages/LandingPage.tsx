@@ -123,6 +123,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <Link to="/demo"><Button size="sm" className="gap-1.5"><Play className="h-3.5 w-3.5" />جرّب الديمو</Button></Link>
             <Link to="/pricing"><Button variant="outline" size="sm">الأسعار</Button></Link>
+            <Link to="/login"><Button variant="ghost" size="sm">تسجيل الدخول</Button></Link>
           </div>
         </div>
       </nav>
