@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import {
   User, FileText, FlaskConical, Image, Pill, Calendar, Clock,
   Activity, Loader2, Download, Star, Stethoscope, LogOut, CalendarPlus, Check, Bell, BellDot,
-  QrCode, Gift, Users, TrendingUp, ClipboardList, Repeat, Heart, Send, Mic, ChevronRight, Wallet
+  QrCode, Gift, Users, TrendingUp, ClipboardList, Repeat, Heart, Send, Mic, ChevronRight, Wallet,
+  UserPlus, DollarSign, CreditCard, CalendarCheck, MapPin
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +22,7 @@ import { QRCodeSVG } from "qrcode.react";
 
 const anim = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.25 } };
 
-type TabKey = "overview" | "payments" | "booking" | "history" | "files" | "prescriptions" | "sessions" | "notifications" | "medical-card" | "loyalty" | "referral" | "treatment-plan" | "progress" | "pre-visit" | "feedback" | "ai-assistant";
+type TabKey = "overview" | "journey" | "payments" | "booking" | "history" | "files" | "prescriptions" | "sessions" | "notifications" | "medical-card" | "loyalty" | "referral" | "treatment-plan" | "progress" | "pre-visit" | "feedback" | "ai-assistant";
 
 export default function PatientPortal() {
   const { user, profile, signOut } = useAuth();
@@ -156,6 +157,7 @@ export default function PatientPortal() {
 
   const tabs: { key: TabKey; label: string; icon: any }[] = [
     { key: "overview", label: "نظرة عامة", icon: Activity },
+    { key: "journey", label: "رحلة المريض", icon: MapPin },
     { key: "payments", label: "المدفوعات", icon: Wallet },
     { key: "booking", label: "حجز موعد", icon: CalendarPlus },
     { key: "pre-visit", label: "نموذج ما قبل الزيارة", icon: ClipboardList },
@@ -301,6 +303,11 @@ export default function PatientPortal() {
             )}
           </div>
         </div>
+      )}
+
+      {/* ── Patient Journey ── */}
+      {activeTab === "journey" && (
+        <PatientJourneyTab visits={visits} />
       )}
 
       {/* ── Payments ── */}
@@ -1197,6 +1204,175 @@ function NotificationsWithConfirmation({ notifications, unreadCount, markAsRead,
               </div>
             );
           })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Patient Journey Tab ──
+const JOURNEY_STAGES = [
+  { key: "reception", label: "الاستقبال", icon: UserPlus, color: "text-primary", bg: "bg-primary/10", border: "border-primary/30" },
+  { key: "pre_payment", label: "الحسابات", icon: DollarSign, color: "text-warning", bg: "bg-warning/10", border: "border-warning/30" },
+  { key: "with_doctor", label: "الطبيب", icon: Stethoscope, color: "text-accent", bg: "bg-accent/10", border: "border-accent/30" },
+  { key: "post_payment", label: "حسابات إضافية", icon: CreditCard, color: "text-warning", bg: "bg-warning/10", border: "border-warning/30" },
+  { key: "checkout", label: "الخروج", icon: CalendarCheck, color: "text-success", bg: "bg-success/10", border: "border-success/30" },
+];
+
+function PatientJourneyTab({ visits }: { visits: any[] }) {
+  const today = new Date().toISOString().split("T")[0];
+  const todayVisits = visits.filter((v: any) => v.date === today && v.status !== "completed");
+  const completedToday = visits.filter((v: any) => v.date === today && v.status === "completed");
+  const recentVisits = visits.filter((v: any) => v.date !== today).slice(0, 5);
+
+  const getStageIndex = (status: string) => {
+    const idx = JOURNEY_STAGES.findIndex(s => s.key === status);
+    return idx >= 0 ? idx : 0;
+  };
+
+  const getStageLabel = (status: string) => {
+    if (status === "completed") return "مكتمل";
+    const stage = JOURNEY_STAGES.find(s => s.key === status);
+    return stage?.label || "الاستقبال";
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Active Visit Today */}
+      {todayVisits.length > 0 ? (
+        todayVisits.map((visit: any) => {
+          const currentIndex = getStageIndex(visit.status);
+          const currentStage = JOURNEY_STAGES[currentIndex];
+
+          return (
+            <div key={visit.id} className="clinic-card p-5 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl ${currentStage.bg} flex items-center justify-center`}>
+                  <currentStage.icon className={`h-5 w-5 ${currentStage.color}`} />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-sm font-bold text-foreground">زيارة اليوم</h2>
+                  <p className="text-xs text-muted-foreground">
+                    أنت الآن في مرحلة: <span className={`font-semibold ${currentStage.color}`}>{currentStage.label}</span>
+                  </p>
+                </div>
+                <Badge variant="default" className="text-[10px]">نشط</Badge>
+              </div>
+
+              {/* Visual Progress */}
+              <div className="space-y-3">
+                {JOURNEY_STAGES.map((stage, i) => {
+                  const isCompleted = i < currentIndex;
+                  const isCurrent = i === currentIndex;
+                  const isPending = i > currentIndex;
+
+                  return (
+                    <div key={stage.key} className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all ${
+                        isCompleted ? "bg-success/20" :
+                        isCurrent ? `${stage.bg} ring-2 ring-offset-2 ring-offset-background ${stage.border}` :
+                        "bg-muted"
+                      }`}>
+                        {isCompleted ? (
+                          <Check className="h-4 w-4 text-success" />
+                        ) : (
+                          <stage.icon className={`h-4 w-4 ${isCurrent ? stage.color : "text-muted-foreground/40"}`} />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className={`text-sm font-medium ${
+                          isCompleted ? "text-success line-through" :
+                          isCurrent ? "text-foreground font-bold" :
+                          "text-muted-foreground"
+                        }`}>
+                          {stage.label}
+                        </p>
+                        {isCurrent && (
+                          <p className="text-[10px] text-primary animate-pulse">⬅ أنت هنا</p>
+                        )}
+                      </div>
+                      {isCompleted && <Badge variant="secondary" className="text-[9px]">✓ تم</Badge>}
+                      {isCurrent && <Badge className="text-[9px]">الحالي</Badge>}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Visit Info */}
+              <div className="bg-muted/30 rounded-xl p-3 grid grid-cols-2 gap-2 text-xs border border-border/50">
+                <div>
+                  <span className="text-muted-foreground">النوع</span>
+                  <p className="font-medium text-foreground">{visit.visit_type === "diagnostic" ? "كشف" : visit.visit_type === "treatment" ? "علاجي" : "متابعة"}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">الوقت</span>
+                  <p className="font-medium text-foreground font-en">{visit.time?.slice(0, 5) || "—"}</p>
+                </div>
+                {visit.diagnosis && (
+                  <div className="col-span-2">
+                    <span className="text-muted-foreground">التشخيص</span>
+                    <p className="font-medium text-foreground">{visit.diagnosis}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })
+      ) : (
+        <div className="clinic-card p-8 text-center">
+          <MapPin className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-sm font-semibold text-foreground">لا توجد زيارة نشطة اليوم</p>
+          <p className="text-[10px] text-muted-foreground mt-1">ستظهر رحلتك هنا عند تسجيل زيارة في العيادة</p>
+        </div>
+      )}
+
+      {/* Completed Today */}
+      {completedToday.length > 0 && (
+        <div className="clinic-card">
+          <div className="p-4 border-b border-border">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Check className="h-4 w-4 text-success" />زيارات مكتملة اليوم
+            </h3>
+          </div>
+          <div className="divide-y divide-border">
+            {completedToday.map((v: any) => (
+              <div key={v.id} className="p-3 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center">
+                  <Check className="h-4 w-4 text-success" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-foreground">{v.visit_type === "diagnostic" ? "كشف" : "متابعة"}</p>
+                  <p className="text-[10px] text-muted-foreground font-en">{v.time?.slice(0, 5)}</p>
+                </div>
+                <Badge variant="default" className="text-[9px]">مكتمل</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent Visit History with stages */}
+      {recentVisits.length > 0 && (
+        <div className="clinic-card">
+          <div className="p-4 border-b border-border">
+            <h3 className="text-sm font-semibold text-foreground">سجل الزيارات السابقة</h3>
+          </div>
+          <div className="divide-y divide-border">
+            {recentVisits.map((v: any) => (
+              <div key={v.id} className="p-3 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-foreground font-en">{v.date}</p>
+                  <p className="text-[10px] text-muted-foreground">{v.diagnosis || (v.visit_type === "diagnostic" ? "كشف" : "متابعة")}</p>
+                </div>
+                <Badge variant={v.status === "completed" ? "default" : "secondary"} className="text-[9px]">
+                  {getStageLabel(v.status)}
+                </Badge>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
