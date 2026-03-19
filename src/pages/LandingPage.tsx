@@ -125,7 +125,6 @@ export default function LandingPage() {
             <a href="#contact" className="hover:text-foreground transition-colors">تواصل معنا</a>
           </div>
           <div className="flex items-center gap-2">
-            <Link to="/demo"><Button size="sm" className="gap-1.5"><Play className="h-3.5 w-3.5" />جرّب الديمو</Button></Link>
             <Link to="/pricing"><Button variant="outline" size="sm">الأسعار</Button></Link>
             <Link to="/login"><Button variant="ghost" size="sm">تسجيل الدخول</Button></Link>
           </div>
@@ -625,12 +624,6 @@ export default function LandingPage() {
                 <Button size="lg" className="gap-3 h-14 px-10 text-lg shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-shadow">
                   <Zap className="h-5 w-5" />
                   سجّل دخولك وابدأ مجاناً
-                </Button>
-              </Link>
-              <Link to="/demo">
-                <Button size="lg" variant="outline" className="gap-3 h-14 px-10 text-lg border-2">
-                  <Play className="h-5 w-5" />
-                  جرّب الديمو التفاعلي
                 </Button>
               </Link>
             </motion.div>
