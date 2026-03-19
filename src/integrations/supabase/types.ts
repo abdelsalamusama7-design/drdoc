@@ -330,6 +330,7 @@ export type Database = {
           notes: string | null
           patient_id: string
           uploaded_by: string | null
+          visit_id: string | null
         }
         Insert: {
           clinic_id?: string | null
@@ -341,6 +342,7 @@ export type Database = {
           notes?: string | null
           patient_id: string
           uploaded_by?: string | null
+          visit_id?: string | null
         }
         Update: {
           clinic_id?: string | null
@@ -352,6 +354,7 @@ export type Database = {
           notes?: string | null
           patient_id?: string
           uploaded_by?: string | null
+          visit_id?: string | null
         }
         Relationships: [
           {
@@ -366,6 +369,13 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_files_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
             referencedColumns: ["id"]
           },
         ]
@@ -431,6 +441,7 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           current_medications: string[] | null
+          gender: string | null
           id: string
           last_visit: string | null
           marital_status: string | null
@@ -449,6 +460,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           current_medications?: string[] | null
+          gender?: string | null
           id?: string
           last_visit?: string | null
           marital_status?: string | null
@@ -467,6 +479,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           current_medications?: string[] | null
+          gender?: string | null
           id?: string
           last_visit?: string | null
           marital_status?: string | null
@@ -497,6 +510,8 @@ export type Database = {
           notes: string | null
           patient_id: string
           payment_method: string | null
+          remaining_amount: number | null
+          total_amount: number | null
           visit_id: string
         }
         Insert: {
@@ -508,6 +523,8 @@ export type Database = {
           notes?: string | null
           patient_id: string
           payment_method?: string | null
+          remaining_amount?: number | null
+          total_amount?: number | null
           visit_id: string
         }
         Update: {
@@ -519,6 +536,8 @@ export type Database = {
           notes?: string | null
           patient_id?: string
           payment_method?: string | null
+          remaining_amount?: number | null
+          total_amount?: number | null
           visit_id?: string
         }
         Relationships: [
@@ -590,6 +609,7 @@ export type Database = {
           id: string
           patient_id: string | null
           patient_name: string
+          visit_id: string | null
         }
         Insert: {
           clinic_id?: string | null
@@ -600,6 +620,7 @@ export type Database = {
           id?: string
           patient_id?: string | null
           patient_name: string
+          visit_id?: string | null
         }
         Update: {
           clinic_id?: string | null
@@ -610,6 +631,7 @@ export type Database = {
           id?: string
           patient_id?: string | null
           patient_name?: string
+          visit_id?: string | null
         }
         Relationships: [
           {
@@ -624,6 +646,13 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
             referencedColumns: ["id"]
           },
         ]

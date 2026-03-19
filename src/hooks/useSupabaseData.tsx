@@ -9,6 +9,7 @@ export interface Patient {
   name: string;
   phone: string;
   age: number | null;
+  gender: string;
   address: string | null;
   marital_status: string;
   medical_history: string | null;
@@ -149,6 +150,8 @@ export interface Payment {
   visit_id: string;
   patient_id: string;
   amount: number;
+  total_amount: number;
+  remaining_amount: number;
   payment_method: string;
   notes: string | null;
   created_by: string | null;

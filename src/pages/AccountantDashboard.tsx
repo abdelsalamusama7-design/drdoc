@@ -64,6 +64,8 @@ export default function AccountantDashboard() {
         visit_id: payForm.visitId,
         patient_id: visit?.patient_id || payForm.patientId,
         amount: parseFloat(payForm.amount),
+        total_amount: parseFloat(payForm.amount),
+        remaining_amount: 0,
         payment_method: payForm.method,
         notes: payForm.notes || null,
         created_by: user?.id || null,

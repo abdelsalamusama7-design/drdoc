@@ -30,7 +30,7 @@ export default function Patients() {
 
   // Form state
   const [form, setForm] = useState({
-    name: "", phone: "", age: "", address: "",
+    name: "", phone: "", age: "", address: "", gender: "male",
     maritalStatus: "single", allergies: "",
     medicalHistory: "", previousSurgeries: "", currentMedications: "",
   });
@@ -72,6 +72,7 @@ export default function Patients() {
         name: form.name.trim(),
         phone: form.phone.trim(),
         age: form.age ? parseInt(form.age) : null,
+        gender: form.gender,
         address: form.address.trim() || null,
         marital_status: form.maritalStatus,
         medical_history: form.medicalHistory.trim() || null,
@@ -84,7 +85,7 @@ export default function Patients() {
       });
       toast({ title: "تم", description: "تم تسجيل المريض بنجاح" });
       setShowAddModal(false);
-      setForm({ name: "", phone: "", age: "", address: "", maritalStatus: "single", allergies: "", medicalHistory: "", previousSurgeries: "", currentMedications: "" });
+      setForm({ name: "", phone: "", age: "", address: "", gender: "male", maritalStatus: "single", allergies: "", medicalHistory: "", previousSurgeries: "", currentMedications: "" });
       refetch();
     } catch (err: any) {
       toast({ title: "خطأ", description: err.message, variant: "destructive" });
@@ -215,6 +216,16 @@ export default function Patients() {
               <div>
                 <Label>العمر</Label>
                 <Input type="number" value={form.age} onChange={e => setForm({...form, age: e.target.value})} placeholder="العمر" className="mt-1.5" />
+              </div>
+              <div>
+                <Label>النوع</Label>
+                <Select value={form.gender} onValueChange={v => setForm({...form, gender: v})}>
+                  <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">ذكر</SelectItem>
+                    <SelectItem value="female">أنثى</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="sm:col-span-2">
                 <Label>العنوان</Label>
