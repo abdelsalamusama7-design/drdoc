@@ -90,6 +90,9 @@ export const NAV_FEATURE_MAP: Record<string, string> = {
   "nav.inventory":          "inventory",
   "nav.noShow":             "noShow",
   "nav.doctorPerformance":  "doctorPerformance",
+  "nav.aiAssistant":        "aiAssistant",
+  "nav.medicalAlerts":      "medicalAlerts",
+  "nav.smartSearch":        "smartSearch",
 };
 
 // ── Hook ──────────────────────────────────────
