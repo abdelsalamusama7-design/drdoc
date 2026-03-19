@@ -41,6 +41,7 @@ const demoFeatures = [
   { id: "dashboard", icon: BarChart3, label: "لوحة التحكم", color: "text-primary" },
   { id: "patients", icon: Users, label: "المرضى", color: "text-accent" },
   { id: "appointments", icon: CalendarCheck, label: "المواعيد", color: "text-success" },
+  { id: "prescriptions", icon: Pill, label: "الوصفات", color: "text-accent" },
   { id: "queue", icon: ListOrdered, label: "قائمة الانتظار", color: "text-warning" },
   { id: "finance", icon: DollarSign, label: "المالية", color: "text-primary" },
   { id: "ai", icon: Brain, label: "المساعد الذكي", color: "text-accent" },
