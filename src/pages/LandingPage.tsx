@@ -20,6 +20,10 @@ import screenshotDashboard from "@/assets/screenshot-dashboard.jpg";
 import screenshotPatients from "@/assets/screenshot-patients.jpg";
 import screenshotAppointments from "@/assets/screenshot-appointments.jpg";
 import screenshotMobile from "@/assets/screenshot-mobile.png";
+import partnersConference from "@/assets/partners-conference.jpg";
+import partnersContract from "@/assets/partners-contract.jpg";
+import partnersTeam from "@/assets/partners-team.jpg";
+import partnersTraining from "@/assets/partners-training.jpg";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
