@@ -528,6 +528,41 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── Partners ── */}
+      <section className="py-16 bg-muted/30 border-t border-border overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">شركاؤنا</h2>
+            <p className="text-muted-foreground">نفخر بالتعاون مع صيدليات ومراكز طبية في جميع أنحاء مصر</p>
+          </motion.div>
+          <div className="relative">
+            <div className="flex animate-scroll gap-6">
+              {[
+                "صيدلية الشفاء", "صيدلية الأمل", "صيدلية الرحمة", "صيدلية النور", "صيدلية الحياة",
+                "صيدلية السلام", "صيدلية البركة", "صيدلية الإيمان", "صيدلية المعافاة", "صيدلية الوفاء",
+                "صيدلية الفردوس", "صيدلية الدواء", "صيدلية العلاج", "صيدلية الصحة", "صيدلية النخبة",
+                "صيدلية المدينة", "صيدلية الزهراء", "صيدلية الياسمين", "صيدلية الربيع", "صيدلية الهدى",
+                "صيدلية التوفيق", "صيدلية الأندلس", "صيدلية النيل", "صيدلية الفجر", "صيدلية الكوثر",
+              ].concat([
+                "صيدلية الشفاء", "صيدلية الأمل", "صيدلية الرحمة", "صيدلية النور", "صيدلية الحياة",
+                "صيدلية السلام", "صيدلية البركة", "صيدلية الإيمان", "صيدلية المعافاة", "صيدلية الوفاء",
+                "صيدلية الفردوس", "صيدلية الدواء", "صيدلية العلاج", "صيدلية الصحة", "صيدلية النخبة",
+              ]).map((name, i) => (
+                <div
+                  key={`${name}-${i}`}
+                  className="flex-shrink-0 px-6 py-3 rounded-xl border border-border bg-background shadow-sm flex items-center gap-2 min-w-max"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Stethoscope className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="text-sm font-medium text-foreground whitespace-nowrap">{name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Final CTA ── */}
       <section className="py-16 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-t border-border">
         <div className="max-w-3xl mx-auto px-4 text-center">
