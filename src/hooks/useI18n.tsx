@@ -31,6 +31,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.smartSearch": "البحث الذكي",
     "nav.subscription": "الأسعار والاشتراكات",
     "nav.patientJourney": "رحلة المريض",
+    "nav.insurance": "التأمين",
 
     // Nav Groups
     "navGroup.main": "الرئيسية",
