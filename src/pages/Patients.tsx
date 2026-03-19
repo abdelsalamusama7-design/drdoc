@@ -72,6 +72,7 @@ export default function Patients() {
         name: form.name.trim(),
         phone: form.phone.trim(),
         age: form.age ? parseInt(form.age) : null,
+        gender: form.gender,
         address: form.address.trim() || null,
         marital_status: form.maritalStatus,
         medical_history: form.medicalHistory.trim() || null,
