@@ -32,6 +32,7 @@ const roleLabels: Record<string, string> = {
   admin: "مدير",
   doctor: "طبيب",
   receptionist: "موظف استقبال",
+  accountant: "محاسب",
   patient: "مريض",
 };
 
@@ -39,6 +40,7 @@ const roleColors: Record<string, string> = {
   admin: "bg-destructive/10 text-destructive",
   doctor: "bg-primary/10 text-primary",
   receptionist: "bg-accent/10 text-accent",
+  accountant: "bg-warning/10 text-warning",
   patient: "bg-success/10 text-success",
 };
 
@@ -46,6 +48,7 @@ const roleIcons: Record<string, typeof Shield> = {
   admin: ShieldCheck,
   doctor: Stethoscope,
   receptionist: UserCog,
+  accountant: Calculator,
   patient: Users,
 };
 
