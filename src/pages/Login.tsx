@@ -115,10 +115,7 @@ export default function Login() {
           <p className="text-sm text-muted-foreground text-center mb-4">
             {mode === "staff"
               ? (isSignUp ? t("login.signup") : t("login.title"))
-              : (isSignUp
-                ? (lang === "ar" ? "إنشاء حساب مريض جديد" : "Create Patient Account")
-                : (lang === "ar" ? "تسجيل دخول المريض" : "Patient Login")
-              )
+              : (lang === "ar" ? "تسجيل دخول المريض" : "Patient Login")
             }
           </p>
 
