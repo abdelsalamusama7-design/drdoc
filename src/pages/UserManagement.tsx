@@ -384,10 +384,10 @@ export default function UserManagement() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserPlus className="h-5 w-5 text-primary" />
-              إضافة موظف جديد
+              إضافة مستخدم جديد
             </DialogTitle>
             <DialogDescription>
-              أنشئ حساب جديد للموظف وحدد دوره في النظام
+              أنشئ حساب جديد وحدد دوره في النظام (موظف أو مريض)
             </DialogDescription>
           </DialogHeader>
 
