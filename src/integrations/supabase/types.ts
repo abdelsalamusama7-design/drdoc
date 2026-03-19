@@ -287,6 +287,8 @@ export type Database = {
           name: string
           phone: string
           previous_surgeries: string | null
+          segment: string | null
+          visit_count: number | null
         }
         Insert: {
           address?: string | null
@@ -302,6 +304,8 @@ export type Database = {
           name: string
           phone: string
           previous_surgeries?: string | null
+          segment?: string | null
+          visit_count?: number | null
         }
         Update: {
           address?: string | null
@@ -317,6 +321,8 @@ export type Database = {
           name?: string
           phone?: string
           previous_surgeries?: string | null
+          segment?: string | null
+          visit_count?: number | null
         }
         Relationships: []
       }
