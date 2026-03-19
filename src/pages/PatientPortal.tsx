@@ -495,6 +495,9 @@ export default function PatientPortal() {
                 <div key={rx.id} className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-semibold text-foreground font-en">{rx.date}</p>
+                    <Button variant="outline" size="sm" className="gap-1.5 text-[10px] h-7" onClick={() => downloadPrescriptionPDF(rx, patientData)}>
+                      <Download className="h-3 w-3" />تحميل PDF
+                    </Button>
                   </div>
                   {rx.doctor_notes && <p className="text-xs text-muted-foreground mb-2">{rx.doctor_notes}</p>}
                   {rx.medications && rx.medications.length > 0 && (
