@@ -51,6 +51,7 @@ const navGroups: NavGroup[] = [
     groupKey: "navGroup.management",
     items: [
       { path: "/finance", labelKey: "nav.finance", icon: DollarSign },
+      { path: "/insurance", labelKey: "nav.insurance", icon: ShieldCheck },
       { path: "/inventory", labelKey: "nav.inventory", icon: Package },
       { path: "/no-show", labelKey: "nav.noShow", icon: UserX },
       { path: "/doctor-performance", labelKey: "nav.doctorPerformance", icon: Activity },
