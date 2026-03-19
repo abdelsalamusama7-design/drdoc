@@ -237,6 +237,8 @@ export default function PatientPortal() {
     { key: "medical-card", label: "البطاقة الطبية", icon: QrCode },
     { key: "loyalty", label: "نقاط الولاء", icon: Gift },
     { key: "referral", label: "دعوة صديق", icon: Users },
+    { key: "messages", label: "رسائل الطبيب", icon: MessageSquare },
+    { key: "online-meeting", label: "ميتنج أونلاين", icon: Video },
     { key: "feedback", label: "تقييم الزيارة", icon: Star },
     { key: "ai-assistant", label: "مساعد صحي", icon: Mic },
     { key: "notifications", label: "الإشعارات", icon: Bell },
