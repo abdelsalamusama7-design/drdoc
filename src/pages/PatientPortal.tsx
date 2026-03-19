@@ -574,28 +574,41 @@ export default function PatientPortal() {
 
       {/* ── Files ── */}
       {activeTab === "files" && (
-        <div className="clinic-card">
-          {patientFiles.length === 0 ? <div className="p-8 text-center text-sm text-muted-foreground">لا توجد ملفات</div> : (
-            <div className="divide-y divide-border">
-              {patientFiles.map(file => (
-                <div key={file.id} className="p-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    {file.file_type === "lab" ? <FlaskConical className="h-4 w-4 text-primary" /> :
-                     file.file_type === "radiology" ? <Image className="h-4 w-4 text-primary" /> :
-                     <FileText className="h-4 w-4 text-primary" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{file.file_name}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <Badge variant="secondary" className="text-[9px]">{file.file_type === "lab" ? "تحليل" : file.file_type === "radiology" ? "أشعة" : file.file_type}</Badge>
-                      <span className="text-[10px] text-muted-foreground font-en">{new Date(file.created_at).toLocaleDateString("ar-SA")}</span>
-                    </div>
-                  </div>
-                  <Button size="sm" variant="ghost" onClick={() => handleDownload(file.file_path)}><Download className="h-4 w-4" /></Button>
-                </div>
-              ))}
+        <div className="space-y-4">
+          {/* Upload Section */}
+          <PatientFileUpload patientData={patientData} onUpload={(file: any) => setPatientFiles(prev => [file, ...prev])} />
+
+          {/* Files List */}
+          <div className="clinic-card">
+            <div className="p-4 border-b border-border">
+              <h2 className="text-sm font-semibold text-foreground">ملفاتي الطبية</h2>
             </div>
-          )}
+            {patientFiles.length === 0 ? <div className="p-8 text-center text-sm text-muted-foreground">لا توجد ملفات بعد - يمكنك رفع ملفاتك من الأعلى</div> : (
+              <div className="divide-y divide-border">
+                {patientFiles.map(file => (
+                  <div key={file.id} className="p-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      {file.file_type === "lab" ? <FlaskConical className="h-4 w-4 text-primary" /> :
+                       file.file_type === "radiology" ? <Image className="h-4 w-4 text-primary" /> :
+                       file.file_type === "prescription" ? <Pill className="h-4 w-4 text-primary" /> :
+                       <FileText className="h-4 w-4 text-primary" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{file.file_name}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <Badge variant="secondary" className="text-[9px]">
+                          {file.file_type === "lab" ? "تحليل" : file.file_type === "radiology" ? "أشعة" : file.file_type === "prescription" ? "روشتة" : file.file_type === "other" ? "ملف" : file.file_type}
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground font-en">{new Date(file.created_at).toLocaleDateString("ar-SA")}</span>
+                      </div>
+                      {file.notes && <p className="text-[10px] text-muted-foreground mt-0.5">{file.notes}</p>}
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={() => handleDownload(file.file_path)}><Download className="h-4 w-4" /></Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -1921,6 +1934,101 @@ function ManualPaymentSection({ patientData, totalRemaining }: { patientData: an
         </Button>
 
         <p className="text-[9px] text-muted-foreground text-center">سيتم مراجعة الدفعة خلال 24 ساعة وتأكيدها</p>
+      </div>
+    </div>
+  );
+}
+
+// ── Patient File Upload Component ──
+function PatientFileUpload({ patientData, onUpload }: { patientData: any; onUpload: (file: any) => void }) {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [fileType, setFileType] = useState<string>("lab");
+  const [notes, setNotes] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const fileTypes = [
+    { id: "lab", label: "تحاليل", icon: FlaskConical },
+    { id: "radiology", label: "أشعة", icon: Image },
+    { id: "prescription", label: "روشتة", icon: Pill },
+    { id: "other", label: "ملف آخر", icon: FileText },
+  ];
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      toast({ title: "اختر ملف أولاً", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    try {
+      const filePath = `${patientData.id}/${Date.now()}_${selectedFile.name}`;
+      const { error: uploadError } = await supabase.storage.from("patient-files").upload(filePath, selectedFile);
+      if (uploadError) throw uploadError;
+
+      const { data, error } = await (supabase.from("patient_files" as any) as any)
+        .insert({
+          patient_id: patientData.id,
+          file_name: selectedFile.name,
+          file_path: filePath,
+          file_type: fileType,
+          notes: notes || null,
+          uploaded_by: user?.id || null,
+          clinic_id: patientData.clinic_id,
+        }).select().single();
+      if (error) throw error;
+
+      onUpload(data);
+      setSelectedFile(null);
+      setNotes("");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      toast({ title: "تم رفع الملف بنجاح ✅" });
+    } catch (err: any) {
+      toast({ title: "خطأ في الرفع", description: err.message, variant: "destructive" });
+    }
+    setUploading(false);
+  };
+
+  return (
+    <div className="clinic-card">
+      <div className="p-4 border-b border-border">
+        <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <Upload className="h-4 w-4 text-primary" />
+          رفع ملف طبي
+        </h2>
+        <p className="text-[10px] text-muted-foreground mt-0.5">ارفع الأشعة والتحاليل والروشتات السابقة والحالية</p>
+      </div>
+      <div className="p-4 space-y-3">
+        {/* File Type Selection */}
+        <div className="grid grid-cols-4 gap-2">
+          {fileTypes.map(ft => (
+            <button key={ft.id} onClick={() => setFileType(ft.id)}
+              className={`p-2.5 rounded-xl border text-center transition-all ${fileType === ft.id ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:border-muted-foreground/30"}`}>
+              <ft.icon className={`h-4 w-4 mx-auto mb-1 ${fileType === ft.id ? "text-primary" : "text-muted-foreground"}`} />
+              <p className={`text-[10px] font-medium ${fileType === ft.id ? "text-primary" : "text-muted-foreground"}`}>{ft.label}</p>
+            </button>
+          ))}
+        </div>
+
+        {/* File Input */}
+        <input ref={fileInputRef} type="file" accept="image/*,.pdf,.doc,.docx" className="hidden" onChange={e => setSelectedFile(e.target.files?.[0] || null)} />
+        <Button variant="outline" className="w-full gap-2 text-xs h-12 border-dashed" onClick={() => fileInputRef.current?.click()}>
+          {selectedFile ? (
+            <><FileImage className="h-4 w-4 text-success" /><span className="truncate">{selectedFile.name}</span></>
+          ) : (
+            <><Upload className="h-5 w-5 text-muted-foreground" />اضغط لاختيار ملف (صورة أو PDF)</>
+          )}
+        </Button>
+
+        {/* Notes */}
+        <Input value={notes} onChange={e => setNotes(e.target.value)} placeholder="ملاحظات (اختياري) - مثال: تحليل دم شامل" className="text-sm" />
+
+        {/* Upload Button */}
+        <Button className="w-full gap-2" onClick={handleUpload} disabled={uploading || !selectedFile}>
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+          رفع الملف
+        </Button>
       </div>
     </div>
   );
