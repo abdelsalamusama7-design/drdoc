@@ -101,9 +101,14 @@ export default function Pricing() {
               <p className="text-xs text-muted-foreground">حلول ذكية للعيادات والمراكز الطبية</p>
             </div>
           </Link>
-          <Link to="/booking">
-            <Button variant="outline" size="sm">جرّب مجاناً</Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link to="/login">
+              <Button size="sm">جرّب الديمو</Button>
+            </Link>
+            <Link to="/booking">
+              <Button variant="outline" size="sm">احجز موعد</Button>
+            </Link>
+          </div>
         </div>
       </div>
 
