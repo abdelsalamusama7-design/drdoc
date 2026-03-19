@@ -381,11 +381,12 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
         <button onClick={() => setSidebarOpen(true)} className="p-2 -mr-2 rounded-lg">
           <Menu className="h-5 w-5 text-foreground" />
         </button>
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
             <Stethoscope className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
           <h1 className="text-sm font-bold text-foreground">Smart Clinic</h1>
+        </Link>
           <ClinicSwitcher />
         </div>
         <div className="flex items-center gap-0.5">
