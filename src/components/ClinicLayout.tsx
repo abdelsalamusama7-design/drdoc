@@ -395,9 +395,6 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           <button onClick={toggleLang} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Language">
             <Languages className="h-4 w-4 text-muted-foreground" />
           </button>
-          <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-muted transition-colors" title="Theme">
-            {theme === "light" ? <Moon className="h-4 w-4 text-muted-foreground" /> : <Sun className="h-4 w-4 text-muted-foreground" />}
-          </button>
           <NotificationPanel />
         </div>
       </header>
@@ -552,19 +549,6 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
             <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-primary font-en">
               {lang === "ar" ? "EN" : "ع"}
             </span>
-          </button>
-
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors"
-            title={theme === "light" ? "Dark Mode" : "Light Mode"}
-          >
-            {theme === "light" ? (
-              <Moon className="h-[18px] w-[18px]" />
-            ) : (
-              <Sun className="h-[18px] w-[18px]" />
-            )}
           </button>
 
           {/* Notifications */}

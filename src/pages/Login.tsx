@@ -74,9 +74,6 @@ export default function Login() {
         <button onClick={toggleLang} className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors">
           <Languages className="h-4 w-4" />
         </button>
-        <button onClick={toggleTheme} className="p-2 rounded-xl hover:bg-muted text-muted-foreground transition-colors">
-          {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-        </button>
       </div>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="w-full max-w-sm">

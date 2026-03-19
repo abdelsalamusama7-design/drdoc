@@ -10,21 +10,14 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem("clinic-theme") as Theme;
-    // Default to dark mode — only respect stored preference if explicitly set
-    const initial = stored === "light" || stored === "dark" ? stored : "dark";
-    // Apply immediately to prevent flash
-    document.documentElement.classList.toggle("dark", initial === "dark");
-    return initial;
-  });
+  const [theme] = useState<Theme>("dark");
 
   useEffect(() => {
-    localStorage.setItem("clinic-theme", theme);
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
+    localStorage.setItem("clinic-theme", "dark");
+    document.documentElement.classList.add("dark");
+  }, []);
 
-  const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  const toggleTheme = () => {};
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
