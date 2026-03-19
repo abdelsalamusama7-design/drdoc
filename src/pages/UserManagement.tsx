@@ -536,7 +536,7 @@ export default function UserManagement() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 py-2">
-            {(["admin", "doctor", "receptionist", "patient"] as const).map((r) => {
+            {(["admin", "doctor", "receptionist", "accountant", "patient"] as const).map((r) => {
               const Icon = roleIcons[r];
               return (
                 <button
