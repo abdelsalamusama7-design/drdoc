@@ -34,7 +34,9 @@ export default function AIChatbot() {
         body: { messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })) },
       });
       if (error) throw error;
-      const reply = data?.reply || "عذراً، حدث خطأ. يرجى المحاولة مرة أخرى.";
+      const reply = typeof data?.reply === "string" && data.reply.trim()
+        ? data.reply
+        : "عذراً، الخدمة غير متاحة حالياً. يمكنك التواصل معنا على 01227080430";
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);
     } catch (err) {
       setMessages(prev => [...prev, { role: "assistant", content: "عذراً، الخدمة غير متاحة حالياً. يمكنك التواصل معنا على 01227080430" }]);
