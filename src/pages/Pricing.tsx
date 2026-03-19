@@ -102,7 +102,7 @@ export default function Pricing() {
             </div>
           </Link>
           <div className="flex items-center gap-2">
-            <Link to="/login">
+            <Link to="/demo">
               <Button size="sm">جرّب الديمو</Button>
             </Link>
             <Link to="/booking">

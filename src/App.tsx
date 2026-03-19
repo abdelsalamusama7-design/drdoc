@@ -44,6 +44,7 @@ import LandingPage from "@/pages/LandingPage";
 import OnboardingWizard from "@/pages/OnboardingWizard";
 import RetentionDashboard from "@/pages/RetentionDashboard";
 import ClinicReferrals from "@/pages/ClinicReferrals";
+import InteractiveDemo from "@/pages/InteractiveDemo";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -142,6 +143,7 @@ const App = () => {
                     <Route path="/booking" element={<Booking />} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/register-clinic" element={<RegisterClinic />} />
+                    <Route path="/demo" element={<InteractiveDemo />} />
                     <Route path="/*" element={<ProtectedRoutes />} />
                   </Routes>
                   <AIChatbot />
