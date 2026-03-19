@@ -452,7 +452,10 @@ export default function Insurance() {
                     {inv.due_date && <span className="text-muted-foreground font-en">الاستحقاق: {inv.due_date}</span>}
                   </div>
 
-                  <div className="flex items-center gap-2 mt-3">
+                   <div className="flex items-center gap-2 mt-3">
+                    <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={() => exportInvoicePDF(inv)}>
+                      <Download className="h-3 w-3" />تصدير PDF
+                    </Button>
                     {inv.status === "draft" && (
                       <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1" onClick={() => updateInvoiceStatus(inv.id, "sent")}>
                         <Send className="h-3 w-3" />إرسال
