@@ -350,6 +350,50 @@ export type Database = {
           },
         ]
       }
+      drug_index: {
+        Row: {
+          category: string | null
+          clinic_id: string | null
+          created_at: string | null
+          default_dosage: string | null
+          default_duration: string | null
+          id: string
+          name: string
+          name_en: string | null
+          notes: string | null
+        }
+        Insert: {
+          category?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          default_dosage?: string | null
+          default_duration?: string | null
+          id?: string
+          name: string
+          name_en?: string | null
+          notes?: string | null
+        }
+        Update: {
+          category?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          default_dosage?: string | null
+          default_duration?: string | null
+          id?: string
+          name?: string
+          name_en?: string | null
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drug_index_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expenses: {
         Row: {
           amount: number
@@ -901,6 +945,44 @@ export type Database = {
           },
         ]
       }
+      lab_index: {
+        Row: {
+          category: string | null
+          clinic_id: string | null
+          created_at: string | null
+          id: string
+          name: string
+          name_en: string | null
+          notes: string | null
+        }
+        Insert: {
+          category?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          name_en?: string | null
+          notes?: string | null
+        }
+        Update: {
+          category?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          name_en?: string | null
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_index_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_alerts: {
         Row: {
           alert_type: string
@@ -951,6 +1033,47 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medication_templates: {
+        Row: {
+          clinic_id: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          items: Json | null
+          name: string
+          template_type: string | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          items?: Json | null
+          name: string
+          template_type?: string | null
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          items?: Json | null
+          name?: string
+          template_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_templates_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
         ]
