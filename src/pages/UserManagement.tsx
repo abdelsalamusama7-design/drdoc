@@ -446,22 +446,27 @@ export default function UserManagement() {
               </div>
             </div>
 
-            {/* Phone + Specialty row */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label className="text-[12px]">الهاتف</Label>
-                <div className="relative mt-1.5">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
-                    placeholder="05xxxxxxxx"
-                    className="pl-9 font-en"
-                    dir="ltr"
-                    maxLength={20}
-                  />
-                </div>
+            {/* Phone */}
+            <div>
+              <Label className="text-[12px]">الهاتف {newRole === "patient" && <span className="text-destructive">*</span>}</Label>
+              <div className="relative mt-1.5">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={newPhone}
+                  onChange={(e) => setNewPhone(e.target.value)}
+                  placeholder="01xxxxxxxxx"
+                  className="pl-9 font-en"
+                  dir="ltr"
+                  maxLength={20}
+                />
               </div>
+              {newRole === "patient" && (
+                <p className="text-[10px] text-muted-foreground mt-1">⚠️ يجب أن يكون نفس الرقم المسجل في ملف المريض</p>
+              )}
+            </div>
+
+            {/* Specialty - only for non-patient */}
+            {newRole !== "patient" && (
               <div>
                 <Label className="text-[12px]">التخصص</Label>
                 <Input
@@ -472,7 +477,7 @@ export default function UserManagement() {
                   maxLength={100}
                 />
               </div>
-            </div>
+            )}
 
             {/* Role Selection */}
             <div>
