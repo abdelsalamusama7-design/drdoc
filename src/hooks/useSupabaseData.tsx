@@ -168,6 +168,13 @@ export interface TherapySession {
 }
 
 // ─── Generic fetch hook ──────────────────────────────────────
+// Tables that should be filtered by clinic_id
+const CLINIC_TABLES = [
+  "patients", "appointments", "visits", "services", "prescriptions",
+  "expenses", "payments", "doctor_notes", "follow_ups", "patient_files",
+  "patient_ratings", "therapy_sessions", "visit_services"
+];
+
 function useSupabaseQuery<T>(
   table: string,
   options?: {
@@ -175,6 +182,7 @@ function useSupabaseQuery<T>(
     ascending?: boolean;
     filters?: Record<string, any>;
     select?: string;
+    clinicId?: string | null;
   }
 ) {
   const [data, setData] = useState<T[]>([]);
@@ -185,6 +193,10 @@ function useSupabaseQuery<T>(
     setLoading(true);
     try {
       let query = (supabase.from(table as any) as any).select(options?.select || "*");
+      // Auto-filter by clinic_id for multi-tenant tables
+      if (CLINIC_TABLES.includes(table) && options?.clinicId) {
+        query = query.eq("clinic_id", options.clinicId);
+      }
       if (options?.filters) {
         Object.entries(options.filters).forEach(([key, value]) => {
           query = query.eq(key, value);
@@ -200,7 +212,7 @@ function useSupabaseQuery<T>(
       toast({ title: "خطأ", description: err.message, variant: "destructive" });
     }
     setLoading(false);
-  }, [table, JSON.stringify(options?.filters)]);
+  }, [table, JSON.stringify(options?.filters), options?.clinicId]);
 
   useEffect(() => { fetch(); }, [fetch]);
   return { data, loading, refetch: fetch, setData };
