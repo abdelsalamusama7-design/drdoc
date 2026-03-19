@@ -161,7 +161,7 @@ const App = () => {
               <AuthProvider>
                 <ClinicProvider>
                   <Routes>
-                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/" element={<SmartHome />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/landing" element={<LandingPage />} />
