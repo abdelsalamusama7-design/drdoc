@@ -47,6 +47,7 @@ import ClinicReferrals from "@/pages/ClinicReferrals";
 import InteractiveDemo from "@/pages/InteractiveDemo";
 import Insurance from "@/pages/Insurance";
 import ResetPassword from "@/pages/ResetPassword";
+import OnlinePayment from "@/pages/OnlinePayment";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 

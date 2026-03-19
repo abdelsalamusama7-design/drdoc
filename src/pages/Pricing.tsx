@@ -175,14 +175,15 @@ export default function Pricing() {
                     <MessageCircle className="h-4 w-4" />
                     اشترك عبر واتساب
                   </Button>
-                  <Button
-                    className="w-full"
-                    variant="secondary"
-                    onClick={() => alert("بوابة الدفع الإلكتروني قيد التفعيل - تواصل معنا عبر واتساب حالياً")}
-                  >
-                    <Zap className="h-4 w-4" />
-                    ادفع أونلاين
-                  </Button>
+                  <Link to={`/pay?plan=${pkg.id}`}>
+                    <Button
+                      className="w-full"
+                      variant="secondary"
+                    >
+                      <Zap className="h-4 w-4" />
+                      ادفع أونلاين
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </motion.div>
