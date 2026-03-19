@@ -91,12 +91,26 @@ export default function Dashboard() {
     { label: t("dash.pendingFollowups"), value: String(stats.pendingFollowups), change: String(stats.pendingFollowups), up: false, icon: Clock, color: "text-warning", bg: "bg-warning/10", ringColor: "ring-warning/20" },
   ];
 
-  const performanceInsights = [
-    { label: t("dash.monthConsultations"), value: String(patients.length), icon: Stethoscope, color: "text-primary" },
-    { label: t("dash.followups"), value: String(followUps.length), icon: Calendar, color: "text-accent" },
-    { label: t("dash.topService"), value: services[0]?.name || "—", icon: Star, color: "text-warning" },
-    { label: t("dash.busiestDay"), value: t("perf.wednesday"), icon: Zap, color: "text-success" },
-  ];
+  const performanceInsights = useMemo(() => {
+    const thisMonth = new Date().toISOString().slice(0, 7);
+    const monthApts = allApts.filter(a => a.date?.startsWith(thisMonth));
+    const totalRevenue = payments.reduce((s, p) => s + Number(p.amount), 0);
+    const totalExp = expenses.reduce((s, e) => s + Number(e.amount), 0);
+
+    // Find busiest day of week
+    const dayCounts: Record<number, number> = {};
+    allApts.forEach(a => { const d = new Date(a.date).getDay(); dayCounts[d] = (dayCounts[d] || 0) + 1; });
+    const busiestDayIdx = Object.entries(dayCounts).sort((a, b) => Number(b[1]) - Number(a[1]))[0];
+    const dayKeys = ["day.sun", "day.mon", "day.tue", "day.wed", "day.thu", "day.fri", "day.sat"];
+    const busiestDay = busiestDayIdx ? t(dayKeys[Number(busiestDayIdx[0])]) : "—";
+
+    return [
+      { label: t("dash.monthConsultations"), value: String(monthApts.length), icon: Stethoscope, color: "text-primary" },
+      { label: t("dash.followups"), value: String(followUps.filter(f => f.status === "pending").length), icon: Calendar, color: "text-accent" },
+      { label: lang === "ar" ? "إجمالي الإيرادات" : "Total Revenue", value: totalRevenue.toLocaleString(), icon: DollarSign, color: "text-success" },
+      { label: t("dash.busiestDay"), value: busiestDay, icon: Zap, color: "text-warning" },
+    ];
+  }, [allApts, payments, expenses, followUps, t, lang]);
 
   if (loading) {
     return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
