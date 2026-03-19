@@ -257,14 +257,14 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-border/80">
           {!collapsed && (
-            <div className="flex items-center gap-2.5">
+            <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
               <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
                 <Stethoscope className="h-4 w-4 text-primary-foreground" />
               </div>
               <div>
                 <h1 className="text-sm font-bold text-foreground leading-none">Smart Clinic</h1>
               </div>
-            </div>
+            </Link>
           )}
           {collapsed && (
             <button onClick={() => setCollapsed(false)} className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center mx-auto hover:opacity-80 transition-opacity">
