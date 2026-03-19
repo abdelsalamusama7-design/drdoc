@@ -121,7 +121,7 @@ export default function Booking() {
               <Stethoscope className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">د. خالد جادالله</h1>
+              <h1 className="text-xl font-bold text-foreground">Smart Clinic</h1>
               <p className="text-xs text-muted-foreground">حجز موعد أونلاين</p>
             </div>
           </div>

@@ -130,7 +130,7 @@ export default function Dashboard() {
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-foreground">{lang === "ar" ? "شارك د. خالد جادالله مع العيادات" : "Share د. خالد جادالله with Clinics"}</h3>
+                  <h3 className="text-sm font-bold text-foreground">{lang === "ar" ? "شارك Smart Clinic مع العيادات" : "Share Smart Clinic with Clinics"}</h3>
                   <p className="text-xs text-muted-foreground mt-0.5">{lang === "ar" ? "صفحة تعريفية احترافية بجميع مميزات النظام" : "Professional page with all system features"}</p>
                 </div>
               </div>

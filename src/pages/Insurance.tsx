@@ -253,7 +253,7 @@ export default function Insurance() {
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(150);
-    doc.text("د. خالد جادالله - Insurance Invoice", 105, 285, { align: "center" });
+    doc.text("Smart Clinic - Insurance Invoice", 105, 285, { align: "center" });
 
     doc.save(`invoice-${inv.invoice_number || inv.id.substring(0, 8)}.pdf`);
     toast({ title: "✅", description: "تم تصدير الفاتورة بنجاح" });

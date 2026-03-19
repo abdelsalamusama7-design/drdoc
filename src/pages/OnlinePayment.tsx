@@ -153,7 +153,7 @@ export default function OnlinePayment() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <Stethoscope className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-sm font-bold text-foreground">د. خالد جادالله</span>
+            <span className="text-sm font-bold text-foreground">Smart Clinic</span>
           </Link>
         </div>
       </nav>
@@ -221,7 +221,7 @@ export default function OnlinePayment() {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                {method === "instapay" ? "الاسم: د. خالد جادالله — بنك المشرق" : "فودافون كاش"}
+                {method === "instapay" ? "الاسم: Smart Clinic — بنك المشرق" : "فودافون كاش"}
               </p>
             </div>
 
