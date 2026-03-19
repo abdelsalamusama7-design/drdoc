@@ -187,7 +187,7 @@ export default function Pricing() {
 
       {/* Comparison Table */}
       <div className="max-w-6xl mx-auto px-4 pb-12">
-        <h3 className="text-xl font-bold text-foreground text-center mb-6">مقارنة تفصيلية</h3>
+        <h3 className="text-xl font-bold text-foreground text-center mb-6">📊 الفرق بين الباقات</h3>
         <div className="clinic-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -200,15 +200,14 @@ export default function Pricing() {
             </thead>
             <tbody className="divide-y divide-border/50">
               {[
-                { label: "عدد المستخدمين", values: ["3", "10", "غير محدود"] },
-                { label: "التقارير", values: ["أساسية", "يومية + شهرية", "مخصصة + ذكية"] },
-                { label: "الرسائل", values: ["50/شهر", "500/شهر", "غير محدود"] },
-                { label: "الذكاء الاصطناعي", values: ["شات بوت", "شات بوت ذكي", "مساعد AI كامل"] },
-                { label: "الدعم الفني", values: ["بريد إلكتروني", "واتساب + هاتف", "أولوية 24/7"] },
+                { label: "عدد المستخدمين", values: ["محدود", "متوسط", "غير محدود"] },
+                { label: "التقارير", values: ["أساسية", "متقدمة", "ذكية"] },
+                { label: "الرسائل", values: ["لا يوجد", "متاح", "متكامل"] },
+                { label: "الذكاء الاصطناعي", values: ["أساسي", "متوسط", "متقدم"] },
+                { label: "الدعم", values: ["عادي", "سريع", "أولوية"] },
                 { label: "إدارة الباقات", values: ["✗", "✓", "✓"] },
                 { label: "CRM", values: ["✗", "✗", "✓"] },
                 { label: "فروع متعددة", values: ["✗", "✗", "✓"] },
-                { label: "بوابة دفع", values: ["✗", "✓", "✓"] },
               ].map((row, i) => (
                 <tr key={i} className="hover:bg-muted/20">
                   <td className="p-4 font-medium text-foreground">{row.label}</td>
