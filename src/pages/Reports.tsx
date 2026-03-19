@@ -96,7 +96,7 @@ export default function Reports() {
     const dateStr = new Date().toLocaleDateString("en-US");
     
     doc.setFontSize(18);
-    doc.text(`DrDoc - ${periodLabel} Report`, 105, 20, { align: "center" });
+    doc.text(`Smart Clinic - ${periodLabel} Report`, 105, 20, { align: "center" });
     doc.setFontSize(11);
     doc.text(dateStr, 105, 28, { align: "center" });
     
