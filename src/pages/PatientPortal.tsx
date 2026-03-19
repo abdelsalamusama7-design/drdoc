@@ -342,6 +342,118 @@ export default function PatientPortal() {
           )}
         </div>
       )}
+
+      {/* Booking */}
+      {activeTab === "booking" && (
+        <BookingForm patientData={patientData} onSuccess={() => { setActiveTab("overview"); }} />
+      )}
     </motion.div>
+  );
+}
+
+// ── Booking Form Component ──
+function BookingForm({ patientData, onSuccess }: { patientData: any; onSuccess: () => void }) {
+  const { toast } = useToast();
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [visitType, setVisitType] = useState("consultation");
+  const [notes, setNotes] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = tomorrow.toISOString().split("T")[0];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!date || !time) {
+      toast({ title: "خطأ", description: "اختر التاريخ والوقت", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await createAppointment({
+        patient_id: patientData.id,
+        patient_name: patientData.name,
+        phone: patientData.phone,
+        date,
+        time,
+        visit_type: visitType,
+        notes: notes || null,
+        doctor: null,
+        status: "scheduled",
+        created_by: null,
+      }, patientData.clinic_id);
+      toast({ title: "✅ تم حجز الموعد", description: `${date} الساعة ${time}` });
+      setDate("");
+      setTime("");
+      setNotes("");
+      onSuccess();
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
+  const timeSlots = [];
+  for (let h = 9; h <= 21; h++) {
+    timeSlots.push(`${String(h).padStart(2, "0")}:00`);
+    timeSlots.push(`${String(h).padStart(2, "0")}:30`);
+  }
+
+  return (
+    <div className="clinic-card p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+          <CalendarPlus className="h-4 w-4 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-sm font-bold text-foreground">حجز موعد جديد</h2>
+          <p className="text-[10px] text-muted-foreground">اختر التاريخ والوقت المناسب</p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs">التاريخ</Label>
+            <Input type="date" value={date} onChange={e => setDate(e.target.value)} min={minDate} className="font-en" required />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">الوقت</Label>
+            <Select value={time} onValueChange={setTime}>
+              <SelectTrigger><SelectValue placeholder="اختر الوقت" /></SelectTrigger>
+              <SelectContent>
+                {timeSlots.map(t => (
+                  <SelectItem key={t} value={t} className="font-en">{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs">نوع الزيارة</Label>
+          <Select value={visitType} onValueChange={setVisitType}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="consultation">كشف جديد</SelectItem>
+              <SelectItem value="follow_up">متابعة</SelectItem>
+              <SelectItem value="urgent">طوارئ</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs">ملاحظات (اختياري)</Label>
+          <Textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} placeholder="أي ملاحظات تريد إبلاغ العيادة بها..." className="text-sm" />
+        </div>
+
+        <Button type="submit" className="w-full gap-2" disabled={submitting}>
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+          تأكيد الحجز
+        </Button>
+      </form>
+    </div>
   );
 }
