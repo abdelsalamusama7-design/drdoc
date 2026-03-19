@@ -30,34 +30,44 @@ export default function Dashboard() {
 
   const today = new Date().toISOString().split("T")[0];
   const { data: todayApts, loading: aptsLoading } = useAppointments(today);
+  const { data: allApts } = useAllAppointments();
   const { data: patients, loading: patsLoading } = usePatients();
   const { data: expenses } = useExpenses();
   const { data: followUps } = useFollowUps();
   const { data: services } = useServices();
+  const { data: payments } = useAllPayments();
 
   const loading = aptsLoading || patsLoading;
 
   const stats = useMemo(() => {
     const pendingFollowups = followUps.filter(f => f.status === "pending").length;
-    const avgServicePrice = services.length > 0 ? services.reduce((s, sv) => s + sv.price, 0) / services.length : 300;
-    const completedToday = todayApts.filter(a => a.status === "completed").length;
-    const todayRevenue = Math.round(completedToday * avgServicePrice);
+    const todayPayments = payments.filter(p => p.created_at?.startsWith(today));
+    const todayRevenue = todayPayments.reduce((s, p) => s + Number(p.amount), 0);
+    const todayExpenses = expenses.filter(e => e.date === today).reduce((s, e) => s + Number(e.amount), 0);
 
     return {
       patientsToday: todayApts.length,
       appointmentCount: todayApts.length,
-      todayRevenue,
+      todayRevenue: Math.round(todayRevenue),
+      todayExpenses: Math.round(todayExpenses),
       pendingFollowups,
     };
-  }, [todayApts, followUps, services]);
+  }, [todayApts, followUps, payments, expenses, today]);
 
   const revenueData = useMemo(() => {
-    const days = [t("day.sat"), t("day.sun"), t("day.mon"), t("day.tue"), t("day.wed"), t("day.thu"), t("day.fri")];
-    return days.map((day, i) => ({
-      day,
-      revenue: Math.round(Math.random() * 3000 + 1000) * (i === 6 ? 0 : 1),
-    }));
-  }, [t]);
+    const now = new Date();
+    const dayNames = [t("day.sun"), t("day.mon"), t("day.tue"), t("day.wed"), t("day.thu"), t("day.fri"), t("day.sat")];
+    const result: { day: string; revenue: number; expenses: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split("T")[0];
+      const dayRevenue = payments.filter(p => p.created_at?.startsWith(dateStr)).reduce((s, p) => s + Number(p.amount), 0);
+      const dayExp = expenses.filter(e => e.date === dateStr).reduce((s, e) => s + Number(e.amount), 0);
+      result.push({ day: dayNames[d.getDay()], revenue: Math.round(dayRevenue), expenses: Math.round(dayExp) });
+    }
+    return result;
+  }, [payments, expenses, t]);
 
   const quickActions = [
     { label: t("action.newPatient"), icon: UserPlus, path: "/patients" },
