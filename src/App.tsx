@@ -34,6 +34,10 @@ import QueueManagement from "@/pages/QueueManagement";
 import DoctorPerformance from "@/pages/DoctorPerformance";
 import InventoryPage from "@/pages/Inventory";
 import NoShowManagement from "@/pages/NoShowManagement";
+import SubscriptionManagement from "@/pages/SubscriptionManagement";
+import AITreatmentAssistant from "@/pages/AITreatmentAssistant";
+import MedicalAlerts from "@/pages/MedicalAlerts";
+import SmartSearch from "@/pages/SmartSearch";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
