@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Plus, Printer, Pill, Loader2, Share2 } from "lucide-react";
 import { usePrescriptions, createPrescription, usePatients } from "@/hooks/useSupabaseData";
 import { useAuth } from "@/hooks/useAuth";
+import { useClinic } from "@/hooks/useClinic";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
