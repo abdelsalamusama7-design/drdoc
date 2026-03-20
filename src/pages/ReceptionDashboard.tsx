@@ -249,7 +249,7 @@ export default function ReceptionDashboard() {
           { label: "حجز موعد", icon: CalendarDays, action: () => {}, path: "/appointments", color: "text-accent", bg: "bg-accent/10" },
           { label: "استلام نقدية", icon: DollarSign, action: () => setShowCashDialog(true), color: "text-success", bg: "bg-success/10" },
           { label: "إضافة مصروف", icon: Receipt, action: () => setShowExpenseDialog(true), color: "text-warning", bg: "bg-warning/10" },
-          { label: "بحث مريض", icon: Search, action: () => {}, path: "/patients", color: "text-primary", bg: "bg-primary/10" },
+          { label: "تقسيط مبلغ", icon: CreditCard, action: () => setShowInstallment(true), color: "text-accent", bg: "bg-accent/10" },
           { label: "التقارير", icon: Printer, action: () => {}, path: "/reports", color: "text-accent", bg: "bg-accent/10" },
         ].map((action, i) => {
           const content = (
