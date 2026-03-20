@@ -1,14 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, Send, Loader2, User, Stethoscope, Calendar, Search, ChevronRight } from "lucide-react";
+import { MessageSquare, Send, Loader2, User, Stethoscope, Calendar, Search, ChevronRight, Plus, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useClinic } from "@/hooks/useClinic";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { usePatients } from "@/hooks/useSupabaseData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 interface Conversation {
   patient_id: string;
@@ -25,6 +29,7 @@ export default function AdminMessages() {
   const { clinic } = useClinic();
   const { profile } = useAuth();
   const { toast } = useToast();
+  const { data: patients } = usePatients();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [messages, setMessages] = useState<any[]>([]);
@@ -32,6 +37,10 @@ export default function AdminMessages() {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [showNewMsg, setShowNewMsg] = useState(false);
+  const [newMsgPatientId, setNewMsgPatientId] = useState("");
+  const [newMsgText, setNewMsgText] = useState("");
+  const [newMsgSearch, setNewMsgSearch] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch all conversations
@@ -68,10 +77,10 @@ export default function AdminMessages() {
     // Fetch patient names
     const patientIds = Object.keys(grouped);
     if (patientIds.length > 0) {
-      const { data: patients } = await (supabase.from("patients" as any) as any)
+      const { data: pats } = await (supabase.from("patients" as any) as any)
         .select("id, name, phone")
         .in("id", patientIds);
-      for (const p of (patients || [])) {
+      for (const p of (pats || [])) {
         if (grouped[p.id]) {
           grouped[p.id].patient_name = p.name;
           grouped[p.id].patient_phone = p.phone;
@@ -134,7 +143,6 @@ export default function AdminMessages() {
     if (!text.trim() || !selectedPatientId) return;
     setSending(true);
     try {
-      const conv = conversations.find(c => c.patient_id === selectedPatientId);
       const { data, error } = await (supabase.from("patient_messages" as any) as any).insert({
         patient_id: selectedPatientId,
         clinic_id: clinic?.id,
@@ -152,21 +160,60 @@ export default function AdminMessages() {
     setSending(false);
   };
 
+  const handleSendNewMessage = async () => {
+    if (!newMsgPatientId || !newMsgText.trim()) {
+      toast({ title: "خطأ", description: "اختر مريض واكتب الرسالة", variant: "destructive" });
+      return;
+    }
+    setSending(true);
+    try {
+      const { error } = await (supabase.from("patient_messages" as any) as any).insert({
+        patient_id: newMsgPatientId,
+        clinic_id: clinic?.id,
+        sender_type: "doctor",
+        message: newMsgText.trim(),
+        recipient_type: "patient",
+        recipient_name: profile?.full_name || "الإدارة",
+      });
+      if (error) throw error;
+      toast({ title: "✅ تم الإرسال", description: "تم إرسال الرسالة بنجاح" });
+      setShowNewMsg(false);
+      setNewMsgPatientId("");
+      setNewMsgText("");
+      setNewMsgSearch("");
+      setSelectedPatientId(newMsgPatientId);
+      fetchConversations();
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+    setSending(false);
+  };
+
   const filteredConvs = search
     ? conversations.filter(c => c.patient_name.includes(search) || c.patient_phone.includes(search))
     : conversations;
 
   const selectedConv = conversations.find(c => c.patient_id === selectedPatientId);
 
+  const filteredPatients = newMsgSearch
+    ? patients.filter(p => p.name.includes(newMsgSearch) || p.phone.includes(newMsgSearch))
+    : patients;
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-[calc(100vh-120px)] flex rounded-2xl overflow-hidden border border-border bg-card" style={{ boxShadow: "var(--card-shadow)" }}>
       {/* Conversations sidebar */}
       <div className="w-[320px] border-l border-border flex flex-col bg-card">
         <div className="p-4 border-b border-border">
-          <h2 className="text-sm font-bold text-foreground flex items-center gap-2 mb-3">
-            <MessageSquare className="h-4 w-4 text-primary" />
-            رسائل المرضى
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-primary" />
+              رسائل المرضى
+            </h2>
+            <Button size="sm" variant="default" className="gap-1.5 text-[11px] h-7 px-2.5" onClick={() => setShowNewMsg(true)}>
+              <Plus className="h-3 w-3" />
+              رسالة جديدة
+            </Button>
+          </div>
           <div className="relative">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
@@ -231,7 +278,11 @@ export default function AdminMessages() {
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
               <MessageSquare className="h-7 w-7 text-primary/40" />
             </div>
-            <p className="text-sm text-muted-foreground">اختر محادثة لعرض الرسائل</p>
+            <p className="text-sm text-muted-foreground mb-3">اختر محادثة لعرض الرسائل</p>
+            <Button variant="outline" className="gap-2 text-xs" onClick={() => setShowNewMsg(true)}>
+              <Plus className="h-3.5 w-3.5" />
+              إرسال رسالة جديدة لمريض
+            </Button>
           </div>
         ) : (
           <>
@@ -295,6 +346,76 @@ export default function AdminMessages() {
           </>
         )}
       </div>
+
+      {/* New Message Dialog */}
+      <Dialog open={showNewMsg} onOpenChange={setShowNewMsg}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-primary" />
+              إرسال رسالة لمريض
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label className="text-xs mb-1.5 block">اختر المريض</Label>
+              <div className="relative mb-2">
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  value={newMsgSearch}
+                  onChange={e => setNewMsgSearch(e.target.value)}
+                  placeholder="بحث بالاسم أو الهاتف..."
+                  className="h-8 text-[11px] pr-9"
+                />
+              </div>
+              <div className="max-h-[180px] overflow-y-auto border border-border rounded-lg">
+                {filteredPatients.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-4">لا يوجد نتائج</p>
+                ) : (
+                  filteredPatients.slice(0, 50).map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => setNewMsgPatientId(p.id)}
+                      className={`w-full text-right px-3 py-2 text-sm border-b border-border/30 last:border-b-0 transition-colors flex items-center gap-2.5 ${
+                        newMsgPatientId === p.id ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
+                      }`}
+                    >
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                        newMsgPatientId === p.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                      }`}>
+                        {p.name.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] font-medium truncate">{p.name}</p>
+                        <p className="text-[10px] text-muted-foreground font-en">{p.phone}</p>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs mb-1.5 block">الرسالة</Label>
+              <Textarea
+                value={newMsgText}
+                onChange={e => setNewMsgText(e.target.value)}
+                placeholder="اكتب رسالتك للمريض..."
+                rows={3}
+                className="text-sm"
+              />
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowNewMsg(false)}>إلغاء</Button>
+              <Button onClick={handleSendNewMessage} disabled={sending || !newMsgPatientId || !newMsgText.trim()} className="gap-1.5">
+                {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                إرسال
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
