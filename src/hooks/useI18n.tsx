@@ -25,6 +25,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.queue": "الطابور",
     "nav.inventory": "المخزون",
     "nav.noShow": "إدارة الغياب",
+    "nav.messages": "الرسائل",
     "nav.doctorPerformance": "أداء الأطباء",
     "nav.aiAssistant": "مساعد AI",
     "nav.medicalAlerts": "التنبيهات الطبية",
