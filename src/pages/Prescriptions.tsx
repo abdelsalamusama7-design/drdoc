@@ -91,38 +91,60 @@ export default function Prescriptions() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
+  const clinicName = clinic?.name || "Smart Clinic";
+  const clinicPhone = clinic?.phone || "01227080430";
+  const clinicAddress = clinic?.address || "";
+  const doctorName = profile?.full_name || "الطبيب المعالج";
+  const doctorSpecialty = profile?.specialty || "عيادة متكاملة للذكورة والسعادة الزوجية وصحة الرجل";
+
+  const buildPrintHeader = () => `
+    <div style="text-align:center;margin-bottom:24px;border-bottom:2px solid #1a56db;padding-bottom:16px;">
+      <h1 style="color:#1a56db;font-size:22px;margin:0;">🏥 ${clinicName}</h1>
+      <p style="color:#666;font-size:11px;margin:4px 0;">${doctorSpecialty}</p>
+      <p style="color:#444;font-size:12px;margin:2px 0;font-weight:600;">د. ${doctorName}</p>
+      ${clinicPhone ? `<p style="color:#888;font-size:11px;margin:2px 0;">📞 ${clinicPhone}</p>` : ''}
+      ${clinicAddress ? `<p style="color:#888;font-size:11px;margin:2px 0;">📍 ${clinicAddress}</p>` : ''}
+    </div>
+  `;
+
+  const buildPrintFooter = () => `
+    <div style="text-align:center;margin-top:40px;padding-top:16px;border-top:1px solid #eee;">
+      <p style="color:#999;font-size:10px;">${clinicName} - د. ${doctorName}</p>
+      <p style="color:#bbb;font-size:9px;">تمت الطباعة: ${new Date().toLocaleString('ar-SA')}</p>
+    </div>
+  `;
+
+  const printStyles = `
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; padding: 30px; max-width: 600px; margin: auto; direction: rtl; }
+    .info { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 13px; }
+    .med { background: #f8f9fa; padding: 10px 14px; border-radius: 8px; margin-bottom: 6px; }
+    .med-name { font-weight: bold; font-size: 13px; }
+    .med-details { color: #666; font-size: 11px; margin-top: 3px; }
+    .notes { margin-top: 16px; padding: 10px; border: 1px dashed #ddd; border-radius: 8px; font-size: 12px; }
+    .section-title { font-size: 14px; font-weight: bold; margin: 16px 0 8px; color: #333; }
+    @media print { body { padding: 16px; } }
+  `;
+
   const handlePrint = (rx: typeof prescriptions[0]) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
     printWindow.document.write(`
-      <html dir="rtl"><head><title>وصفة طبية - Smart Clinic</title>
-      <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; padding: 40px; max-width: 600px; margin: auto; }
-        h1 { text-align: center; color: #1a56db; font-size: 24px; margin-bottom: 4px; }
-        .subtitle { text-align: center; color: #666; font-size: 12px; margin-bottom: 30px; }
-        .info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; }
-        .med { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 8px; }
-        .med-name { font-weight: bold; font-size: 14px; }
-        .med-details { color: #666; font-size: 12px; margin-top: 4px; }
-        .notes { margin-top: 20px; padding: 12px; border: 1px dashed #ddd; border-radius: 8px; font-size: 13px; }
-        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 11px; }
-        @media print { body { padding: 20px; } }
-      </style></head><body>
-        <h1>🏥 Smart Clinic</h1>
-        <p class="subtitle">عيادة متكاملة للذكورة والسعادة الزوجية وصحة الرجل</p>
+      <html dir="rtl"><head><title>وصفة طبية - ${clinicName}</title>
+      <style>${printStyles}</style></head><body>
+        ${buildPrintHeader()}
         <div class="info">
           <span>المريض: <strong>${rx.patient_name}</strong></span>
           <span>التاريخ: ${rx.date}</span>
         </div>
-        <h3>الأدوية:</h3>
+        <p class="section-title">💊 الأدوية:</p>
         ${(rx.medications || []).map(m => `
           <div class="med">
             <div class="med-name">${m.name}</div>
             <div class="med-details">${m.dosage || ''} • ${m.duration || ''} ${m.notes ? `• ${m.notes}` : ''}</div>
           </div>
         `).join('')}
-        ${rx.doctor_notes ? `<div class="notes"><strong>ملاحظات:</strong> ${rx.doctor_notes}</div>` : ''}
-        <div class="footer">Smart Clinic Management System - تمت الطباعة: ${new Date().toLocaleString('ar-SA')}</div>
+        ${rx.doctor_notes ? `<div class="notes"><strong>ملاحظات الطبيب:</strong> ${rx.doctor_notes}</div>` : ''}
+        ${buildPrintFooter()}
       </body></html>
     `);
     printWindow.document.close();
