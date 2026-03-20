@@ -84,10 +84,12 @@ export default function Prescriptions() {
   };
 
   const shareWhatsApp = (rx: typeof prescriptions[0]) => {
+    const cName = clinic?.name || "Smart Clinic";
+    const dName = profile?.full_name || "الطبيب المعالج";
     const meds = (rx.medications || []).map(m => 
       `💊 ${m.name}${m.dosage ? ` • ${m.dosage}` : ''}${m.duration ? ` • ${m.duration}` : ''}`
     ).join('\n');
-    const text = `🏥 *وصفة طبية - Smart Clinic*\n👤 المريض: *${rx.patient_name}*\n📅 التاريخ: ${rx.date}\n\n*الأدوية:*\n${meds}${rx.doctor_notes ? `\n\n📝 *ملاحظات:* ${rx.doctor_notes}` : ''}`;
+    const text = `🏥 *وصفة طبية - ${cName}*\n👨‍⚕️ د. *${dName}*\n👤 المريض: *${rx.patient_name}*\n📅 التاريخ: ${rx.date}\n\n*الأدوية:*\n${meds}${rx.doctor_notes ? `\n\n📝 *ملاحظات:* ${rx.doctor_notes}` : ''}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
