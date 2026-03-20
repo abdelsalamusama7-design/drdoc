@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   Users, CalendarDays, Plus, UserPlus, Upload, FileText,
   Loader2, Clock, Search, DollarSign, Receipt, Edit2,
-  Filter, Printer
+  Filter, Printer, CreditCard
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/hooks/useSupabaseData";
 import { useAuth } from "@/hooks/useAuth";
 import { useClinic } from "@/hooks/useClinic";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -39,6 +40,7 @@ export default function ReceptionDashboard() {
   const [showCashDialog, setShowCashDialog] = useState(false);
   const [showExpenseDialog, setShowExpenseDialog] = useState(false);
   const [showReschedule, setShowReschedule] = useState(false);
+  const [showInstallment, setShowInstallment] = useState(false);
   const [doctorFilter, setDoctorFilter] = useState("all");
   const [submitting, setSubmitting] = useState(false);
 
@@ -46,6 +48,7 @@ export default function ReceptionDashboard() {
   const [cashForm, setCashForm] = useState({ patientId: "", visitId: "", amount: "", method: "cash", notes: "" });
   const [expenseForm, setExpenseForm] = useState({ category: "", amount: "", notes: "" });
   const [rescheduleForm, setRescheduleForm] = useState({ aptId: "", newDate: "", newTime: "" });
+  const [installForm, setInstallForm] = useState({ patientId: "", totalAmount: "", downPayment: "0", numInstallments: "3", notes: "" });
 
   const todayVisits = visits.filter(v => v.date === today);
   const pendingVisits = todayVisits.filter(v => v.status === "pending");
