@@ -89,6 +89,17 @@ export default function PatientPortal() {
           setPayments(paymentsRes.data || []);
           setMessages(messagesRes.data || []);
 
+          // Fetch installment plans
+          const { data: iplans } = await (supabase.from("payment_plans" as any) as any)
+            .select("*").eq("patient_id", pid).order("created_at", { ascending: false });
+          setInstallmentPlans(iplans || []);
+          if (iplans?.length) {
+            const planIds = iplans.map((p: any) => p.id);
+            const { data: insts } = await (supabase.from("installment_payments" as any) as any)
+              .select("*").in("plan_id", planIds).order("due_date", { ascending: true });
+            setInstallments(insts || []);
+          }
+
           // Fetch treatment steps for all plans
           if (plansRes.data?.length) {
             const planIds = plansRes.data.map((p: any) => p.id);
