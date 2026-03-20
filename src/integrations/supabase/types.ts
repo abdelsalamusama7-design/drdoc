@@ -1232,6 +1232,8 @@ export type Database = {
           is_read: boolean | null
           message: string
           patient_id: string
+          recipient_name: string | null
+          recipient_type: string | null
           sender_type: string
         }
         Insert: {
@@ -1241,6 +1243,8 @@ export type Database = {
           is_read?: boolean | null
           message: string
           patient_id: string
+          recipient_name?: string | null
+          recipient_type?: string | null
           sender_type?: string
         }
         Update: {
@@ -1250,6 +1254,8 @@ export type Database = {
           is_read?: boolean | null
           message?: string
           patient_id?: string
+          recipient_name?: string | null
+          recipient_type?: string | null
           sender_type?: string
         }
         Relationships: [
