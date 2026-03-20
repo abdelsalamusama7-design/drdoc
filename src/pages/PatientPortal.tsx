@@ -579,9 +579,7 @@ export default function PatientPortal() {
           )}
 
           {/* Manual Payment */}
-          {totalRemaining > 0 && (
-            <ManualPaymentSection patientData={patientData} totalRemaining={totalRemaining} />
-          )}
+          <ManualPaymentSection patientData={patientData} totalRemaining={totalRemaining} />
 
           {/* Visa Coming Soon */}
           <div className="clinic-card p-4 bg-gradient-to-l from-primary/5 to-transparent">
@@ -1945,7 +1943,7 @@ function OnlineMeetingTab({ patientData }: { patientData: any }) {
 }
 
 // ── Manual Payment Section ──
-const PAYMENT_NUMBER = "01032320096";
+const PAYMENT_NUMBER = "01032320099";
 
 function ManualPaymentSection({ patientData, totalRemaining }: { patientData: any; totalRemaining: number }) {
   const { toast } = useToast();
