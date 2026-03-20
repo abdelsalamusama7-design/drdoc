@@ -1601,13 +1601,38 @@ function MessagesTab({ patientData, messages, onNewMessage }: { patientData: any
   const { toast } = useToast();
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [recipientType, setRecipientType] = useState<"doctor" | "reception">("doctor");
+  const [recipientName, setRecipientName] = useState("");
+  const [doctors, setDoctors] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Fetch doctors from clinic_members + profiles
+  useEffect(() => {
+    if (!patientData?.clinic_id) return;
+    const fetchDoctors = async () => {
+      const { data: members } = await (supabase.from("clinic_members" as any) as any)
+        .select("user_id, role")
+        .eq("clinic_id", patientData.clinic_id)
+        .eq("is_active", true);
+      if (!members?.length) return;
+      const doctorMembers = members.filter((m: any) => m.role === "doctor" || m.role === "admin");
+      const userIds = doctorMembers.map((m: any) => m.user_id);
+      if (!userIds.length) return;
+      const { data: profiles } = await (supabase.from("profiles" as any) as any)
+        .select("id, full_name")
+        .in("id", userIds);
+      if (profiles?.length) {
+        setDoctors(profiles.map((p: any) => p.full_name || "طبيب").filter(Boolean));
+        if (!recipientName && profiles[0]?.full_name) setRecipientName(profiles[0].full_name);
+      }
+    };
+    fetchDoctors();
+  }, [patientData?.clinic_id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Realtime subscription for new messages
   useEffect(() => {
     if (!patientData?.id) return;
     const channel = supabase
@@ -1617,7 +1642,7 @@ function MessagesTab({ patientData, messages, onNewMessage }: { patientData: any
         filter: `patient_id=eq.${patientData.id}`
       }, (payload) => {
         const newMsg = payload.new as any;
-        if (newMsg.sender_type === "doctor") {
+        if (newMsg.sender_type !== "patient") {
           onNewMessage(newMsg);
         }
       })
@@ -1634,6 +1659,8 @@ function MessagesTab({ patientData, messages, onNewMessage }: { patientData: any
         clinic_id: patientData.clinic_id,
         sender_type: "patient",
         message: text.trim(),
+        recipient_type: recipientType,
+        recipient_name: recipientType === "doctor" ? recipientName : "الاستقبال",
       }).select().single();
       if (error) throw error;
       onNewMessage(data);
@@ -1646,18 +1673,49 @@ function MessagesTab({ patientData, messages, onNewMessage }: { patientData: any
 
   return (
     <div className="clinic-card flex flex-col" style={{ height: "calc(100vh - 320px)", minHeight: "400px" }}>
-      <div className="p-4 border-b border-border flex items-center gap-2">
-        <MessageSquare className="h-4 w-4 text-primary" />
-        <h2 className="text-sm font-semibold text-foreground">رسائل الطبيب</h2>
+      <div className="p-4 border-b border-border">
+        <div className="flex items-center gap-2 mb-3">
+          <MessageSquare className="h-4 w-4 text-primary" />
+          <h2 className="text-sm font-semibold text-foreground">رسائل الطبيب</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+            <button
+              onClick={() => setRecipientType("doctor")}
+              className={`text-[11px] px-3 py-1.5 rounded-md font-medium transition-all ${recipientType === "doctor" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <Stethoscope className="h-3 w-3 inline-block ml-1" />
+              دكتور
+            </button>
+            <button
+              onClick={() => setRecipientType("reception")}
+              className={`text-[11px] px-3 py-1.5 rounded-md font-medium transition-all ${recipientType === "reception" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <Calendar className="h-3 w-3 inline-block ml-1" />
+              الاستقبال
+            </button>
+          </div>
+          {recipientType === "doctor" && doctors.length > 0 && (
+            <Select value={recipientName} onValueChange={setRecipientName}>
+              <SelectTrigger className="h-8 text-[11px] w-[160px]">
+                <SelectValue placeholder="اختر الطبيب" />
+              </SelectTrigger>
+              <SelectContent>
+                {doctors.map(d => (
+                  <SelectItem key={d} value={d} className="text-[11px]">{d}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
       </div>
 
-      {/* Messages list */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <MessageSquare className="h-10 w-10 text-muted-foreground/20 mb-3" />
             <p className="text-sm text-muted-foreground">لا توجد رسائل بعد</p>
-            <p className="text-[10px] text-muted-foreground mt-1">ابدأ محادثة مع طبيبك</p>
+            <p className="text-[10px] text-muted-foreground mt-1">ابدأ محادثة مع طبيبك أو الاستقبال</p>
           </div>
         ) : (
           messages.map((msg: any) => (
@@ -1667,10 +1725,15 @@ function MessagesTab({ patientData, messages, onNewMessage }: { patientData: any
                   ? "bg-primary text-primary-foreground rounded-br-sm"
                   : "bg-muted text-foreground rounded-bl-sm"
               }`}>
+                {msg.sender_type === "patient" && msg.recipient_name && (
+                  <p className={`text-[9px] mb-1 font-medium ${msg.sender_type === "patient" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                    إلى: {msg.recipient_name} ({msg.recipient_type === "reception" ? "استقبال" : "دكتور"})
+                  </p>
+                )}
                 <p className="text-sm leading-relaxed">{msg.message}</p>
                 <p className={`text-[9px] mt-1 ${msg.sender_type === "patient" ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
                   {new Date(msg.created_at).toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}
-                  {msg.sender_type === "doctor" && " · الطبيب"}
+                  {msg.sender_type !== "patient" && " · " + (msg.sender_type === "doctor" ? "الطبيب" : "الاستقبال")}
                 </p>
               </div>
             </div>
@@ -1679,12 +1742,11 @@ function MessagesTab({ patientData, messages, onNewMessage }: { patientData: any
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
       <div className="p-3 border-t border-border flex items-center gap-2">
         <Textarea
           value={text}
           onChange={e => setText(e.target.value)}
-          placeholder="اكتب رسالتك للطبيب..."
+          placeholder={recipientType === "doctor" ? "اكتب رسالتك للطبيب..." : "اكتب رسالتك للاستقبال (تغيير موعد، استفسار...)"}
           className="flex-1 min-h-[40px] max-h-[80px] resize-none text-sm"
           rows={1}
           onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
