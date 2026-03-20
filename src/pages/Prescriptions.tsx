@@ -35,7 +35,8 @@ const mockMedications = [
 export default function Prescriptions() {
   const { data: prescriptions, loading, refetch } = usePrescriptions();
   const { data: patients } = usePatients();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const { clinic } = useClinic();
   const { toast } = useToast();
   const [showCreate, setShowCreate] = useState(false);
   const [medications, setMedications] = useState<MedEntry[]>([]);
