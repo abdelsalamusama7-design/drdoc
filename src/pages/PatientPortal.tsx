@@ -1380,14 +1380,15 @@ function AIHealthAssistantTab({ patientData }: { patientData: any }) {
         },
       });
       if (error) throw error;
-      const reply = data?.answer || data?.raw || "عذراً، لم أتمكن من الإجابة حالياً.";
+      const reply = data?.answer || data?.raw || data?.reply || "عذراً، لم أتمكن من الإجابة حالياً. تواصل مع العيادة مباشرة.";
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);
 
       if (data?.urgency === "high") {
         setMessages(prev => [...prev, { role: "assistant", content: "⚠️ يُنصح بالتواصل مع العيادة في أقرب وقت." }]);
       }
-    } catch {
-      setMessages(prev => [...prev, { role: "assistant", content: "عذراً، حدث خطأ. حاول مرة أخرى." }]);
+    } catch (err) {
+      console.error("Health assistant error:", err);
+      setMessages(prev => [...prev, { role: "assistant", content: "عذراً، حدث خطأ في الاتصال. حاول مرة أخرى أو تواصل مع العيادة على 01227080430" }]);
     }
     setLoading(false);
   };

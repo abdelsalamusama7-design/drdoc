@@ -111,24 +111,52 @@ Return ONLY valid JSON.`;
     // ── Action: Patient Health Assistant ──
     if (action === "health_assistant") {
       const { question } = requestData;
-      const { data: patient } = await supabase.from("patients").select("*").eq("id", patient_id).single();
+      let patientContext = "";
+      try {
+        const { data: patient } = await supabase.from("patients").select("*").eq("id", patient_id).single();
+        if (patient) {
+          patientContext = `Patient: ${patient.name}, Age: ${patient.age}
+Allergies: ${patient.allergies?.join(", ") || "None"}
+Current Medications: ${patient.current_medications?.join(", ") || "None"}`;
+        }
+      } catch { /* ignore patient fetch errors */ }
 
-      const prompt = `You are a friendly health assistant for a clinic patient. Answer in Arabic.
-Patient: ${patient?.name}, Age: ${patient?.age}
-Allergies: ${patient?.allergies?.join(", ") || "None"}
-Current Medications: ${patient?.current_medications?.join(", ") || "None"}
+      // Use direct chat approach for reliability
+      const models = ["google/gemini-3-flash-preview", "google/gemini-2.5-flash", "openai/gpt-5-mini"];
+      let answer = "";
+      for (const model of models) {
+        try {
+          const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model,
+              messages: [
+                { role: "system", content: HEALTH_ASSISTANT_SYSTEM },
+                { role: "user", content: `${patientContext ? patientContext + "\n\n" : ""}سؤال المريض: ${question}` },
+              ],
+            }),
+          });
+          if (response.status === 429) return jsonResponse({ answer: "عذراً، عدد الطلبات كثير. يرجى المحاولة بعد قليل.", urgency: "low" });
+          if (response.status === 402) return jsonResponse({ answer: "عذراً، الخدمة غير متاحة مؤقتاً. تواصل مع العيادة مباشرة.", urgency: "low" });
+          if (!response.ok) { console.error(`${model} returned ${response.status}`); continue; }
+          const data = await response.json();
+          answer = data.choices?.[0]?.message?.content?.trim() || "";
+          if (answer) break;
+        } catch (err) { console.error(`${model} failed:`, err); }
+      }
 
-Patient Question: "${question}"
+      if (!answer) {
+        return jsonResponse({ answer: "عذراً، المساعد الصحي غير متاح حالياً. يمكنك التواصل مع العيادة على 01227080430", urgency: "low" });
+      }
 
-Rules: Never diagnose. Recommend doctor visits. Give general guidance only.
-Respond with JSON:
-- answer: Your response in Arabic
-- category: "medication" | "general" | "appointment" | "emergency"
-- urgency: "low" | "medium" | "high"
-Return ONLY valid JSON.`;
-
-      const aiResponse = await callAI(LOVABLE_API_KEY, prompt);
-      return jsonResponse(aiResponse);
+      // Try to parse as JSON, otherwise return raw text as answer
+      try {
+        const parsed = JSON.parse(answer.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim());
+        return jsonResponse(parsed);
+      } catch {
+        return jsonResponse({ answer, urgency: "low" });
+      }
     }
 
     // ── Action: Patient Behavior Analysis ──
