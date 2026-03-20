@@ -496,6 +496,73 @@ export type Database = {
           },
         ]
       }
+      installment_payments: {
+        Row: {
+          amount: number
+          clinic_id: string | null
+          created_at: string | null
+          due_date: string
+          id: string
+          installment_number: number
+          notes: string | null
+          paid_date: string | null
+          patient_id: string
+          payment_method: string | null
+          plan_id: string
+          status: string
+        }
+        Insert: {
+          amount?: number
+          clinic_id?: string | null
+          created_at?: string | null
+          due_date: string
+          id?: string
+          installment_number: number
+          notes?: string | null
+          paid_date?: string | null
+          patient_id: string
+          payment_method?: string | null
+          plan_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          clinic_id?: string | null
+          created_at?: string | null
+          due_date?: string
+          id?: string
+          installment_number?: number
+          notes?: string | null
+          paid_date?: string | null
+          patient_id?: string
+          payment_method?: string | null
+          plan_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "installment_payments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installment_payments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "installment_payments_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "payment_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insurance_claims: {
         Row: {
           approved_amount: number | null
@@ -1413,6 +1480,73 @@ export type Database = {
             columns: ["insurance_company_id"]
             isOneToOne: false
             referencedRelation: "insurance_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_plans: {
+        Row: {
+          clinic_id: string | null
+          created_at: string | null
+          created_by: string | null
+          down_payment: number
+          id: string
+          installment_amount: number
+          notes: string | null
+          num_installments: number
+          patient_id: string
+          status: string
+          total_amount: number
+          visit_id: string | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          down_payment?: number
+          id?: string
+          installment_amount?: number
+          notes?: string | null
+          num_installments?: number
+          patient_id: string
+          status?: string
+          total_amount?: number
+          visit_id?: string | null
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          down_payment?: number
+          id?: string
+          installment_amount?: number
+          notes?: string | null
+          num_installments?: number
+          patient_id?: string
+          status?: string
+          total_amount?: number
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_plans_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_plans_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_plans_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
             referencedColumns: ["id"]
           },
         ]

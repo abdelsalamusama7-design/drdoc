@@ -43,6 +43,8 @@ export default function PatientPortal() {
   const [preVisitForms, setPreVisitForms] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
+  const [installmentPlans, setInstallmentPlans] = useState<any[]>([]);
+  const [installments, setInstallments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -86,6 +88,17 @@ export default function PatientPortal() {
           setPreVisitForms(formsRes.data || []);
           setPayments(paymentsRes.data || []);
           setMessages(messagesRes.data || []);
+
+          // Fetch installment plans
+          const { data: iplans } = await (supabase.from("payment_plans" as any) as any)
+            .select("*").eq("patient_id", pid).order("created_at", { ascending: false });
+          setInstallmentPlans(iplans || []);
+          if (iplans?.length) {
+            const planIds = iplans.map((p: any) => p.id);
+            const { data: insts } = await (supabase.from("installment_payments" as any) as any)
+              .select("*").in("plan_id", planIds).order("due_date", { ascending: true });
+            setInstallments(insts || []);
+          }
 
           // Fetch treatment steps for all plans
           if (plansRes.data?.length) {
@@ -496,6 +509,74 @@ export default function PatientPortal() {
               <p className="text-[10px] text-muted-foreground">المتبقي (ج.م)</p>
             </div>
           </div>
+
+          {/* Installment Plans */}
+          {installmentPlans.length > 0 && (
+            <div className="clinic-card">
+              <div className="p-4 border-b border-border flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-accent" />
+                <h2 className="text-sm font-semibold text-foreground">خطط التقسيط</h2>
+              </div>
+              {installmentPlans.map((plan: any) => {
+                const planInstallments = installments.filter((i: any) => i.plan_id === plan.id);
+                const paidCount = planInstallments.filter((i: any) => i.status === "paid").length;
+                const totalInst = planInstallments.length;
+                const paidAmount = planInstallments.filter((i: any) => i.status === "paid").reduce((s: number, i: any) => s + Number(i.amount), 0);
+                const remainingAmount = Number(plan.total_amount) - Number(plan.down_payment) - paidAmount;
+                const progress = totalInst > 0 ? Math.round((paidCount / totalInst) * 100) : 0;
+
+                return (
+                  <div key={plan.id} className="p-4 border-b border-border/50 last:border-b-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-semibold text-foreground">
+                        إجمالي: <span className="font-en">{Number(plan.total_amount).toLocaleString()}</span> ج.م
+                      </p>
+                      <Badge variant={plan.status === "completed" ? "default" : "secondary"} className="text-[9px]">
+                        {plan.status === "completed" ? "مكتمل" : plan.status === "active" ? "جاري" : plan.status}
+                      </Badge>
+                    </div>
+                    {Number(plan.down_payment) > 0 && (
+                      <p className="text-[10px] text-muted-foreground mb-1">مقدم: <span className="font-en">{Number(plan.down_payment).toLocaleString()}</span> ج.م</p>
+                    )}
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${progress}%` }} />
+                      </div>
+                      <span className="text-[10px] text-muted-foreground font-en">{paidCount}/{totalInst}</span>
+                    </div>
+                    {remainingAmount > 0 && (
+                      <p className="text-[10px] text-destructive">متبقي: <span className="font-en">{remainingAmount.toLocaleString()}</span> ج.م</p>
+                    )}
+                    {/* Installment list */}
+                    <div className="mt-3 space-y-1.5">
+                      {planInstallments.map((inst: any) => (
+                        <div key={inst.id} className={`flex items-center justify-between p-2 rounded-lg text-[11px] ${
+                          inst.status === "paid" ? "bg-success/5" : 
+                          new Date(inst.due_date) < new Date() ? "bg-destructive/5" : "bg-muted/30"
+                        }`}>
+                          <div className="flex items-center gap-2">
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${
+                              inst.status === "paid" ? "bg-success/10 text-success" : 
+                              new Date(inst.due_date) < new Date() ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"
+                            }`}>
+                              {inst.installment_number}
+                            </div>
+                            <span className="text-muted-foreground font-en">{inst.due_date}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-en font-medium">{Number(inst.amount).toLocaleString()} ج.م</span>
+                            <Badge variant={inst.status === "paid" ? "default" : new Date(inst.due_date) < new Date() ? "destructive" : "secondary"} className="text-[8px] px-1.5">
+                              {inst.status === "paid" ? "مدفوع" : new Date(inst.due_date) < new Date() ? "متأخر" : "قادم"}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* Manual Payment */}
           {totalRemaining > 0 && (

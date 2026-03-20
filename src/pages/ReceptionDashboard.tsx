@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   Users, CalendarDays, Plus, UserPlus, Upload, FileText,
   Loader2, Clock, Search, DollarSign, Receipt, Edit2,
-  Filter, Printer
+  Filter, Printer, CreditCard
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/hooks/useSupabaseData";
 import { useAuth } from "@/hooks/useAuth";
 import { useClinic } from "@/hooks/useClinic";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -39,6 +40,7 @@ export default function ReceptionDashboard() {
   const [showCashDialog, setShowCashDialog] = useState(false);
   const [showExpenseDialog, setShowExpenseDialog] = useState(false);
   const [showReschedule, setShowReschedule] = useState(false);
+  const [showInstallment, setShowInstallment] = useState(false);
   const [doctorFilter, setDoctorFilter] = useState("all");
   const [submitting, setSubmitting] = useState(false);
 
@@ -46,6 +48,7 @@ export default function ReceptionDashboard() {
   const [cashForm, setCashForm] = useState({ patientId: "", visitId: "", amount: "", method: "cash", notes: "" });
   const [expenseForm, setExpenseForm] = useState({ category: "", amount: "", notes: "" });
   const [rescheduleForm, setRescheduleForm] = useState({ aptId: "", newDate: "", newTime: "" });
+  const [installForm, setInstallForm] = useState({ patientId: "", totalAmount: "", downPayment: "0", numInstallments: "3", notes: "" });
 
   const todayVisits = visits.filter(v => v.date === today);
   const pendingVisits = todayVisits.filter(v => v.status === "pending");
@@ -136,6 +139,74 @@ export default function ReceptionDashboard() {
     setSubmitting(false);
   };
 
+  const handleCreateInstallment = async () => {
+    const total = parseFloat(installForm.totalAmount);
+    const down = parseFloat(installForm.downPayment || "0");
+    const num = parseInt(installForm.numInstallments);
+    if (!installForm.patientId || !total || num < 1) {
+      toast({ title: "خطأ", description: "أدخل البيانات المطلوبة", variant: "destructive" }); return;
+    }
+    setSubmitting(true);
+    try {
+      const remaining = total - down;
+      const instAmount = Math.ceil(remaining / num);
+
+      // Create payment plan
+      const { data: plan, error: planErr } = await (supabase.from("payment_plans" as any) as any)
+        .insert({
+          patient_id: installForm.patientId,
+          clinic_id: clinic?.id,
+          total_amount: total,
+          down_payment: down,
+          num_installments: num,
+          installment_amount: instAmount,
+          status: "active",
+          notes: installForm.notes || null,
+          created_by: user?.id || null,
+        }).select().single();
+      if (planErr) throw planErr;
+
+      // Create individual installments
+      const installments = [];
+      for (let i = 1; i <= num; i++) {
+        const dueDate = new Date();
+        dueDate.setMonth(dueDate.getMonth() + i);
+        installments.push({
+          plan_id: plan.id,
+          patient_id: installForm.patientId,
+          clinic_id: clinic?.id,
+          installment_number: i,
+          amount: i === num ? remaining - (instAmount * (num - 1)) : instAmount,
+          due_date: dueDate.toISOString().split("T")[0],
+          status: "pending",
+        });
+      }
+      const { error: instErr } = await (supabase.from("installment_payments" as any) as any).insert(installments);
+      if (instErr) throw instErr;
+
+      // If there's a down payment, record it
+      if (down > 0) {
+        const v = await createVisit({
+          patient_id: installForm.patientId, appointment_id: null,
+          date: today, time: new Date().toTimeString().split(" ")[0],
+          visit_type: "consultation", payment_type: "installment",
+          status: "completed", doctor_notes: null, diagnosis: null, created_by: user?.id || null,
+        }, clinic?.id);
+        await createPayment({
+          visit_id: v.id, patient_id: installForm.patientId,
+          amount: down, total_amount: total,
+          remaining_amount: remaining, payment_method: "cash",
+          notes: "مقدم تقسيط", created_by: user?.id || null,
+        }, clinic?.id);
+      }
+
+      toast({ title: "تم", description: `تم إنشاء خطة تقسيط (${num} أقساط)` });
+      setShowInstallment(false);
+      setInstallForm({ patientId: "", totalAmount: "", downPayment: "0", numInstallments: "3", notes: "" });
+    } catch (err: any) { toast({ title: "خطأ", description: err.message, variant: "destructive" }); }
+    setSubmitting(false);
+  };
+
   if (pLoading || aLoading) {
     return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
   }
@@ -178,7 +249,7 @@ export default function ReceptionDashboard() {
           { label: "حجز موعد", icon: CalendarDays, action: () => {}, path: "/appointments", color: "text-accent", bg: "bg-accent/10" },
           { label: "استلام نقدية", icon: DollarSign, action: () => setShowCashDialog(true), color: "text-success", bg: "bg-success/10" },
           { label: "إضافة مصروف", icon: Receipt, action: () => setShowExpenseDialog(true), color: "text-warning", bg: "bg-warning/10" },
-          { label: "بحث مريض", icon: Search, action: () => {}, path: "/patients", color: "text-primary", bg: "bg-primary/10" },
+          { label: "تقسيط مبلغ", icon: CreditCard, action: () => setShowInstallment(true), color: "text-accent", bg: "bg-accent/10" },
           { label: "التقارير", icon: Printer, action: () => {}, path: "/reports", color: "text-accent", bg: "bg-accent/10" },
         ].map((action, i) => {
           const content = (
@@ -370,6 +441,68 @@ export default function ReceptionDashboard() {
             <div className="flex gap-2 justify-end">
               <Button variant="outline" onClick={() => setShowReschedule(false)}>إلغاء</Button>
               <Button onClick={handleReschedule} disabled={submitting}>{submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "تأكيد"}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Installment Dialog */}
+      <Dialog open={showInstallment} onOpenChange={setShowInstallment}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5 text-primary" />إنشاء خطة تقسيط</DialogTitle></DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label>المريض *</Label>
+              <Select value={installForm.patientId} onValueChange={v => setInstallForm({...installForm, patientId: v})}>
+                <SelectTrigger className="mt-1.5"><SelectValue placeholder="اختر مريض" /></SelectTrigger>
+                <SelectContent>{patients.map(p => <SelectItem key={p.id} value={p.id}>{p.name} - {p.phone}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>المبلغ الإجمالي *</Label>
+                <Input value={installForm.totalAmount} onChange={e => setInstallForm({...installForm, totalAmount: e.target.value})}
+                  className="mt-1.5 font-en" dir="ltr" type="number" placeholder="0" />
+              </div>
+              <div>
+                <Label>المقدم (اختياري)</Label>
+                <Input value={installForm.downPayment} onChange={e => setInstallForm({...installForm, downPayment: e.target.value})}
+                  className="mt-1.5 font-en" dir="ltr" type="number" placeholder="0" />
+              </div>
+            </div>
+            <div>
+              <Label>عدد الأقساط *</Label>
+              <Select value={installForm.numInstallments} onValueChange={v => setInstallForm({...installForm, numInstallments: v})}>
+                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {[2,3,4,5,6,8,10,12].map(n => <SelectItem key={n} value={String(n)}>{n} أقساط</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Preview */}
+            {installForm.totalAmount && (
+              <div className="bg-muted/50 rounded-xl p-3 space-y-1.5">
+                <p className="text-[11px] font-semibold text-foreground">ملخص الخطة:</p>
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-muted-foreground">الإجمالي</span>
+                  <span className="font-en font-medium">{parseFloat(installForm.totalAmount).toLocaleString()} ج.م</span>
+                </div>
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-muted-foreground">المقدم</span>
+                  <span className="font-en font-medium">{parseFloat(installForm.downPayment || "0").toLocaleString()} ج.م</span>
+                </div>
+                <div className="flex justify-between text-[11px] text-primary font-semibold">
+                  <span>القسط الشهري</span>
+                  <span className="font-en">
+                    {Math.ceil((parseFloat(installForm.totalAmount) - parseFloat(installForm.downPayment || "0")) / parseInt(installForm.numInstallments)).toLocaleString()} ج.م
+                  </span>
+                </div>
+              </div>
+            )}
+            <div><Label>ملاحظات</Label><Input value={installForm.notes} onChange={e => setInstallForm({...installForm, notes: e.target.value})} className="mt-1.5" /></div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowInstallment(false)}>إلغاء</Button>
+              <Button onClick={handleCreateInstallment} disabled={submitting}>{submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "إنشاء خطة التقسيط"}</Button>
             </div>
           </div>
         </DialogContent>
