@@ -445,6 +445,68 @@ export default function ReceptionDashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Installment Dialog */}
+      <Dialog open={showInstallment} onOpenChange={setShowInstallment}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5 text-primary" />إنشاء خطة تقسيط</DialogTitle></DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label>المريض *</Label>
+              <Select value={installForm.patientId} onValueChange={v => setInstallForm({...installForm, patientId: v})}>
+                <SelectTrigger className="mt-1.5"><SelectValue placeholder="اختر مريض" /></SelectTrigger>
+                <SelectContent>{patients.map(p => <SelectItem key={p.id} value={p.id}>{p.name} - {p.phone}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>المبلغ الإجمالي *</Label>
+                <Input value={installForm.totalAmount} onChange={e => setInstallForm({...installForm, totalAmount: e.target.value})}
+                  className="mt-1.5 font-en" dir="ltr" type="number" placeholder="0" />
+              </div>
+              <div>
+                <Label>المقدم (اختياري)</Label>
+                <Input value={installForm.downPayment} onChange={e => setInstallForm({...installForm, downPayment: e.target.value})}
+                  className="mt-1.5 font-en" dir="ltr" type="number" placeholder="0" />
+              </div>
+            </div>
+            <div>
+              <Label>عدد الأقساط *</Label>
+              <Select value={installForm.numInstallments} onValueChange={v => setInstallForm({...installForm, numInstallments: v})}>
+                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {[2,3,4,5,6,8,10,12].map(n => <SelectItem key={n} value={String(n)}>{n} أقساط</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Preview */}
+            {installForm.totalAmount && (
+              <div className="bg-muted/50 rounded-xl p-3 space-y-1.5">
+                <p className="text-[11px] font-semibold text-foreground">ملخص الخطة:</p>
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-muted-foreground">الإجمالي</span>
+                  <span className="font-en font-medium">{parseFloat(installForm.totalAmount).toLocaleString()} ج.م</span>
+                </div>
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-muted-foreground">المقدم</span>
+                  <span className="font-en font-medium">{parseFloat(installForm.downPayment || "0").toLocaleString()} ج.م</span>
+                </div>
+                <div className="flex justify-between text-[11px] text-primary font-semibold">
+                  <span>القسط الشهري</span>
+                  <span className="font-en">
+                    {Math.ceil((parseFloat(installForm.totalAmount) - parseFloat(installForm.downPayment || "0")) / parseInt(installForm.numInstallments)).toLocaleString()} ج.م
+                  </span>
+                </div>
+              </div>
+            )}
+            <div><Label>ملاحظات</Label><Input value={installForm.notes} onChange={e => setInstallForm({...installForm, notes: e.target.value})} className="mt-1.5" /></div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setShowInstallment(false)}>إلغاء</Button>
+              <Button onClick={handleCreateInstallment} disabled={submitting}>{submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "إنشاء خطة التقسيط"}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
