@@ -724,6 +724,14 @@ export default function PatientDetail() {
               <input ref={fileInputRef} type="file" accept="image/*,.pdf"
                 onChange={e => setSelectedFile(e.target.files?.[0] || null)}
                 className="mt-1.5 w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-xs file:font-medium file:text-primary hover:file:bg-primary/20" />
+              <div className="mt-2 flex gap-2">
+                <input ref={el => { if (el) el.setAttribute('capture', 'environment'); }} type="file" accept="image/*" capture="environment"
+                  onChange={e => setSelectedFile(e.target.files?.[0] || null)}
+                  className="hidden" id="camera-capture-detail" />
+                <Button type="button" variant="outline" size="sm" className="gap-1.5 text-xs flex-1" onClick={() => document.getElementById('camera-capture-detail')?.click()}>
+                  📷 التقاط من الكاميرا
+                </Button>
+              </div>
             </div>
             <div>
               <Label>ملاحظات</Label>
