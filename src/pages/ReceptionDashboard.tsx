@@ -139,6 +139,74 @@ export default function ReceptionDashboard() {
     setSubmitting(false);
   };
 
+  const handleCreateInstallment = async () => {
+    const total = parseFloat(installForm.totalAmount);
+    const down = parseFloat(installForm.downPayment || "0");
+    const num = parseInt(installForm.numInstallments);
+    if (!installForm.patientId || !total || num < 1) {
+      toast({ title: "خطأ", description: "أدخل البيانات المطلوبة", variant: "destructive" }); return;
+    }
+    setSubmitting(true);
+    try {
+      const remaining = total - down;
+      const instAmount = Math.ceil(remaining / num);
+
+      // Create payment plan
+      const { data: plan, error: planErr } = await (supabase.from("payment_plans" as any) as any)
+        .insert({
+          patient_id: installForm.patientId,
+          clinic_id: clinic?.id,
+          total_amount: total,
+          down_payment: down,
+          num_installments: num,
+          installment_amount: instAmount,
+          status: "active",
+          notes: installForm.notes || null,
+          created_by: user?.id || null,
+        }).select().single();
+      if (planErr) throw planErr;
+
+      // Create individual installments
+      const installments = [];
+      for (let i = 1; i <= num; i++) {
+        const dueDate = new Date();
+        dueDate.setMonth(dueDate.getMonth() + i);
+        installments.push({
+          plan_id: plan.id,
+          patient_id: installForm.patientId,
+          clinic_id: clinic?.id,
+          installment_number: i,
+          amount: i === num ? remaining - (instAmount * (num - 1)) : instAmount,
+          due_date: dueDate.toISOString().split("T")[0],
+          status: "pending",
+        });
+      }
+      const { error: instErr } = await (supabase.from("installment_payments" as any) as any).insert(installments);
+      if (instErr) throw instErr;
+
+      // If there's a down payment, record it
+      if (down > 0) {
+        const v = await createVisit({
+          patient_id: installForm.patientId, appointment_id: null,
+          date: today, time: new Date().toTimeString().split(" ")[0],
+          visit_type: "consultation", payment_type: "installment",
+          status: "completed", doctor_notes: null, diagnosis: null, created_by: user?.id || null,
+        }, clinic?.id);
+        await createPayment({
+          visit_id: v.id, patient_id: installForm.patientId,
+          amount: down, total_amount: total,
+          remaining_amount: remaining, payment_method: "cash",
+          notes: "مقدم تقسيط", created_by: user?.id || null,
+        }, clinic?.id);
+      }
+
+      toast({ title: "تم", description: `تم إنشاء خطة تقسيط (${num} أقساط)` });
+      setShowInstallment(false);
+      setInstallForm({ patientId: "", totalAmount: "", downPayment: "0", numInstallments: "3", notes: "" });
+    } catch (err: any) { toast({ title: "خطأ", description: err.message, variant: "destructive" }); }
+    setSubmitting(false);
+  };
+
   if (pLoading || aLoading) {
     return <div className="flex items-center justify-center h-64"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
   }
