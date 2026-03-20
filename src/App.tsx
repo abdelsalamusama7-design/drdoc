@@ -48,6 +48,7 @@ import RetentionDashboard from "@/pages/RetentionDashboard";
 import ClinicReferrals from "@/pages/ClinicReferrals";
 import InteractiveDemo from "@/pages/InteractiveDemo";
 import Insurance from "@/pages/Insurance";
+import AdminMessages from "@/pages/AdminMessages";
 import ResetPassword from "@/pages/ResetPassword";
 import OnlinePayment from "@/pages/OnlinePayment";
 import NotFound from "@/pages/NotFound";
