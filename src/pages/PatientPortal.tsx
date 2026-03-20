@@ -579,9 +579,7 @@ export default function PatientPortal() {
           )}
 
           {/* Manual Payment */}
-          {totalRemaining > 0 && (
-            <ManualPaymentSection patientData={patientData} totalRemaining={totalRemaining} />
-          )}
+          <ManualPaymentSection patientData={patientData} totalRemaining={totalRemaining} />
 
           {/* Visa Coming Soon */}
           <div className="clinic-card p-4 bg-gradient-to-l from-primary/5 to-transparent">
