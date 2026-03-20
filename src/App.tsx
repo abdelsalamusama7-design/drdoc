@@ -137,6 +137,7 @@ function ProtectedRoutes() {
         <Route path="/referrals" element={<ClinicReferrals />} />
         <Route path="/insurance" element={<Insurance />} />
         <Route path="/drug-index" element={<FeatureGuard path="/drug-index"><DrugIndex /></FeatureGuard>} />
+        <Route path="/messages" element={<AdminMessages />} />
         <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
