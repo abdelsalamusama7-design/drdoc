@@ -43,6 +43,8 @@ export default function PatientPortal() {
   const [preVisitForms, setPreVisitForms] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
+  const [installmentPlans, setInstallmentPlans] = useState<any[]>([]);
+  const [installments, setInstallments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
