@@ -53,6 +53,7 @@ const navGroups: NavGroup[] = [
       { path: "/finance", labelKey: "nav.finance", icon: DollarSign },
       { path: "/insurance", labelKey: "nav.insurance", icon: ShieldCheck },
       { path: "/inventory", labelKey: "nav.inventory", icon: Package },
+      { path: "/messages", labelKey: "nav.messages", icon: MessageSquare },
       { path: "/no-show", labelKey: "nav.noShow", icon: UserX },
       { path: "/doctor-performance", labelKey: "nav.doctorPerformance", icon: Activity },
       { path: "/reports", labelKey: "nav.reports", icon: BarChart3 },
