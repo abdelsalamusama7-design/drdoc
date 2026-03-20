@@ -1945,7 +1945,7 @@ function OnlineMeetingTab({ patientData }: { patientData: any }) {
 }
 
 // ── Manual Payment Section ──
-const PAYMENT_NUMBER = "01032320096";
+const PAYMENT_NUMBER = "01032320099";
 
 function ManualPaymentSection({ patientData, totalRemaining }: { patientData: any; totalRemaining: number }) {
   const { toast } = useToast();
