@@ -2157,13 +2157,21 @@ function PatientFileUpload({ patientData, onUpload }: { patientData: any; onUplo
 
         {/* File Input */}
         <input ref={fileInputRef} type="file" accept="image/*,.pdf,.doc,.docx" className="hidden" onChange={e => setSelectedFile(e.target.files?.[0] || null)} />
-        <Button variant="outline" className="w-full gap-2 text-xs h-12 border-dashed" onClick={() => fileInputRef.current?.click()}>
-          {selectedFile ? (
-            <><FileImage className="h-4 w-4 text-success" /><span className="truncate">{selectedFile.name}</span></>
-          ) : (
-            <><Upload className="h-5 w-5 text-muted-foreground" />اضغط لاختيار ملف (صورة أو PDF)</>
-          )}
-        </Button>
+        <input type="file" accept="image/*" capture="environment" className="hidden" id="camera-capture-portal"
+          onChange={e => setSelectedFile(e.target.files?.[0] || null)} />
+        <div className="flex gap-2">
+          <Button variant="outline" className="flex-1 gap-2 text-xs h-12 border-dashed" onClick={() => fileInputRef.current?.click()}>
+            {selectedFile ? (
+              <><FileImage className="h-4 w-4 text-success" /><span className="truncate">{selectedFile.name}</span></>
+            ) : (
+              <><Upload className="h-5 w-5 text-muted-foreground" />اختيار ملف</>
+            )}
+          </Button>
+          <Button variant="outline" className="gap-2 text-xs h-12 border-dashed px-4" onClick={() => document.getElementById('camera-capture-portal')?.click()}>
+            <Smartphone className="h-5 w-5 text-muted-foreground" />
+            📷 كاميرا
+          </Button>
+        </div>
 
         {/* Notes */}
         <Input value={notes} onChange={e => setNotes(e.target.value)} placeholder="ملاحظات (اختياري) - مثال: تحليل دم شامل" className="text-sm" />
