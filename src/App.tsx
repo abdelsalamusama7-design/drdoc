@@ -48,6 +48,7 @@ import RetentionDashboard from "@/pages/RetentionDashboard";
 import ClinicReferrals from "@/pages/ClinicReferrals";
 import InteractiveDemo from "@/pages/InteractiveDemo";
 import Insurance from "@/pages/Insurance";
+import AdminMessages from "@/pages/AdminMessages";
 import ResetPassword from "@/pages/ResetPassword";
 import OnlinePayment from "@/pages/OnlinePayment";
 import NotFound from "@/pages/NotFound";
@@ -136,6 +137,7 @@ function ProtectedRoutes() {
         <Route path="/referrals" element={<ClinicReferrals />} />
         <Route path="/insurance" element={<Insurance />} />
         <Route path="/drug-index" element={<FeatureGuard path="/drug-index"><DrugIndex /></FeatureGuard>} />
+        <Route path="/messages" element={<AdminMessages />} />
         <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
