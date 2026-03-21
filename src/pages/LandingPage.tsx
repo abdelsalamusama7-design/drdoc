@@ -22,6 +22,9 @@ import screenshotPatients from "@/assets/screenshot-patients.jpg";
 import screenshotAppointments from "@/assets/screenshot-appointments.jpg";
 import screenshotMobile from "@/assets/screenshot-mobile.png";
 import PartnersSection from "@/components/PartnersSection";
+import shotDashboard from "@/assets/shot-dashboard.png";
+import shotRecords from "@/assets/shot-records.png";
+import shotFinance from "@/assets/shot-finance.png";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
 const fadeIn = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.5 } } };
@@ -476,6 +479,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">إدارة بيانات المرضى بشكل منظم وسريع</h3>
               <p className="text-muted-foreground mb-6">نظام شامل لتسجيل وإدارة جميع بيانات المرضى مع إمكانية البحث والتصفية المتقدمة.</p>
+              <img src={shotDashboard} alt="لوحة تحكم Smart Clinic" className="rounded-2xl border border-border/50 shadow-xl w-full mt-4" loading="lazy" />
             </motion.div>
             <motion.div variants={fadeUp} className="space-y-2.5">
               {[
@@ -540,6 +544,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">متابعة الجوانب المالية للعيادة</h3>
               <p className="text-muted-foreground mb-6">نظام مالي متكامل لتتبع كل جنيه يدخل أو يخرج من العيادة.</p>
+              <img src={shotFinance} alt="إدارة الإيرادات - Smart Clinic" className="rounded-2xl border border-border/50 shadow-xl w-full mt-4" loading="lazy" />
             </motion.div>
             <motion.div variants={fadeUp} className="space-y-2.5">
               {[
@@ -615,6 +620,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">سجل طبي كامل ومتكامل لكل مريض</h3>
               <p className="text-muted-foreground mb-6">كل معلومات المريض في مكان واحد — التشخيصات، الأدوية، التحاليل، الصور، والتقارير الطبية.</p>
+              <img src={shotRecords} alt="السجل الطبي للمريض - Smart Clinic" className="rounded-2xl border border-border/50 shadow-xl w-full mt-4" loading="lazy" />
             </motion.div>
           </motion.div>
 
