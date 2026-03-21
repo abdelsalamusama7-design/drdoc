@@ -22,6 +22,7 @@ import screenshotPatients from "@/assets/screenshot-patients.jpg";
 import screenshotAppointments from "@/assets/screenshot-appointments.jpg";
 import screenshotMobile from "@/assets/screenshot-mobile.png";
 import PartnersSection from "@/components/PartnersSection";
+import DashboardGallery from "@/components/DashboardGallery";
 import shotDashboard from "@/assets/shot-dashboard.png";
 import shotRecords from "@/assets/shot-records.png";
 import shotFinance from "@/assets/shot-finance.png";
@@ -403,6 +404,8 @@ export default function LandingPage() {
       </section>
 
       <PartnersSection />
+
+      <DashboardGallery />
 
       {/* ══════════ Features Grid ══════════ */}
       <section id="features" className="py-20 sm:py-28 bg-muted/30 border-y border-border">
