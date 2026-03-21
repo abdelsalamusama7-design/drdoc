@@ -22,6 +22,9 @@ import screenshotPatients from "@/assets/screenshot-patients.jpg";
 import screenshotAppointments from "@/assets/screenshot-appointments.jpg";
 import screenshotMobile from "@/assets/screenshot-mobile.png";
 import PartnersSection from "@/components/PartnersSection";
+import shotDashboard from "@/assets/shot-dashboard.png";
+import shotRecords from "@/assets/shot-records.png";
+import shotFinance from "@/assets/shot-finance.png";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
 const fadeIn = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.5 } } };
