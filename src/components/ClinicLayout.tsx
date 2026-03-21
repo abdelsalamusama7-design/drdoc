@@ -446,7 +446,17 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="py-2 px-2.5 overflow-y-auto space-y-1" style={{ maxHeight: 'calc(100vh - 56px - 70px)' }}>
+              {/* Mobile Logout Button - Prominent */}
+              <div className="px-2.5 pt-2">
+                <button
+                  onClick={() => { setSidebarOpen(false); signOut(); }}
+                  className="w-full flex items-center justify-center gap-2 px-3 h-11 rounded-xl bg-destructive text-destructive-foreground text-sm font-bold hover:bg-destructive/90 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>{t("layout.signOut")}</span>
+                </button>
+              </div>
+              <nav className="py-2 px-2.5 overflow-y-auto space-y-1" style={{ maxHeight: 'calc(100vh - 56px - 70px - 56px)' }}>
                 {navGroups.map(group => {
                   const visibleItems = group.items.filter(filterItem);
                   if (visibleItems.length === 0) return null;
