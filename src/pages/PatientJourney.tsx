@@ -93,29 +93,29 @@ export default function PatientJourney() {
   const getPatient = (patientId: string) => patients.find(p => p.id === patientId);
 
   return (
-    <motion.div {...anim} className="space-y-6">
+    <motion.div {...anim} className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-lg md:text-2xl font-bold text-foreground">
             {lang === "ar" ? "رحلة المريض" : "Patient Journey"}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">
             {lang === "ar" ? "تتبع المرضى خطوة بخطوة داخل العيادة" : "Track patients step-by-step through the clinic"}
           </p>
         </div>
-        <Badge variant="secondary" className="font-en">
+        <Badge variant="secondary" className="font-en w-fit">
           {today} · {todayVisits.length} {lang === "ar" ? "مريض" : "patients"}
         </Badge>
       </div>
 
-      {/* Pipeline Header */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+      {/* Pipeline Header - horizontal scroll on mobile */}
+      <div className="flex items-center gap-1.5 md:gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide">
         {STAGES.map((stage, i) => (
           <div key={stage.key} className="flex items-center shrink-0">
-            <div className={`flex items-center gap-2 px-4 py-2.5 rounded-xl ${stage.bg} ${stage.border} border`}>
-              <stage.icon className={`h-4 w-4 ${stage.color}`} />
-              <span className={`text-sm font-semibold ${stage.color}`}>
+            <div className={`flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2 md:py-2.5 rounded-xl ${stage.bg} ${stage.border} border`}>
+              <stage.icon className={`h-3.5 w-3.5 md:h-4 md:w-4 ${stage.color}`} />
+              <span className={`text-xs md:text-sm font-semibold ${stage.color} whitespace-nowrap`}>
                 {lang === "ar" ? stage.label : stage.labelEn}
               </span>
               <Badge variant="secondary" className="text-[10px] h-5 min-w-[20px] justify-center">
@@ -123,7 +123,7 @@ export default function PatientJourney() {
               </Badge>
             </div>
             {i < STAGES.length - 1 && (
-              <ChevronLeft className="h-4 w-4 text-muted-foreground/40 mx-1 shrink-0" />
+              <ChevronLeft className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground/40 mx-0.5 md:mx-1 shrink-0" />
             )}
           </div>
         ))}
