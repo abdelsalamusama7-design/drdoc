@@ -722,6 +722,7 @@ export default function LandingPage() {
           </motion.div>
 
         </div>
+      </section>
 
       {/* ══════════ Multi-Device Section ══════════ */}
       <section className="py-20 sm:py-28">
