@@ -297,6 +297,29 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           </div>
         )}
 
+        {/* Logout Button - Prominent */}
+        {!collapsed ? (
+          <div className="px-3 pt-2">
+            <button
+              onClick={signOut}
+              className="w-full flex items-center justify-center gap-2 px-3 h-10 rounded-xl bg-destructive text-destructive-foreground text-sm font-bold hover:bg-destructive/90 transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>{t("layout.signOut")}</span>
+            </button>
+          </div>
+        ) : (
+          <div className="px-2 pt-2 flex justify-center">
+            <button
+              onClick={signOut}
+              className="p-2.5 rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
+              title={t("layout.signOut")}
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
         {/* Nav Items - Grouped */}
         <nav className="flex-1 py-2 px-2.5 overflow-y-auto space-y-1">
           {navGroups.map(group => {
