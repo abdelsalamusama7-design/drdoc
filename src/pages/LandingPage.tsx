@@ -479,6 +479,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">إدارة بيانات المرضى بشكل منظم وسريع</h3>
               <p className="text-muted-foreground mb-6">نظام شامل لتسجيل وإدارة جميع بيانات المرضى مع إمكانية البحث والتصفية المتقدمة.</p>
+              <img src={shotDashboard} alt="لوحة تحكم Smart Clinic" className="rounded-2xl border border-border/50 shadow-xl w-full mt-4" loading="lazy" />
             </motion.div>
             <motion.div variants={fadeUp} className="space-y-2.5">
               {[
