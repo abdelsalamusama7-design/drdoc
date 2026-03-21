@@ -449,6 +449,281 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ══════════ Detailed Features Sections ══════════ */}
+      <section className="py-20 sm:py-28">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-24">
+
+          {/* ── Section Intro ── */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="text-center">
+            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
+              <Layers className="h-4 w-4" />
+              برنامج متكامل لإدارة العيادات والمراكز الطبية
+            </motion.div>
+            <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+              نظام احترافي شامل لكل احتياجات عيادتك
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-muted-foreground text-lg max-w-3xl mx-auto leading-relaxed">
+              يساعد الأطباء على تنظيم العمل داخل العيادة بسهولة، وإدارة المرضى والمواعيد والسجلات الطبية والفواتير بشكل سريع وآمن. يدعم العمل لأكثر من طبيب وأكثر من تخصص في نفس الوقت.
+            </motion.p>
+          </motion.div>
+
+          {/* ── إدارة المرضى ── */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="grid lg:grid-cols-2 gap-10 items-center">
+            <motion.div variants={fadeUp}>
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
+                <Users className="h-4 w-4" />
+                إدارة المرضى
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">إدارة بيانات المرضى بشكل منظم وسريع</h3>
+              <p className="text-muted-foreground mb-6">نظام شامل لتسجيل وإدارة جميع بيانات المرضى مع إمكانية البحث والتصفية المتقدمة.</p>
+            </motion.div>
+            <motion.div variants={fadeUp} className="space-y-2.5">
+              {[
+                "تسجيل بيانات المريض الكاملة",
+                "البحث عن المريض بالاسم أو الكود أو رقم الهاتف",
+                "عرض وتعديل بيانات المريض بسهولة",
+                "عرض الملف الطبي الكامل للمريض",
+                "احتساب العمر تلقائياً عند تحديد تاريخ الميلاد والعكس",
+                "فتح شات واتساب مع رقم هاتف المريض",
+                "التحكم في بيانات المريض المطلوبة وتخصيصها",
+                "عرض بيانات المرضى وعمل فلتر عليها",
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-card border border-border hover:border-primary/20 transition-colors">
+                  <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  <span className="text-sm text-foreground">{item}</span>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* ── إدارة المواعيد ── */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="grid lg:grid-cols-2 gap-10 items-center">
+            <motion.div variants={fadeUp} className="order-2 lg:order-1 space-y-2.5">
+              {[
+                "حجز موعد للمريض في نفس اليوم أو في يوم لاحق",
+                "تعديل أو تغيير مواعيد الحجز بسهولة",
+                "إدارة مواعيد أكثر من طبيب في وقت واحد",
+                "تحديد نوع الخدمة المقدمة للمريض",
+                "تحصيل ثمن الحجز بأكثر من طريقة دفع",
+                "طباعة فاتورة بالحجز والخدمات المقدمة",
+                "إمكانية ترك مبلغ آجل وتحصيله لاحقاً",
+                "تقسيط المبلغ مع إشعارات بمواعيد الدفع",
+                "التحكم بفترة ظهور إشعارات الأقساط",
+                "طباعة تقرير بالحجوزات",
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-card border border-border hover:border-accent/20 transition-colors">
+                  <div className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-accent" />
+                  </div>
+                  <span className="text-sm text-foreground">{item}</span>
+                </div>
+              ))}
+            </motion.div>
+            <motion.div variants={fadeUp} className="order-1 lg:order-2">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-semibold mb-4 border border-accent/20">
+                <CalendarCheck className="h-4 w-4" />
+                إدارة المواعيد
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">نظام متكامل لتنظيم مواعيد العيادة</h3>
+              <p className="text-muted-foreground mb-6">تنظيم حجوزات المرضى مع دعم أكثر من طبيب وطرق دفع متعددة وإشعارات تلقائية.</p>
+            </motion.div>
+          </motion.div>
+
+          {/* ── الإيرادات والمصروفات ── */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="grid lg:grid-cols-2 gap-10 items-center">
+            <motion.div variants={fadeUp}>
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-warning/10 text-warning text-sm font-semibold mb-4 border border-warning/20">
+                <DollarSign className="h-4 w-4" />
+                إدارة الإيرادات والمصروفات
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">متابعة الجوانب المالية للعيادة</h3>
+              <p className="text-muted-foreground mb-6">نظام مالي متكامل لتتبع كل جنيه يدخل أو يخرج من العيادة.</p>
+            </motion.div>
+            <motion.div variants={fadeUp} className="space-y-2.5">
+              {[
+                "تسجيل رسوم الخدمات المقدمة",
+                "إصدار الفواتير بشكل احترافي",
+                "تسجيل المصروفات وتوزيع قيمتها على الأطباء",
+                "طباعة كشف حساب لكل طبيب",
+                "تقارير الإيرادات لأي فترة زمنية",
+                "تقارير المصروفات لأي فترة زمنية",
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-card border border-border hover:border-warning/20 transition-colors">
+                  <div className="w-6 h-6 rounded-lg bg-warning/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-warning" />
+                  </div>
+                  <span className="text-sm text-foreground">{item}</span>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* ── طباعة الفواتير ── */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="bg-card rounded-3xl border border-border p-8 sm:p-10">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-success/10 text-success text-sm font-semibold mb-4 border border-success/20">
+                <FileText className="h-4 w-4" />
+                طباعة الفواتير والتذاكر
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-foreground">أنواع متعددة من الطباعة</h3>
+            </div>
+            <motion.div variants={fadeUp} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { icon: "🎫", title: "طباعة رقم الدور", desc: "تنظيم قائمة الانتظار" },
+                { icon: "🎟️", title: "طباعة تذكرة المريض", desc: "بيانات الموعد والخدمة" },
+                { icon: "🧾", title: "فاتورة حرارية", desc: "طباعة سريعة من الطابعة الحرارية" },
+                { icon: "📄", title: "فاتورة خدمات A5", desc: "فاتورة مفصلة بحجم A5" },
+              ].map((item, i) => (
+                <div key={i} className="text-center p-5 rounded-2xl bg-muted/50 border border-border hover:border-success/20 transition-colors">
+                  <div className="text-3xl mb-3">{item.icon}</div>
+                  <h4 className="font-bold text-foreground mb-1">{item.title}</h4>
+                  <p className="text-xs text-muted-foreground">{item.desc}</p>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* ── السجل الطبي ── */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="grid lg:grid-cols-2 gap-10 items-center">
+            <motion.div variants={fadeUp} className="order-2 lg:order-1 space-y-2.5">
+              {[
+                "عرض جميع الزيارات السابقة بالتفصيل",
+                "تسجيل تشخيص المريض مع البحث السريع (Auto Complete)",
+                "إضافة التحاليل والفحوصات الطبية",
+                "إضافة الأدوية من قاعدة بيانات الأدوية الشاملة",
+                "إنشاء مجموعات أدوية جاهزة (مثل أدوية مرضى السكر)",
+                "إنشاء مجموعات تحاليل وفحوصات جاهزة للإضافة السريعة",
+                "إضافة ملاحظات خاصة بكل زيارة",
+                "إرفاق صور الأشعة أو التحاليل مع ملف المريض",
+                "إضافة تقرير طبي مع إمكانية نسخ تقرير سابق والتعديل عليه",
+                "حفظ تلقائي لجميع البيانات في السجل الطبي عند انتهاء الزيارة",
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-card border border-border hover:border-primary/20 transition-colors">
+                  <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  <span className="text-sm text-foreground">{item}</span>
+                </div>
+              ))}
+            </motion.div>
+            <motion.div variants={fadeUp} className="order-1 lg:order-2">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
+                <Heart className="h-4 w-4" />
+                السجل الطبي للمريض
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">سجل طبي كامل ومتكامل لكل مريض</h3>
+              <p className="text-muted-foreground mb-6">كل معلومات المريض في مكان واحد — التشخيصات، الأدوية، التحاليل، الصور، والتقارير الطبية.</p>
+            </motion.div>
+          </motion.div>
+
+          {/* ── طباعة الروشتة والتقارير ── */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="bg-gradient-to-br from-primary/5 via-card to-accent/5 rounded-3xl border border-border p-8 sm:p-10">
+            <div className="grid lg:grid-cols-2 gap-10 items-center">
+              <motion.div variants={fadeUp}>
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-semibold mb-4 border border-accent/20">
+                  <FileText className="h-4 w-4" />
+                  طباعة الروشتة والتقارير الطبية
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">طباعة احترافية بتصميم مخصص</h3>
+                <p className="text-muted-foreground mb-6">لكل طبيب تصميمه الخاص للروشتة والتقرير الطبي مع خيارات طباعة مرنة.</p>
+                <div className="space-y-2.5">
+                  {[
+                    "تصميم مخصص لكل طبيب للروشتة والتقرير الطبي",
+                    "طباعة روشتة الأدوية بشكل واضح ومنظم",
+                    "طباعة طلبات التحاليل والفحوصات",
+                    "طباعة التقارير الطبية",
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                      <span className="text-sm text-foreground">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+                  <h4 className="font-bold text-foreground flex items-center gap-2">
+                    <span className="text-lg">🖨️</span> طرق الطباعة
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-muted/50">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <FileText className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">ورق أبيض بتصميم خاص</p>
+                        <p className="text-xs text-muted-foreground">طباعة بتصميم مخصص لكل طبيب على ورق عادي</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-muted/50">
+                      <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                        <FileText className="h-4 w-4 text-accent" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">دفاتر الروشتات المطبوعة</p>
+                        <p className="text-xs text-muted-foreground">طباعة مباشرة على ورق من الدفاتر المطبوعة الجاهزة</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* ── نظام عيادات الأسنان ── */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}>
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-success/10 text-success text-sm font-semibold mb-4 border border-success/20">
+                <Stethoscope className="h-4 w-4" />
+                نظام خاص لعيادات الأسنان
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">إصدار متخصص لعيادات ومراكز الأسنان</h3>
+              <p className="text-muted-foreground max-w-2xl mx-auto">يحتوي على أدوات متقدمة مصممة خصيصاً لأطباء الأسنان مع رسم بياني للأسنان ومتابعة الإجراءات.</p>
+            </div>
+            <motion.div variants={fadeUp} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { icon: "🦷", title: "Dental Chart", desc: "رسم بياني كامل لأسنان البالغين" },
+                { icon: "👶", title: "Pedo Chart", desc: "رسم بياني لأسنان الأطفال" },
+                { icon: "💰", title: "تعريف الخدمات والأسعار", desc: "تعريف خدمات الأسنان وعناصرها وأسعارها" },
+                { icon: "✅", title: "تسجيل الإجراءات المنفذة", desc: "تسجيل ومتابعة الإجراءات التي تم تنفيذها" },
+                { icon: "📋", title: "الإجراءات المتبقية", desc: "متابعة الإجراءات المتبقية للزيارات القادمة" },
+                { icon: "📱", title: "ربط تطبيق الموبايل", desc: "حفظ صور الأشعة من الموبايل تلقائياً" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-4 p-5 rounded-2xl bg-card border border-border hover:border-success/20 hover:shadow-lg transition-all">
+                  <div className="text-2xl shrink-0">{item.icon}</div>
+                  <div>
+                    <h4 className="font-bold text-foreground mb-1">{item.title}</h4>
+                    <p className="text-xs text-muted-foreground">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* ── نظام شامل لكل التخصصات Banner ── */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary to-accent p-10 sm:p-14 text-center">
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(0_0%_100%/0.05)_1px,transparent_1px),linear-gradient(to_bottom,hsl(0_0%_100%/0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
+            <div className="relative">
+              <h3 className="text-3xl sm:text-4xl font-extrabold text-primary-foreground mb-4">
+                🏥 نظام شامل لكل التخصصات
+              </h3>
+              <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto mb-8">
+                أسنان · باطنة · جلدية · أطفال · عظام · نساء وتوليد · عيون · ذكورة · مراكز طبية متكاملة
+              </p>
+              <Link to="/login">
+                <Button size="lg" variant="secondary" className="gap-2 text-base h-14 px-10 shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all">
+                  <Zap className="h-4.5 w-4.5" />
+                  ابدأ تجربتك المجانية الآن
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+
+        </div>
+      </section>
+
       {/* ══════════ Multi-Device Section ══════════ */}
       <section className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
