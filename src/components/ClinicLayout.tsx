@@ -374,30 +374,21 @@ export default function ClinicLayout({ children }: ClinicLayoutProps) {
           })}
         </nav>
 
-        {/* User */}
+        {/* User info only (logout moved to top) */}
         <div className="border-t border-border/80">
-          {collapsed ? (
-            <div className="p-3 flex justify-center">
-              <button onClick={signOut} className="p-2 rounded-lg hover:bg-muted text-muted-foreground" title={t("layout.signOut")}>
-                <LogOut className="h-4 w-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="p-3">
-              <div className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-muted/50 transition-colors">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary text-xs font-bold">
-                  {initials}
-                </div>
+          <div className="p-3">
+            <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-2.5 p-2 rounded-xl hover:bg-muted/50 transition-colors'}`}>
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary text-xs font-bold">
+                {initials}
+              </div>
+              {!collapsed && (
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-semibold truncate text-foreground">{displayName}</p>
                   <p className="text-[10px] text-muted-foreground">{roleLabel}</p>
                 </div>
-                <button onClick={signOut} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground transition-colors" title={t("layout.signOut")}>
-                  <LogOut className="h-3.5 w-3.5" />
-                </button>
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </aside>
 
