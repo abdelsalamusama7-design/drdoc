@@ -619,6 +619,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">سجل طبي كامل ومتكامل لكل مريض</h3>
               <p className="text-muted-foreground mb-6">كل معلومات المريض في مكان واحد — التشخيصات، الأدوية، التحاليل، الصور، والتقارير الطبية.</p>
+              <img src={shotRecords} alt="السجل الطبي للمريض - Smart Clinic" className="rounded-2xl border border-border/50 shadow-xl w-full mt-4" loading="lazy" />
             </motion.div>
           </motion.div>
 
