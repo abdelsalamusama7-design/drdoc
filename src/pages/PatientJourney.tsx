@@ -130,7 +130,7 @@ export default function PatientJourney() {
       </div>
 
       {/* Kanban Board */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 min-h-[400px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 min-h-[200px] md:min-h-[400px]">
         {STAGES.map((stage) => (
           <div key={stage.key} className="space-y-2">
             {/* Column header */}
