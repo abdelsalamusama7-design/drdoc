@@ -5,12 +5,12 @@ import {
   ArrowRight, Phone, MapPin, AlertTriangle, Calendar, FileText,
   Pill, Activity, StickyNote, Upload, Plus, Star, Loader2,
   Image, FlaskConical, Download, Clock, Brain, Mic, MicOff, ClipboardList,
-  TrendingUp, Shield, BarChart3, ChevronDown, ChevronUp
+  TrendingUp, Shield, BarChart3, ChevronDown, ChevronUp, Pencil, Eye, Check, X
 } from "lucide-react";
 import {
   usePatient, useDoctorNotes, usePatientFiles, useFollowUps,
   createDoctorNote, uploadPatientFile, createFollowUp, updateFollowUp,
-  getSignedFileUrl, type DoctorNote
+  getSignedFileUrl, renamePatientFile, type DoctorNote
 } from "@/hooks/useSupabaseData";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,6 +74,10 @@ export default function PatientDetail() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [followUpForm, setFollowUpForm] = useState({ date: '', reason: '' });
+  const [renamingFileId, setRenamingFileId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewName, setPreviewName] = useState('');
 
   // Pre-visit form data
   const [preVisitForm, setPreVisitForm] = useState<any>(null);
@@ -270,6 +274,31 @@ export default function PatientDetail() {
       toast({ title: "خطأ", description: err.message, variant: "destructive" });
     }
   };
+
+  const handleRenameFile = async (fileId: string) => {
+    if (!renameValue.trim()) return;
+    try {
+      await renamePatientFile(fileId, renameValue.trim());
+      toast({ title: "تم", description: "تم تغيير اسم الملف" });
+      setRenamingFileId(null);
+      refetchFiles();
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handlePreviewFile = async (filePath: string, fileName: string) => {
+    try {
+      const url = await getSignedFileUrl(filePath);
+      setPreviewUrl(url);
+      setPreviewName(fileName);
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const isImageFile = (fileName: string) => /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(fileName);
+  const isPdfFile = (fileName: string) => /\.pdf$/i.test(fileName);
 
   const fileTypeLabels: Record<string, string> = { lab: 'تحليل', radiology: 'أشعة', prescription: 'وصفة', other: 'آخر' };
   const fileTypeIcons: Record<string, typeof Activity> = { lab: FlaskConical, radiology: Image, prescription: FileText, other: FileText };
@@ -549,17 +578,40 @@ export default function PatientDetail() {
             <div className="divide-y divide-border">
               {files.map((file) => {
                 const FileIcon = fileTypeIcons[file.file_type] || FileText;
+                const canPreview = isImageFile(file.file_name) || isPdfFile(file.file_name);
                 return (
                   <div key={file.id} className="p-4 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><FileIcon className="h-4 w-4 text-primary" /></div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{file.file_name}</p>
+                      {renamingFileId === file.id ? (
+                        <div className="flex items-center gap-2">
+                          <Input value={renameValue} onChange={e => setRenameValue(e.target.value)} className="h-8 text-sm" autoFocus
+                            onKeyDown={e => { if (e.key === 'Enter') handleRenameFile(file.id); if (e.key === 'Escape') setRenamingFileId(null); }} />
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => handleRenameFile(file.id)}><Check className="h-3.5 w-3.5 text-success" /></Button>
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setRenamingFileId(null)}><X className="h-3.5 w-3.5 text-destructive" /></Button>
+                        </div>
+                      ) : (
+                        <p className="text-sm font-medium text-foreground truncate">{file.file_name}</p>
+                      )}
                       <div className="flex items-center gap-2 mt-0.5">
                         <Badge variant="secondary" className="text-[9px]">{fileTypeLabels[file.file_type] || file.file_type}</Badge>
                         <span className="text-[10px] text-muted-foreground font-en">{new Date(file.created_at).toLocaleDateString('ar-SA')}</span>
+                        {file.notes && <span className="text-[10px] text-muted-foreground">• {file.notes}</span>}
                       </div>
                     </div>
-                    <Button size="sm" variant="ghost" onClick={() => handleDownloadFile(file.file_path)}><Download className="h-4 w-4" /></Button>
+                    <div className="flex items-center gap-1">
+                      {canPreview && (
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0" title="عرض" onClick={() => handlePreviewFile(file.file_path, file.file_name)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0" title="تغيير الاسم" onClick={() => { setRenamingFileId(file.id); setRenameValue(file.file_name); }}>
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0" title="تحميل" onClick={() => handleDownloadFile(file.file_path)}>
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 );
               })}
@@ -765,6 +817,21 @@ export default function PatientDetail() {
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "جدولة"}
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── File Preview Dialog ── */}
+      <Dialog open={!!previewUrl} onOpenChange={() => { setPreviewUrl(null); setPreviewName(''); }}>
+        <DialogContent className="max-w-3xl max-h-[90vh]">
+          <DialogHeader><DialogTitle className="truncate">{previewName}</DialogTitle></DialogHeader>
+          <div className="mt-2 max-h-[70vh] overflow-auto rounded-lg bg-muted/30">
+            {previewUrl && isImageFile(previewName) && (
+              <img src={previewUrl} alt={previewName} className="w-full h-auto rounded-lg" />
+            )}
+            {previewUrl && isPdfFile(previewName) && (
+              <iframe src={previewUrl} className="w-full h-[65vh] rounded-lg border-0" title={previewName} />
+            )}
           </div>
         </DialogContent>
       </Dialog>

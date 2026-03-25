@@ -390,6 +390,12 @@ export async function uploadPatientFile(
   return data as PatientFile;
 }
 
+export async function renamePatientFile(fileId: string, newName: string) {
+  const { error } = await (supabase.from("patient_files" as any) as any)
+    .update({ file_name: newName }).eq("id", fileId);
+  if (error) throw error;
+}
+
 export function getFileUrl(filePath: string) {
   const { data } = supabase.storage.from("patient-files").getPublicUrl(filePath);
   return data.publicUrl;
