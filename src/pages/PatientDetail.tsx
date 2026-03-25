@@ -10,7 +10,7 @@ import {
 import {
   usePatient, useDoctorNotes, usePatientFiles, useFollowUps,
   createDoctorNote, uploadPatientFile, createFollowUp, updateFollowUp,
-  getSignedFileUrl, type DoctorNote
+  getSignedFileUrl, renamePatientFile, type DoctorNote
 } from "@/hooks/useSupabaseData";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
