@@ -578,17 +578,40 @@ export default function PatientDetail() {
             <div className="divide-y divide-border">
               {files.map((file) => {
                 const FileIcon = fileTypeIcons[file.file_type] || FileText;
+                const canPreview = isImageFile(file.file_name) || isPdfFile(file.file_name);
                 return (
                   <div key={file.id} className="p-4 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><FileIcon className="h-4 w-4 text-primary" /></div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{file.file_name}</p>
+                      {renamingFileId === file.id ? (
+                        <div className="flex items-center gap-2">
+                          <Input value={renameValue} onChange={e => setRenameValue(e.target.value)} className="h-8 text-sm" autoFocus
+                            onKeyDown={e => { if (e.key === 'Enter') handleRenameFile(file.id); if (e.key === 'Escape') setRenamingFileId(null); }} />
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => handleRenameFile(file.id)}><Check className="h-3.5 w-3.5 text-success" /></Button>
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setRenamingFileId(null)}><X className="h-3.5 w-3.5 text-destructive" /></Button>
+                        </div>
+                      ) : (
+                        <p className="text-sm font-medium text-foreground truncate">{file.file_name}</p>
+                      )}
                       <div className="flex items-center gap-2 mt-0.5">
                         <Badge variant="secondary" className="text-[9px]">{fileTypeLabels[file.file_type] || file.file_type}</Badge>
                         <span className="text-[10px] text-muted-foreground font-en">{new Date(file.created_at).toLocaleDateString('ar-SA')}</span>
+                        {file.notes && <span className="text-[10px] text-muted-foreground">• {file.notes}</span>}
                       </div>
                     </div>
-                    <Button size="sm" variant="ghost" onClick={() => handleDownloadFile(file.file_path)}><Download className="h-4 w-4" /></Button>
+                    <div className="flex items-center gap-1">
+                      {canPreview && (
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0" title="عرض" onClick={() => handlePreviewFile(file.file_path, file.file_name)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0" title="تغيير الاسم" onClick={() => { setRenamingFileId(file.id); setRenameValue(file.file_name); }}>
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0" title="تحميل" onClick={() => handleDownloadFile(file.file_path)}>
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 );
               })}
