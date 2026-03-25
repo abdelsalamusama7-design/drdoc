@@ -820,6 +820,21 @@ export default function PatientDetail() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* ── File Preview Dialog ── */}
+      <Dialog open={!!previewUrl} onOpenChange={() => { setPreviewUrl(null); setPreviewName(''); }}>
+        <DialogContent className="max-w-3xl max-h-[90vh]">
+          <DialogHeader><DialogTitle className="truncate">{previewName}</DialogTitle></DialogHeader>
+          <div className="mt-2 max-h-[70vh] overflow-auto rounded-lg bg-muted/30">
+            {previewUrl && isImageFile(previewName) && (
+              <img src={previewUrl} alt={previewName} className="w-full h-auto rounded-lg" />
+            )}
+            {previewUrl && isPdfFile(previewName) && (
+              <iframe src={previewUrl} className="w-full h-[65vh] rounded-lg border-0" title={previewName} />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
