@@ -5,7 +5,7 @@ import {
   ArrowRight, Phone, MapPin, AlertTriangle, Calendar, FileText,
   Pill, Activity, StickyNote, Upload, Plus, Star, Loader2,
   Image, FlaskConical, Download, Clock, Brain, Mic, MicOff, ClipboardList,
-  TrendingUp, Shield, BarChart3, ChevronDown, ChevronUp
+  TrendingUp, Shield, BarChart3, ChevronDown, ChevronUp, Pencil, Eye, Check, X
 } from "lucide-react";
 import {
   usePatient, useDoctorNotes, usePatientFiles, useFollowUps,
