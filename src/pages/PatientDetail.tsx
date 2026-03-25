@@ -275,6 +275,31 @@ export default function PatientDetail() {
     }
   };
 
+  const handleRenameFile = async (fileId: string) => {
+    if (!renameValue.trim()) return;
+    try {
+      await renamePatientFile(fileId, renameValue.trim());
+      toast({ title: "تم", description: "تم تغيير اسم الملف" });
+      setRenamingFileId(null);
+      refetchFiles();
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handlePreviewFile = async (filePath: string, fileName: string) => {
+    try {
+      const url = await getSignedFileUrl(filePath);
+      setPreviewUrl(url);
+      setPreviewName(fileName);
+    } catch (err: any) {
+      toast({ title: "خطأ", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const isImageFile = (fileName: string) => /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(fileName);
+  const isPdfFile = (fileName: string) => /\.pdf$/i.test(fileName);
+
   const fileTypeLabels: Record<string, string> = { lab: 'تحليل', radiology: 'أشعة', prescription: 'وصفة', other: 'آخر' };
   const fileTypeIcons: Record<string, typeof Activity> = { lab: FlaskConical, radiology: Image, prescription: FileText, other: FileText };
 
