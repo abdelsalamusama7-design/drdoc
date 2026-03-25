@@ -74,6 +74,10 @@ export default function PatientDetail() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [followUpForm, setFollowUpForm] = useState({ date: '', reason: '' });
+  const [renamingFileId, setRenamingFileId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewName, setPreviewName] = useState('');
 
   // Pre-visit form data
   const [preVisitForm, setPreVisitForm] = useState<any>(null);
